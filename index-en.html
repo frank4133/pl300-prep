@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PL-300 Mock Exam &amp; Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============ Linear design tokens ============ */
+:root, :root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #08090A;
+  --surface-1: #16171C;
+  --surface-2: #1E1F25;
+  --surface-3: #26272E;
+  --hairline: rgba(255,255,255,0.06);
+  --hairline-strong: rgba(255,255,255,0.10);
+  --text-1: #F7F8F8;
+  --text-2: #9CA3AF;
+  --text-3: #6B7280;
+  --accent: #5E6AD2;
+  --accent-soft: rgba(94,106,210,0.14);
+  --accent-text: #A9B1F0;
+  --ok: #4CB782;
+  --ok-soft: rgba(76,183,130,0.12);
+  --bad: #EB5757;
+  --bad-soft: rgba(235,87,87,0.10);
+  --warn: #F2C94C;
+  --code-bg: #1E1F25;
+  --code-text: #A78BFA;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ground: #FBFBFC;
+  --surface-1: #FFFFFF;
+  --surface-2: #F6F7F8;
+  --surface-3: #EFF0F2;
+  --hairline: rgba(9,10,12,0.08);
+  --hairline-strong: rgba(9,10,12,0.14);
+  --text-1: #0F1011;
+  --text-2: #5C6066;
+  --text-3: #8A8F98;
+  --accent: #5E6AD2;
+  --accent-soft: rgba(94,106,210,0.10);
+  --accent-text: #4C56B8;
+  --ok: #2E9E63;
+  --ok-soft: rgba(46,158,99,0.10);
+  --bad: #D64545;
+  --bad-soft: rgba(214,69,69,0.08);
+  --warn: #B98A00;
+  --code-bg: #EFF0F2;
+  --code-text: #6D5AC4;
+  --shadow: 0 1px 2px rgba(9,10,12,0.06);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
+body {
+  font-family: "Inter", "Noto Sans TC", system-ui, sans-serif;
+  font-size: 15.5px; line-height: 1.6;
+  background: var(--ground); color: var(--text-1);
+}
+a { color: var(--accent-text); }
+button { font-family: inherit; cursor: pointer; }
+p, li, h1, h2, h3, .sub { text-wrap: pretty; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+h1, h2, h3, .brand, .tile .v, strong {
+  font-family: "Inter Tight", "Noto Sans TC", sans-serif;
+}
+h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.mono, .timer, .qid, .chip, .key, .tile .v, .ppos {
+  font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+/* ---------- topbar ---------- */
+header.topbar {
+  position: sticky; top: 0; z-index: 50; height: 54px;
+  display: flex; align-items: center; gap: 4px; padding: 0 20px;
+  background: color-mix(in srgb, var(--ground) 86%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--hairline);
+}
+.topbar .brand { display: flex; align-items: baseline; gap: 8px; margin-right: 24px; white-space: nowrap; }
+.topbar .brand .pl { font-family: "JetBrains Mono", monospace; font-weight: 500; font-size: 15px; color: var(--text-1); }
+.topbar .brand span.sub-t { font-size: 12.5px; color: var(--text-3); }
+.topbar nav { display: flex; gap: 2px; flex: 1; overflow-x: auto; }
+.topbar nav button {
+  border: none; background: none; color: var(--text-2); font-size: 14px; font-weight: 500;
+  padding: 7px 13px; border-radius: 6px; white-space: nowrap;
+  transition: color .15s ease-out, background .15s ease-out;
+}
+.topbar nav button:hover { color: var(--text-1); background: var(--surface-2); }
+.topbar nav button.active { color: var(--text-1); background: var(--surface-3); }
+.langlink {
+  font-size: 13px; font-weight: 500; color: var(--text-2); text-decoration: none;
+  border: 1px solid var(--hairline); border-radius: 6px; padding: 5px 10px; margin-right: 6px;
+  transition: border-color .15s ease-out, color .15s ease-out;
+}
+.langlink:hover { border-color: var(--hairline-strong); color: var(--text-1); }
+#themeBtn, .iconbtn {
+  width: 32px; height: 32px; display: grid; place-items: center; flex: none;
+  border: 1px solid var(--hairline); border-radius: 6px; background: none; color: var(--text-2);
+  transition: border-color .15s ease-out, color .15s ease-out;
+}
+#themeBtn:hover, .iconbtn:hover { border-color: var(--hairline-strong); color: var(--text-1); }
+#themeBtn svg, .iconbtn svg { width: 15px; height: 15px; }
+:root[data-theme="dark"] .ic-sun { display: block; }
+:root[data-theme="dark"] .ic-moon { display: none; }
+:root[data-theme="light"] .ic-sun { display: none; }
+:root[data-theme="light"] .ic-moon { display: block; }
+
+main { max-width: 1500px; margin: 0 auto; padding: 28px 24px 96px; }
+#page-home, #page-exam { max-width: 1020px; margin: 0 auto; }
+#page-guide { max-width: 1200px; margin: 0 auto; }
+.page { display: none; }
+.page.active { display: block; }
+.sub { color: var(--text-2); font-size: 14.5px; margin-bottom: 22px; }
+
+/* ---------- cards & tiles ---------- */
+.card {
+  background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px;
+  padding: 22px 24px; margin-bottom: 16px; box-shadow: var(--shadow);
+}
+.card > strong { font-size: 15px; font-weight: 600; }
+.tiles {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px; background: var(--hairline); border: 1px solid var(--hairline);
+  border-radius: 12px; overflow: hidden; margin-bottom: 20px;
+}
+.tile { background: var(--surface-1); padding: 18px 20px; border: none; border-radius: 0; }
+.tile .v { font-size: 26px; font-weight: 500; letter-spacing: -0.02em; }
+.tile .v small { font-size: 13px; color: var(--text-3); font-weight: 400; }
+.tile .l { font-size: 12.5px; color: var(--text-3); margin-top: 4px; }
+.meter { height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; margin-top: 12px; }
+.meter > div { height: 100%; background: var(--accent); border-radius: 2px; }
+
+/* ---------- chips ---------- */
+.badge {
+  display: inline-block; font-size: 11.5px; font-weight: 500; padding: 2px 8px;
+  border-radius: 6px; border: 1px solid var(--hairline-strong); color: var(--text-2);
+  margin-right: 6px; vertical-align: 2px;
+  font-family: "Inter", "Noto Sans TC", sans-serif;
+}
+.badge.t-choice { color: var(--accent-text); border-color: color-mix(in srgb, var(--accent) 45%, transparent); background: var(--accent-soft); }
+.badge.t-multi { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, transparent); background: var(--ok-soft); }
+.badge.t-hotspot { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, transparent); }
+.badge.t-dragdrop { color: var(--code-text); border-color: color-mix(in srgb, var(--code-text) 40%, transparent); }
+.badge.t-case { color: var(--text-2); }
+.badge.st-right { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, transparent); }
+.badge.st-wrong { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 40%, transparent); }
+.qid {
+  font-size: 12px; padding: 2px 9px; border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--accent-text); background: var(--accent-soft); white-space: nowrap;
+}
+
+/* ---------- question rendering ---------- */
+.qbody p { margin-bottom: 10px; }
+.qul { margin: 2px 0 12px; padding-left: 24px; }
+.qul li { margin-bottom: 4px; }
+.qul li::marker { color: var(--text-3); }
+.qh { font-weight: 600; color: var(--text-1); margin: 16px 0 6px; }
+.qbody > .qh:first-child, .inner > .qh:first-child { margin-top: 0; }
+pre.dax {
+  background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 6px;
+  padding: 12px 16px; margin: 10px 0 14px; overflow-x: auto;
+  font-family: "JetBrains Mono", Consolas, monospace; font-size: 13px;
+  color: var(--code-text); line-height: 1.55;
+}
+.refs { font-size: 13px; word-break: break-all; }
+.qbody img, .expl img {
+  max-width: 100%; border: 1px solid var(--hairline-strong); border-radius: 6px;
+  margin: 10px 0; display: block; cursor: zoom-in; background: #fff;
+}
+.opts { list-style: none; margin: 16px 0; }
+.opts li {
+  border: 1px solid var(--hairline); border-radius: 6px; padding: 12px 16px; margin-bottom: 8px;
+  display: flex; gap: 12px; cursor: pointer; background: none; font-size: 15px;
+  transition: border-color .15s ease-out, background .15s ease-out;
+}
+.opts li:hover { border-color: var(--hairline-strong); background: var(--surface-2); }
+.opts li .letter { font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--text-3); min-width: 18px; padding-top: 2px; }
+.opts li.sel { border-color: var(--accent); background: var(--accent-soft); }
+.opts li.sel .letter { color: var(--accent-text); }
+.opts li.right { border-color: color-mix(in srgb, var(--ok) 55%, transparent); background: var(--ok-soft); }
+.opts li.right .letter { color: var(--ok); }
+.opts li.wrong { border-color: color-mix(in srgb, var(--bad) 55%, transparent); background: var(--bad-soft); }
+.opts li.wrong .letter { color: var(--bad); }
+.opts li.dim { opacity: .45; }
+.opts li.locked { cursor: default; }
+.opts li.locked:hover { background: none; }
+.opts li.right.locked:hover { background: var(--ok-soft); }
+.opts li.wrong.locked:hover { background: var(--bad-soft); }
+.expl {
+  background: var(--surface-2); border: 1px solid var(--hairline);
+  padding: 14px 18px; border-radius: 6px; margin-top: 14px; font-size: 14.5px; color: var(--text-2);
+}
+.expl p { margin-bottom: 8px; }
+.expl .hd { font-weight: 600; margin-bottom: 8px; color: var(--text-1); font-size: 14px; }
+.verdict { font-weight: 600; margin: 12px 0 2px; font-size: 15px; }
+.verdict.ok { color: var(--ok); }
+.verdict.no { color: var(--bad); }
+.casebox { border: 1px solid var(--hairline); background: var(--surface-2); border-radius: 6px; margin-bottom: 16px; }
+.casebox > summary { padding: 10px 16px; cursor: pointer; font-weight: 500; color: var(--text-2); font-size: 14px; }
+.casebox > summary:hover { color: var(--text-1); }
+.casebox > .inner { padding: 4px 18px 16px; font-size: 14.5px; color: var(--text-2); max-height: 420px; overflow-y: auto; border-top: 1px solid var(--hairline); }
+
+/* ---------- filters ---------- */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; align-items: center; }
+.filters select, .filters input[type=text] {
+  background: var(--surface-1); color: var(--text-1); border: 1px solid var(--hairline-strong);
+  border-radius: 6px; padding: 8px 12px; font-size: 14px; font-family: inherit;
+  transition: border-color .15s ease-out;
+}
+.filters select:hover, .filters input[type=text]:hover { border-color: var(--text-3); }
+.filters select:focus, .filters input[type=text]:focus { outline: none; border-color: var(--accent); }
+.filters input[type=text] { flex: 1; min-width: 180px; }
+
+/* ---------- question card ---------- */
+.qitem { background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px; margin-bottom: 10px; overflow: hidden; box-shadow: var(--shadow); }
+.qitem > .qhead {
+  padding: 12px 20px; display: flex; gap: 10px; align-items: center;
+  background: var(--surface-2); border-bottom: 1px solid var(--hairline);
+}
+.qitem .qdetail { padding: 20px 24px 22px; }
+.rowbtns { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; align-items: center; }
+.btn {
+  border: 1px solid var(--hairline-strong); background: var(--surface-2); color: var(--text-1);
+  border-radius: 6px; padding: 8px 16px; font-size: 14px; font-weight: 500;
+  transition: background .15s ease-out, border-color .15s ease-out;
+}
+.btn:hover { background: var(--surface-3); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { background: color-mix(in srgb, var(--accent) 88%, #fff); }
+.btn.small { padding: 5px 12px; font-size: 13px; }
+.btn.danger { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 45%, transparent); background: none; }
+.btn.danger:hover { background: var(--bad-soft); }
+.bookmark { background: none; border: none; color: var(--text-3); padding: 2px 4px; display: grid; place-items: center; transition: color .15s ease-out; }
+.bookmark svg { width: 17px; height: 17px; }
+.bookmark:hover { color: var(--text-1); }
+.bookmark.on { color: var(--warn); }
+.bookmark.on svg path { fill: currentColor; }
+
+/* ---------- split view ---------- */
+#pCard { scroll-margin-top: 70px; }
+.psplit { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 16px; align-items: start; }
+.pside {
+  position: sticky; top: 70px; max-height: calc(100vh - 92px);
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px;
+}
+.pside-head {
+  padding: 10px 14px; font-size: 11.5px; color: var(--text-3);
+  border-bottom: 1px solid var(--hairline); display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+}
+.legend { display: inline-flex; align-items: center; gap: 5px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.pside-list { overflow-y: auto; overscroll-behavior: contain; }
+.pitem {
+  display: flex; gap: 10px; align-items: center; padding: 8px 14px;
+  font-size: 13px; cursor: pointer; color: var(--text-2);
+  border-top: 1px solid var(--hairline);
+  transition: background .15s ease-out;
+}
+.pitem:first-child { border-top: none; }
+.pitem:hover { background: var(--surface-2); }
+.pitem.cur { background: var(--accent-soft); color: var(--text-1); box-shadow: inset 2px 0 0 var(--accent); }
+.pitem.r { }
+.pitem.w { }
+.pitem .num { font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--text-3); min-width: 30px; }
+.pitem .tno { font-family: "JetBrains Mono", monospace; font-size: 12px; white-space: nowrap; flex: 1; }
+.pitem .ic { font-size: 12px; min-width: 14px; text-align: center; }
+#pSideBtn { display: none; align-items: center; gap: 7px; }
+#pSideBtn svg { width: 14px; height: 14px; }
+.pbackdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 55; }
+.pbackdrop.show { display: block; }
+.pbar {
+  position: sticky; bottom: 14px; z-index: 30;
+  display: flex; gap: 10px; align-items: center;
+  background: color-mix(in srgb, var(--surface-1) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--hairline); border-radius: 12px;
+  padding: 10px 14px; margin-top: 14px; box-shadow: var(--shadow);
+}
+.pbar .ppos { flex: 1; text-align: center; font-size: 12.5px; color: var(--text-3); }
+.key {
+  font-size: 11px; border: 1px solid var(--hairline-strong); border-bottom-width: 2px;
+  border-radius: 4px; padding: 1px 6px; color: var(--text-3); margin-left: 5px;
+}
+.keyhint { font-size: 12px; color: var(--text-3); white-space: nowrap; }
+
+/* ---------- mock exam ---------- */
+.exam-top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.timer { font-size: 20px; font-weight: 500; }
+.timer.low { color: var(--bad); }
+.navgrid { display: flex; flex-wrap: wrap; gap: 5px; margin: 14px 0; }
+.navgrid button {
+  width: 36px; height: 30px; border-radius: 6px; border: 1px solid var(--hairline);
+  background: var(--surface-1); color: var(--text-3); font-size: 12px;
+  font-family: "JetBrains Mono", monospace;
+  transition: border-color .15s ease-out, background .15s ease-out;
+}
+.navgrid button:hover { border-color: var(--hairline-strong); }
+.navgrid button.answered { background: var(--accent-soft); color: var(--accent-text); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.navgrid button.flagged { box-shadow: inset 0 -2px 0 var(--warn); }
+.navgrid button.cur { outline: 1.5px solid var(--accent); outline-offset: 1px; }
+.navgrid button.rv-right { background: var(--ok-soft); border-color: color-mix(in srgb, var(--ok) 40%, transparent); color: var(--ok); }
+.navgrid button.rv-wrong { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 40%, transparent); color: var(--bad); }
+.radio-row { display: flex; gap: 18px; flex-wrap: wrap; margin: 8px 0 4px; }
+.radio-row label { display: flex; gap: 7px; align-items: center; font-size: 14.5px; cursor: pointer; color: var(--text-2); }
+.radio-row input { accent-color: var(--accent); }
+.field-label { font-weight: 600; font-size: 14px; margin-top: 16px; margin-bottom: 2px; }
+.scorebar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin: 12px 0 8px; background: var(--surface-3); }
+.scorebar .ok { background: var(--ok); border-right: 2px solid var(--surface-1); }
+.scorebar .bad { background: var(--bad); }
+.passline { font-size: 13px; color: var(--text-3); }
+#flagBtn { display: inline-flex; align-items: center; gap: 6px; }
+#flagBtn svg { width: 13px; height: 13px; }
+#flagBtn.flag-on { border-color: color-mix(in srgb, var(--warn) 55%, transparent); color: var(--warn); }
+
+/* ---------- guide ---------- */
+.toc { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 28px; }
+.toc a {
+  display: block; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px;
+  padding: 11px 13px; text-decoration: none; color: var(--text-1); font-size: 13.5px; font-weight: 600;
+  transition: border-color .15s ease-out, background .15s ease-out;
+}
+.toc a:hover { border-color: var(--hairline-strong); background: var(--surface-2); }
+.toc a .w { display: block; font-size: 11.5px; color: var(--text-3); font-weight: 400; margin-top: 3px; }
+.guide h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin: 40px 0 12px; padding-top: 20px; border-top: 1px solid var(--hairline); }
+.guide h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; color: var(--accent-text); }
+.guide p, .guide li { font-size: 15px; color: var(--text-2); }
+.guide ul, .guide ol { padding-left: 22px; margin-bottom: 12px; }
+.guide li { margin-bottom: 5px; }
+.guide li strong, .guide p strong { color: var(--text-1); font-weight: 600; }
+.guide table { border-collapse: collapse; width: 100%; margin: 12px 0 18px; font-size: 14px; }
+.guide th, .guide td { border: 1px solid var(--hairline); padding: 8px 12px; text-align: left; vertical-align: top; color: var(--text-2); }
+.guide th { background: var(--surface-2); font-weight: 600; color: var(--text-1); }
+.guide code, .qbody code {
+  background: var(--code-bg); border: 1px solid var(--hairline); border-radius: 4px;
+  padding: 1px 6px; font-size: 13px; color: var(--code-text);
+  font-family: "JetBrains Mono", Consolas, monospace;
+}
+.guide pre {
+  background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 6px;
+  padding: 14px 16px; overflow-x: auto; margin: 10px 0 16px;
+}
+.guide pre code { border: none; background: none; padding: 0; font-size: 13px; }
+.tip, .warn {
+  background: var(--surface-2); border: 1px solid var(--hairline);
+  padding: 12px 16px; border-radius: 6px; margin: 12px 0; font-size: 14.5px; color: var(--text-2);
+}
+.tip strong { color: var(--ok); }
+.warn strong { color: var(--warn); }
+
+/* ---------- lightbox & misc ---------- */
+#lightbox {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 100;
+  align-items: center; justify-content: center; cursor: zoom-out; padding: 24px;
+}
+#lightbox img { max-width: 96vw; max-height: 94vh; border-radius: 6px; background: #fff; }
+.footnote { color: var(--text-3); font-size: 12.5px; margin-top: 32px; text-align: center; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 860px) {
+  .psplit { display: block; }
+  .pside {
+    position: fixed; top: 54px; left: 0; bottom: 0; width: min(80vw, 300px);
+    max-height: none; z-index: 60; border-radius: 0 12px 0 0;
+    transform: translateX(-105%);
+    transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 4px 0 24px rgba(0,0,0,.3);
+  }
+  .pside.open { transform: none; }
+  #pSideBtn { display: inline-flex; }
+  .keyhint { display: none; }
+  .pbar { padding: 8px 10px; gap: 6px; }
+  .pbar .btn { padding: 8px 12px; font-size: 13px; }
+}
+@media (max-width: 1100px) {
+  .toc { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .topbar { padding: 0 12px; }
+  .topbar .brand { margin-right: 8px; }
+  .topbar .brand span.sub-t { display: none; }
+  main { padding: 18px 12px 72px; }
+  .guide table { display: block; overflow-x: auto; }
+  .tiles { grid-template-columns: repeat(2, 1fr); }
+  .toc { grid-template-columns: repeat(2, 1fr); }
+  h1 { font-size: 21px; }
+  .qitem .qdetail { padding: 16px 16px 18px; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="pl">PL-300</span><span class="sub-t">Exam Prep</span></div>
+  <nav>
+    <button data-page="home" class="active">Overview</button>
+    <button data-page="exam">Mock Exam</button>
+    <button data-page="practice">Question Bank</button>
+    <button data-page="guide">Study Guide</button>
+  </nav>
+  <a class="langlink" href="index.html" title="中文版">中文</a>
+  <button id="themeBtn" title="Toggle theme">
+    <svg class="ic-sun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3"/></svg>
+    <svg class="ic-moon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z"/></svg>
+  </button>
+</header>
+
+<main>
+<!-- ============ overview ============ -->
+<section id="page-home" class="page active">
+  <h1>PL-300: Microsoft Power BI Data Analyst</h1>
+  <p class="sub">Mock exams and study material built from a 382-question reference bank. Passing score: 700 out of 1000.</p>
+  <div class="tiles" id="homeTiles"></div>
+  <div class="card">
+    <strong>Practice progress</strong>
+    <div id="homeProgress"></div>
+    <div class="rowbtns">
+      <button class="btn primary" onclick="showPage('exam')">Start a mock exam</button>
+      <button class="btn" onclick="showPage('practice')">Open the question bank</button>
+      <button class="btn" onclick="showPage('guide')">Read the study guide</button>
+      <button class="btn small danger" onclick="resetProgress()">Clear all records</button>
+    </div>
+  </div>
+  <div class="card">
+    <strong>Skills measured (post-2024 outline)</strong>
+    <table style="border-collapse:collapse;width:100%;margin-top:10px;font-size:13.5px">
+      <tr><td style="padding:6px 8px;border:1px solid var(--hairline)">Prepare the data</td><td style="padding:6px 8px;border:1px solid var(--hairline)">25&ndash;30%</td></tr>
+      <tr><td style="padding:6px 8px;border:1px solid var(--hairline)">Model the data</td><td style="padding:6px 8px;border:1px solid var(--hairline)">25&ndash;30%</td></tr>
+      <tr><td style="padding:6px 8px;border:1px solid var(--hairline)">Visualize and analyze the data</td><td style="padding:6px 8px;border:1px solid var(--hairline)">25&ndash;30%</td></tr>
+      <tr><td style="padding:6px 8px;border:1px solid var(--hairline)">Manage and secure Power BI</td><td style="padding:6px 8px;border:1px solid var(--hairline)">15&ndash;20%</td></tr>
+    </table>
+    <p style="font-size:13.5px;color:var(--text-2)">The real exam has roughly 40&ndash;60 questions in 100 minutes, mixing single/multiple choice, hotspots, drag-and-drop, and case studies.</p>
+  </div>
+</section>
+
+<!-- ============ mock exam ============ -->
+<section id="page-exam" class="page">
+  <div id="examSetup">
+    <h1>Mock Exam</h1>
+    <p class="sub">Questions are drawn at random from the 245 auto-gradable choice questions (single/multiple). Hotspot and drag-and-drop questions live in the Question Bank for per-question review.</p>
+    <div class="card">
+      <div class="field-label">Number of questions</div>
+      <div class="radio-row">
+        <label><input type="radio" name="exCount" value="20"> 20</label>
+        <label><input type="radio" name="exCount" value="40" checked> 40 (closest to the real exam)</label>
+        <label><input type="radio" name="exCount" value="60"> 60</label>
+      </div>
+      <div class="field-label">Time limit</div>
+      <div class="radio-row">
+        <label><input type="radio" name="exTime" value="0"> Untimed</label>
+        <label><input type="radio" name="exTime" value="60" checked> 60 minutes</label>
+        <label><input type="radio" name="exTime" value="100"> 100 minutes</label>
+      </div>
+      <div class="field-label">Question pool</div>
+      <div class="radio-row">
+        <label><input type="radio" name="exPool" value="all" checked> Random from everything</label>
+        <label><input type="radio" name="exPool" value="unseen"> Prefer unpracticed questions</label>
+        <label><input type="radio" name="exPool" value="wrong"> Only previously missed questions</label>
+      </div>
+      <div class="rowbtns"><button class="btn primary" onclick="startExam()">Start exam</button></div>
+    </div>
+    <div class="card" id="examHistory"></div>
+  </div>
+
+  <div id="examRun" style="display:none">
+    <div class="exam-top">
+      <div class="timer" id="examTimer">--:--</div>
+      <div style="color:var(--text-2);font-size:14px" id="examPos"></div>
+      <div style="flex:1"></div>
+      <button class="btn small" id="flagBtn" onclick="toggleFlag()"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3.5 14V2.5m0 0h8.5l-2 3 2 3H3.5"/></svg>Flag</button>
+      <button class="btn small danger" onclick="confirmSubmit()">Submit</button>
+    </div>
+    <div class="navgrid" id="examNav"></div>
+    <div class="card" id="examQ"></div>
+    <div class="rowbtns">
+      <button class="btn" onclick="examMove(-1)">&larr; Previous</button>
+      <button class="btn primary" onclick="examMove(1)">Next &rarr;</button>
+    </div>
+  </div>
+
+  <div id="examResult" style="display:none"></div>
+</section>
+
+<!-- ============ question bank ============ -->
+<section id="page-practice" class="page">
+  <h1>Question Bank</h1>
+  <p class="sub">All 382 questions, every format. Choice questions grade instantly; for hotspot and drag-and-drop questions, use &ldquo;Show answer&rdquo; to see the official answer and exhibits, then self-grade.</p>
+  <div class="filters">
+    <select id="fTopic"><option value="">All topics</option></select>
+    <select id="fType">
+      <option value="">All formats</option>
+      <option value="single">Single choice</option>
+      <option value="multi">Multiple choice</option>
+      <option value="hotspot">Hotspot</option>
+      <option value="dragdrop">Drag &amp; drop</option>
+    </select>
+    <select id="fStatus">
+      <option value="">Any status</option>
+      <option value="new">Unanswered</option>
+      <option value="right">Answered correctly</option>
+      <option value="wrong">Answered incorrectly</option>
+      <option value="mark">Bookmarked</option>
+    </select>
+    <input type="text" id="fSearch" placeholder="Search keywords, e.g. DAX, RLS, gateway&hellip;">
+  </div>
+  <div class="sub" id="fCount"></div>
+  <div class="psplit">
+    <aside class="pside" id="pSide">
+      <div class="pside-head">
+        <span class="legend"><span class="dot" style="background:var(--ok)"></span>Correct</span>
+        <span class="legend"><span class="dot" style="background:var(--bad)"></span>Missed</span>
+        <span class="legend"><span class="dot" style="background:var(--warn)"></span>Bookmarked</span>
+      </div>
+      <div class="pside-list" id="pSideList"></div>
+    </aside>
+    <div class="pmain">
+      <div id="pCard"></div>
+      <div class="pbar">
+        <button class="btn small" id="pSideBtn" onclick="togglePSide()"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.5 4h11M2.5 8h11M2.5 12h11"/></svg>Question list</button>
+        <button class="btn" onclick="pMove(-1)">&larr; Previous</button>
+        <div class="ppos" id="pPos"></div>
+        <button class="btn primary" onclick="pMove(1)">Next &rarr;</button>
+        <span class="keyhint">Shortcuts<span class="key">&larr;</span><span class="key">&rarr;</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="pbackdrop" id="pBackdrop" onclick="togglePSide(false)"></div>
+</section>
+
+<!-- ============ study guide ============ -->
+<section id="page-guide" class="page guide">
+  <h1>PL-300 Study Guide</h1>
+  <p class="sub">Condensed notes organized by the four exam domains. Best used alongside the question bank.</p>
+  <div class="toc">
+    <a href="#g0">Exam overview &amp; strategy<span class="w">Format, scoring, pacing</span></a>
+    <a href="#g1">1. Prepare the data<span class="w">25&ndash;30% &middot; Power Query</span></a>
+    <a href="#g2">2. Model the data<span class="w">25&ndash;30% &middot; Star schema &amp; DAX</span></a>
+    <a href="#g3">3. Visualize &amp; analyze<span class="w">25&ndash;30% &middot; Reports &amp; AI visuals</span></a>
+    <a href="#g4">4. Manage &amp; secure<span class="w">15&ndash;20% &middot; Workspaces, RLS, deploy</span></a>
+    <a href="#g5">DAX cheat sheet<span class="w">Frequently tested functions</span></a>
+  </div>
+
+  <h2 id="g0">Exam overview &amp; strategy</h2>
+  <p>PL-300 validates your ability to prepare, model, visualize, and analyze data with Microsoft Power BI, and to deploy and maintain those assets.</p>
+  <table>
+    <tr><th>Item</th><th>Details</th></tr>
+    <tr><td>Questions / time</td><td>About 40&ndash;60 questions, 100 minutes (including case studies)</td></tr>
+    <tr><td>Passing score</td><td>700 / 1000</td></tr>
+    <tr><td>Question formats</td><td>Single choice, multiple choice, hotspot (dropdowns), drag-and-drop, yes/no series, case studies</td></tr>
+    <tr><td>Languages</td><td>Available in English, Traditional Chinese, and more</td></tr>
+  </table>
+  <div class="tip"><strong>Strategy:</strong> within a case study each question stands alone &mdash; read the question first, then look up only the requirements it needs. &ldquo;Series&rdquo; yes/no sets cannot be revisited once you move on. Budget under 2 minutes per question on average.</div>
+
+  <h2 id="g1">1. Prepare the data (25&ndash;30%)</h2>
+  <h3>Getting data &amp; storage modes</h3>
+  <ul>
+    <li><strong>Import</strong>: data is cached in the model; fastest queries, full feature set; needs scheduled refresh. <em>The default, and the usual &ldquo;best performance&rdquo; answer.</em></li>
+    <li><strong>DirectQuery</strong>: nothing cached; every query hits the source. Use for near-real-time data or very large volumes; visuals are slower and DAX/PQ features are limited.</li>
+    <li><strong>Dual</strong>: acts as cached or not depending on the query; typical for dimension tables joining a DirectQuery fact table plus Import aggregations (composite models) &mdash; reduces limited relationships and improves performance.</li>
+    <li><strong>Live Connection</strong>: connects to Analysis Services or a published Power BI semantic model. To reuse an existing model and its measures with the least development effort, choose the <strong>Power BI semantic model</strong> connector.</li>
+  </ul>
+  <table>
+    <tr><th>Refresh requirement</th><th>Recommended storage mode</th></tr>
+    <tr><td>Near real time</td><td>DirectQuery</td></tr>
+    <tr><td>Daily/weekly refresh, fastest visuals</td><td>Import (or Import aggregations)</td></tr>
+    <tr><td>Dimension tables joined to a DirectQuery fact</td><td>Dual</td></tr>
+  </table>
+  <h3>Power Query transforms that get tested</h3>
+  <ul>
+    <li><strong>Merge</strong> = horizontal JOIN (add columns via a key); <strong>Append</strong> = vertical UNION (add rows). &ldquo;One row per customer with city added&rdquo; &rarr; Merge. &ldquo;Two identically shaped tables into one&rdquo; &rarr; Append Queries as New, then disable load on the originals to keep the model small.</li>
+    <li><strong>Group By</strong>: aggregations (sum, count, min/max).</li>
+    <li><strong>Pivot / Unpivot</strong>: Unpivot turns attribute columns into attribute/value pairs (wide &rarr; long); Pivot is the reverse. When column headers are data values (years, months), the answer is almost always Unpivot.</li>
+    <li><strong>Transpose</strong>: swaps rows and columns wholesale &mdash; different from Pivot/Unpivot.</li>
+    <li><strong>Use first row as headers</strong>, <strong>Fill Down/Up</strong>: fixes nulls caused by merged cells.</li>
+    <li><strong>Split Column</strong>, <strong>Column From Examples</strong>: generate transforms from sample values.</li>
+    <li>Type errors like <code>Expression.Error: cannot convert</code> usually mean non-numeric characters in a column, or a renamed source column (<code>column wasn't found</code> &rarr; the source column was renamed).</li>
+  </ul>
+  <h3>Data profiling</h3>
+  <ul>
+    <li><strong>Column quality</strong>: Valid / Error / Empty percentages.</li>
+    <li><strong>Column distribution</strong>: Distinct vs Unique counts &mdash; tells you whether a column can be a key.</li>
+    <li><strong>Column profile</strong>: statistics (min, max, average) and value distribution. Profiling covers the first 1,000 rows by default; switch to the entire data set if needed.</li>
+  </ul>
+  <h3>Query folding &amp; performance</h3>
+  <ul>
+    <li><strong>Query folding</strong>: steps translate back into the source&rsquo;s native query (SQL). Check with &ldquo;View Native Query&rdquo; &mdash; grayed out means folding broke. Incremental refresh requires a folding-capable source.</li>
+    <li>Reference vs Duplicate: Reference reuses the original query&rsquo;s result, so upstream changes flow downstream.</li>
+    <li>Shrink the model: remove unused columns/rows, disable auto date/time, avoid high-cardinality columns (GUIDs), pre-aggregate.</li>
+  </ul>
+
+  <h2 id="g2">2. Model the data (25&ndash;30%)</h2>
+  <h3>Star schema &amp; relationships</h3>
+  <ul>
+    <li><strong>Fact tables</strong> hold transactions/measures; <strong>dimension tables</strong> hold descriptive attributes. Dimensions relate one-to-many into facts; cross-filter direction defaults to single (dimension &rarr; fact).</li>
+    <li>Cardinality: one-to-many is the norm. Avoid <strong>many-to-many</strong>; resolve it with a bridge table.</li>
+    <li><strong>Bidirectional filtering</strong> adds ambiguity and cost &mdash; use only when required (bridge tables). To let RLS flow across a bidirectional relationship, tick &ldquo;Apply security filter in both directions.&rdquo;</li>
+    <li>Inactive relationships (dashed lines) are activated per-measure with <code>USERELATIONSHIP()</code> &mdash; the classic order-date/ship-date role-playing dimension setup.</li>
+    <li>Date table: &ldquo;Mark as date table&rdquo; is required for time intelligence on a custom date table; it needs one row per day, contiguous, no gaps.</li>
+  </ul>
+  <h3>Calculated columns vs measures vs calculated tables</h3>
+  <table>
+    <tr><th></th><th>Calculated column</th><th>Measure</th></tr>
+    <tr><td>Evaluated</td><td>At refresh, row by row, then stored</td><td>At query time, against the current filters</td></tr>
+    <tr><td>Context</td><td>Row context</td><td>Filter context</td></tr>
+    <tr><td>Model size</td><td>Consumes memory</td><td>Only the formula is stored</td></tr>
+    <tr><td>Use for</td><td>Slicers, axes, grouping</td><td>Aggregations, KPIs (<em>prefer measures &mdash; &ldquo;minimize model size&rdquo; questions want a measure</em>)</td></tr>
+  </table>
+  <h3>Core DAX concepts</h3>
+  <ul>
+    <li><strong><code>CALCULATE(expression, filters&hellip;)</code></strong> rewrites filter context; combine with <code>FILTER</code>, <code>ALL</code>, <code>ALLSELECTED</code>, <code>KEEPFILTERS</code>, <code>REMOVEFILTERS</code>.</li>
+    <li><strong>Iterators (X functions)</strong>: <code>SUMX / AVERAGEX / COUNTX / MAXX</code> evaluate row by row then aggregate, e.g. <code>SUMX(Sales, Sales[Qty]*Sales[Price])</code>.</li>
+    <li><strong>Time intelligence</strong>: <code>TOTALYTD / DATESYTD</code> (year to date), <code>SAMEPERIODLASTYEAR / DATEADD(dates,-1,YEAR)</code> (prior year), <code>DATESINPERIOD</code> (rolling windows, e.g. last 12 months), <code>PREVIOUSMONTH</code>.</li>
+    <li><strong>Counting</strong>: <code>COUNT</code> (numeric), <code>COUNTA</code> (non-blank), <code>COUNTROWS</code> (rows), <code>DISTINCTCOUNT</code> (unique values).</li>
+    <li><strong>Following relationships</strong>: <code>RELATED</code> (many side pulls from one side), <code>RELATEDTABLE</code> (one side pulls the many side), <code>LOOKUPVALUE</code> (no relationship needed).</li>
+    <li><strong>Also tested</strong>: <code>DIVIDE(a,b,alt)</code> for safe division, <code>SELECTEDVALUE</code>, <code>HASONEVALUE</code>, <code>ISFILTERED</code>, <code>CALCULATETABLE</code>, <code>SUMMARIZE</code>, <code>ADDCOLUMNS</code>, <code>CROSSFILTER</code>, <code>TREATAS</code>.</li>
+    <li><code>VAR &hellip; RETURN</code> improves readability and performance (repeated expressions evaluate once).</li>
+  </ul>
+  <pre><code>Sales YTD = TOTALYTD ( [Sales Amount], 'Date'[Date] )
+Sales LY  = CALCULATE ( [Sales Amount], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+Rolling12 = CALCULATE ( [Sales Amount],
+              DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -12, MONTH ) )</code></pre>
+  <h3>Row-level security (RLS)</h3>
+  <ul>
+    <li>Desktop: Modeling &rarr; Manage roles; define table-filter DAX such as <code>[Region] = "West"</code> or dynamic <code>[Email] = USERPRINCIPALNAME()</code>.</li>
+    <li>Test in Desktop with &ldquo;View as&rdquo;; in the service, assign users/groups to roles on the <strong>semantic model&rsquo;s Security page</strong>.</li>
+    <li>RLS applies only to <strong>Viewer</strong>-role users; workspace Admins, Members, and Contributors bypass it.</li>
+  </ul>
+  <h3>Performance tuning</h3>
+  <ul>
+    <li><strong>Performance Analyzer</strong> (Desktop): records per-visual DAX timings; export to JSON.</li>
+    <li><strong>Best Practice / VertiPaq analysis, DAX Studio</strong>: find memory-hungry columns.</li>
+    <li>Reduce cardinality (drop seconds, split datetime), use integer keys, prefer measures over calculated columns, add aggregation tables.</li>
+    <li><strong>Large dataset storage format</strong>: enable on Premium when a model outgrows the default limit.</li>
+  </ul>
+
+  <h2 id="g3">3. Visualize and analyze the data (25&ndash;30%)</h2>
+  <h3>Choosing the right visual</h3>
+  <table>
+    <tr><th>Need</th><th>Visual</th></tr>
+    <tr><td>One headline number (total, KPI)</td><td>Card / KPI</td></tr>
+    <tr><td>Progress toward a target</td><td>Gauge, KPI</td></tr>
+    <tr><td>Trend over time</td><td>Line chart; with forecasting &rarr; the Analytics pane&rsquo;s Forecast</td></tr>
+    <tr><td>Category comparison</td><td>Bar / column chart</td></tr>
+    <tr><td>Two measures + distribution</td><td>Scatter chart, optionally with a play axis</td></tr>
+    <tr><td>Part-to-whole (with drill-down)</td><td>Treemap, donut; Decomposition tree</td></tr>
+    <tr><td>Cumulative gains/losses breakdown</td><td>Waterfall chart</td></tr>
+    <tr><td>What drives a metric</td><td>Key influencers</td></tr>
+    <tr><td>Auto-generated text summary</td><td>Smart narrative</td></tr>
+    <tr><td>Natural-language &ldquo;how many&rdquo; questions</td><td>Q&amp;A (numeric answers render as a card)</td></tr>
+    <tr><td>Geographic data</td><td>Map / filled map (choropleth); shape map</td></tr>
+    <tr><td>Matrix detail with subtotals</td><td>Matrix &mdash; supports hierarchy drill-down and +/&minus; expansion</td></tr>
+  </table>
+  <h3>Interactions, filters &amp; navigation</h3>
+  <ul>
+    <li><strong>Filter scopes</strong>: visual &rarr; page &rarr; all pages (report). <strong>Slicers</strong> can be synced across pages via Sync slicers.</li>
+    <li><strong>Edit interactions</strong>: choose whether a visual filters, highlights, or ignores the others.</li>
+    <li><strong>Drill through</strong>: right-click a summary to jump to a detail page carrying the filter; the target page declares drill-through fields; add a back button.</li>
+    <li><strong>Bookmarks + buttons + Selection pane</strong>: navigation, reset-filters, and show/hide toggles.</li>
+    <li><strong>Tooltip pages</strong>: a report page used as a custom hover tooltip.</li>
+    <li><strong>Conditional formatting</strong>: background/font color by measure, data bars, icons; &ldquo;Field value&rdquo; accepts a color-code column.</li>
+    <li><strong>Top N filter</strong>: visual-level filter by measure.</li>
+    <li><strong>Groups / bins</strong>: bucket continuous values or group categories.</li>
+    <li><strong>Analytics pane</strong>: average/median/percentile lines, trend lines, error bars; line-chart Forecast and <strong>Anomaly detection</strong>.</li>
+    <li><strong>Mobile layout</strong>: a separate portrait arrangement for phones.</li>
+  </ul>
+  <h3>Dashboards vs reports</h3>
+  <ul>
+    <li>Dashboards exist only in the service and are built by pinning tiles from reports. <strong>Data alerts</strong> work only on cards, KPIs, and gauges.</li>
+    <li>Alerts can trigger a <strong>Power Automate</strong> flow to email other people (built-in alerts notify only you).</li>
+    <li>Live tile cache time shows on the tile; report themes and dashboard themes are configured separately.</li>
+    <li><strong>Subscriptions</strong> email report/dashboard snapshots on a schedule; <strong>comments</strong> support @mentions, including external users.</li>
+  </ul>
+
+  <h2 id="g4">4. Manage and secure Power BI (15&ndash;20%)</h2>
+  <h3>Workspace roles (heavily tested!)</h3>
+  <table>
+    <tr><th>Role</th><th>Key rights</th></tr>
+    <tr><td><strong>Admin</strong></td><td>Everything, plus delete the workspace, manage all members (including other admins), update/delete the app</td></tr>
+    <tr><td><strong>Member</strong></td><td>Publish/unpublish and update the app, add lower-privileged members, share content (<em>&ldquo;can invite others with least privilege&rdquo; &rarr; Member</em>)</td></tr>
+    <tr><td><strong>Contributor</strong></td><td>Create/edit/delete workspace content, schedule refresh; cannot share or publish the app (unless an admin delegates &ldquo;update app&rdquo;)</td></tr>
+    <tr><td><strong>Viewer</strong></td><td>View and interact only; <em>the only role RLS applies to</em></td></tr>
+  </table>
+  <ul>
+    <li>Notify a group about workspace issues: add it to the workspace <strong>contact list</strong> &mdash; no role needed (least privilege).</li>
+    <li><strong>Apps</strong>: the recommended way to distribute content to many viewers; support audiences, optional Build permission on underlying models, and Teams installation.</li>
+  </ul>
+  <h3>Sharing &amp; permissions</h3>
+  <ul>
+    <li>Semantic-model permissions: <strong>Read</strong> (view), <strong>Build</strong> (create reports on it / connect for analysis; required by Analyze in Excel), <strong>Reshare</strong>, <strong>Write</strong>.</li>
+    <li>&ldquo;Build their own reports on an existing model&rdquo; &rarr; grant <strong>Build</strong>; no workspace role required.</li>
+    <li><strong>Endorsement</strong>: Promoted (any owner) vs Certified (authorized certifiers appointed by the tenant admin) &mdash; &ldquo;financial-decision data must be reviewed and approved&rdquo; &rarr; Certified.</li>
+    <li><strong>Sensitivity labels</strong> (Microsoft Purview Information Protection): encrypt exported files (PDF/Excel/PPT) and prevent PII export; requires Azure Information Protection licensing.</li>
+    <li><strong>Lineage view</strong>: trace source &rarr; semantic model &rarr; report &rarr; dashboard dependencies and upstream impact.</li>
+  </ul>
+  <h3>Refresh &amp; gateways</h3>
+  <ul>
+    <li>On-premises sources (file servers, SQL Server, intranet) need an <strong>on-premises data gateway</strong> (standard mode is shared, multi-source; personal mode is single-user).</li>
+    <li>Cloud sources (OneDrive, SharePoint Online, Azure SQL) need no gateway; OneDrive/SharePoint files sync roughly hourly.</li>
+    <li>Scheduled refresh: up to 8/day on shared capacity, 48/day on Premium. After ~2 months of inactivity refresh is <strong>disabled for inactivity</strong>; anyone opening a dependent dashboard/report resumes it.</li>
+    <li><strong>Incremental refresh</strong>: filters on <code>RangeStart</code>/<code>RangeEnd</code> parameters and refreshes only the newest partitions; requires query folding.</li>
+    <li>Refresh-failure notifications can go to the owner plus designated contacts in the semantic-model settings.</li>
+  </ul>
+  <h3>Deployment &amp; governance</h3>
+  <ul>
+    <li><strong>Deployment pipelines</strong>: Development &rarr; Test &rarr; Production; stage comparison and deployment rules (swap data sources/parameters per stage); needs Premium/PPU/Fabric capacity.</li>
+    <li><strong>.pbit templates</strong> keep the model/queries/report definition without data, and can prompt for parameters &mdash; &ldquo;share with colleagues for reuse without leaking data&rdquo; &rarr; .pbit.</li>
+    <li><strong>.pbip / Power BI Desktop developer mode</strong>: project format suited to version control.</li>
+    <li><strong>Usage metrics report</strong>: views and viewers per report/dashboard.</li>
+    <li><strong>Analyze in Excel</strong>: PivotTables over a semantic model; in Excel, Get Data &rarr; Power BI semantic model.</li>
+  </ul>
+
+  <h2 id="g5">DAX cheat sheet</h2>
+  <table>
+    <tr><th>Goal</th><th>Pattern</th></tr>
+    <tr><td>Total sales</td><td><code>Total Sales = SUM ( Sales[Amount] )</code></td></tr>
+    <tr><td>Row-wise multiply then sum</td><td><code>Revenue = SUMX ( Sales, Sales[Qty] * Sales[Price] )</code></td></tr>
+    <tr><td>Same period last year</td><td><code>CALCULATE ( [Total Sales], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )</code></td></tr>
+    <tr><td>Year to date</td><td><code>TOTALYTD ( [Total Sales], 'Date'[Date] )</code></td></tr>
+    <tr><td>Share of grand total</td><td><code>DIVIDE ( [Total Sales], CALCULATE ( [Total Sales], ALL ( Product ) ) )</code></td></tr>
+    <tr><td>Share of current selection</td><td><code>DIVIDE ( [Total Sales], CALCULATE ( [Total Sales], ALLSELECTED () ) )</code></td></tr>
+    <tr><td>Unique customers</td><td><code>DISTINCTCOUNT ( Sales[CustomerID] )</code></td></tr>
+    <tr><td>Inactive relationship</td><td><code>CALCULATE ( [x], USERELATIONSHIP ( Sales[ShipDate], 'Date'[Date] ) )</code></td></tr>
+    <tr><td>Dynamic RLS</td><td><code>[Email] = USERPRINCIPALNAME ()</code></td></tr>
+    <tr><td>Safe division</td><td><code>DIVIDE ( numerator, denominator, 0 )</code></td></tr>
+    <tr><td>Ranking</td><td><code>RANKX ( ALL ( Product[Name] ), [Total Sales] )</code></td></tr>
+    <tr><td>Conditional measure</td><td><code>IF ( HASONEVALUE ( 'Date'[Year] ), [Total Sales], BLANK () )</code></td></tr>
+  </table>
+  <div class="warn"><strong>Common traps:</strong> <code>SUM</code> accepts a single column only &mdash; row-level math needs <code>SUMX</code>. <code>COUNT</code> skips text blanks &mdash; count rows with <code>COUNTROWS</code>. Time intelligence needs a contiguous, marked date table.</div>
+  <p class="footnote">Notes follow the official Microsoft Learn skills outline. Cross-practice with the question bank for best results.</p>
+</section>
+</main>
+
+<div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
+
+<script src="data.js"></script>
+<script>
+/* ================= state ================= */
+const QS = BANK.questions;
+const CASES = BANK.caseStudies;
+const LS = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  set(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+};
+let progress = LS.get("pl300_progress", {});   // qid -> {r: true/false}
+let marks = new Set(LS.get("pl300_marks", []));
+let history = LS.get("pl300_history", []);      // [{date, total, correct, score, mins}]
+
+const TYPE_LABEL = { choice: "Single", multi: "Multi", hotspot: "Hotspot", dragdrop: "Drag" };
+function typeKey(q) { return q.type === "choice" ? (q.multi ? "multi" : "single") : q.type; }
+function typeBadge(q) {
+  const k = typeKey(q);
+  const cls = { single: "t-choice", multi: "t-multi", hotspot: "t-hotspot", dragdrop: "t-dragdrop" }[k];
+  const lbl = { single: "Single", multi: "Multi", hotspot: "Hotspot", dragdrop: "Drag&Drop" }[k];
+  return `<span class="badge ${cls}">${lbl}</span>` + (q.hasCase ? '<span class="badge t-case">Case</span>' : "");
+}
+function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+/* render body/explanation line arrays into HTML paragraphs + images */
+function renderLines(lines) {
+  lines = lines.filter((l, i) => l !== lines[i - 1]);
+  let html = "", para = [], mode = "p", listOpen = false, code = [];
+  const closeList = () => { if (listOpen) { html += "</ul>"; listOpen = false; } };
+  const flush = () => {
+    if (!para.length) return;
+    const txt = para.join(" ");
+    if (mode === "li") {
+      if (!listOpen) { html += '<ul class="qul">'; listOpen = true; }
+      html += "<li>" + txt + "</li>";
+    } else {
+      closeList();
+      if (/^(https?:\/\/\S+\s*)+$/.test(txt)) html += '<p class="refs">' + txt.split(/\s+/).filter(Boolean).join("<br>") + "</p>";
+      else html += "<p>" + txt + "</p>";
+    }
+    para = [];
+  };
+  const flushCode = () => { if (code.length) { flush(); closeList(); html += '<pre class="dax">' + code.join("\n") + "</pre>"; code = []; } };
+  const DAXSTART = /:=|^[\w'’‘\[\]#% .]{1,45}=\s*[A-Z][A-Za-z]+\s*\(/;
+  const PROSE = /^(You|The|What|Which|How|For|NOTE|Note|In |If |Each|To |Use |This|A |An )/;
+  for (const raw of lines) {
+    const m = raw.match(/^\[IMG:(.+)\]$/);
+    if (m) {
+      flushCode(); flush(); mode = "p"; closeList();
+      html += `<img src="${m[1]}" loading="lazy" onclick="zoom(this)" alt="exhibit">`;
+      continue;
+    }
+    if (code.length) {
+      if (/[()\[\]]/.test(raw) && !PROSE.test(raw)) { code.push(esc(raw)); continue; }
+      flushCode();
+    }
+    if (DAXSTART.test(raw) && !PROSE.test(raw)) { flush(); mode = "p"; code.push(esc(raw)); continue; }
+    const hdr = raw.match(/^(.{2,40}) -$/) || raw.match(/^((?:Existing Environment|Requirements)\..{0,50})$/);
+    if (hdr && !/^Correct Answer/.test(raw)) {
+      flush(); mode = "p"; closeList();
+      html += '<p class="qh">' + esc(hdr[1]) + "</p>";
+      continue;
+    }
+    const bullet = raw.match(/^[✑•▪]\s?(.*)|^[-*]\s(.*)/);
+    if (bullet) {
+      flush(); mode = "li";
+      para.push(esc(bullet[1] !== undefined ? bullet[1] : bullet[2]));
+      continue;
+    }
+    if (mode === "li") {
+      if (/^[a-z(]/.test(raw) && para.length) { para.push(esc(raw)); continue; }
+      flush(); mode = "p";
+    }
+    if (/^Box \d|^Reference:|^Note:|^NOTE:|^Incorrect|^Correct Answer/.test(raw)) flush();
+    para.push(esc(raw));
+    if (/[.:;?!。:;?!]$/.test(raw.trim())) flush();
+  }
+  flushCode(); flush(); closeList();
+  return html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+}
+function zoom(img) {
+  document.getElementById("lightboxImg").src = img.src;
+  document.getElementById("lightbox").style.display = "flex";
+}
+function caseBox(q) {
+  if (q.qcase) return `<details class="casebox"><summary>Case study background (click to expand)</summary><div class="inner">${renderLines(q.qcase)}</div></details>`;
+  if (!q.hasCase || !CASES[q.topic]) return "";
+  return `<details class="casebox"><summary>Case study background (shared by Topic ${q.topic}, click to expand)</summary><div class="inner">${renderLines(CASES[q.topic])}</div></details>`;
+}
+
+/* ================= navigation ================= */
+function showPage(id) {
+  LS.set("pl300_page", id);
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page-" + id).classList.add("active");
+  document.querySelectorAll(".topbar nav button").forEach(b => b.classList.toggle("active", b.dataset.page === id));
+  if (id === "home") renderHome();
+  if (id === "practice") renderList();
+  if (id === "exam" && !examState) renderExamSetup();
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll(".topbar nav button").forEach(b => b.onclick = () => showPage(b.dataset.page));
+
+/* theme */
+const themeBtn = document.getElementById("themeBtn");
+function applyTheme(t) { document.documentElement.dataset.theme = t; LS.set("pl300_theme", t); }
+themeBtn.onclick = () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+applyTheme(LS.get("pl300_theme", "dark"));
+
+/* ================= home ================= */
+function renderHome() {
+  const total = QS.length;
+  const single = QS.filter(q => typeKey(q) === "single").length;
+  const multi = QS.filter(q => q.multi).length;
+  const hot = QS.filter(q => q.type === "hotspot").length;
+  const drag = QS.filter(q => q.type === "dragdrop").length;
+  document.getElementById("homeTiles").innerHTML = `
+    <div class="tile"><div class="v">${total}</div><div class="l">Questions</div></div>
+    <div class="tile"><div class="v">${single}</div><div class="l">Single choice</div></div>
+    <div class="tile"><div class="v">${multi}</div><div class="l">Multiple choice</div></div>
+    <div class="tile"><div class="v">${hot}</div><div class="l">Hotspot</div></div>
+    <div class="tile"><div class="v">${drag}</div><div class="l">Drag &amp; drop</div></div>`;
+  const done = Object.keys(progress).length;
+  const right = Object.values(progress).filter(p => p.r).length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  const acc = done ? Math.round(right / done * 100) : 0;
+  document.getElementById("homeProgress").innerHTML = `
+    <div style="font-size:14px;color:var(--text-2);margin-top:6px">${done} / ${total} questions practiced (${pct}%), ${acc}% correct${history.length ? `, ${history.length} mock exam${history.length > 1 ? "s" : ""} completed` : ""}</div>
+    <div class="meter"><div style="width:${pct}%"></div></div>`;
+}
+function resetProgress() {
+  if (!confirm("Clear all practice records, bookmarks, and exam history?")) return;
+  progress = {}; marks = new Set(); history = [];
+  LS.set("pl300_progress", {}); LS.set("pl300_marks", []); LS.set("pl300_history", []);
+  renderHome();
+}
+
+/* ================= practice list ================= */
+const fTopic = document.getElementById("fTopic");
+[...new Set(QS.map(q => q.topic))].sort((a, b) => a - b).forEach(t => {
+  const n = QS.filter(q => q.topic === t).length;
+  fTopic.insertAdjacentHTML("beforeend", `<option value="${t}">Topic ${t}${t >= 6 ? " (case)" : ""} — ${n} questions</option>`);
+});
+["fTopic", "fType", "fStatus"].forEach(id => document.getElementById(id).onchange = renderList);
+document.getElementById("fSearch").oninput = () => { clearTimeout(window._st); window._st = setTimeout(renderList, 250); };
+
+let pList = [], pIdx = 0;
+function renderList() {
+  const t = fTopic.value, ty = document.getElementById("fType").value,
+        st = document.getElementById("fStatus").value,
+        kw = document.getElementById("fSearch").value.trim().toLowerCase();
+  pList = QS.filter(q => {
+    if (t && q.topic != t) return false;
+    if (ty && typeKey(q) !== ty) return false;
+    if (st === "new" && progress[q.id]) return false;
+    if (st === "right" && !(progress[q.id] && progress[q.id].r)) return false;
+    if (st === "wrong" && !(progress[q.id] && !progress[q.id].r)) return false;
+    if (st === "mark" && !marks.has(q.id)) return false;
+    if (kw) {
+      const hay = (q.body.join(" ") + " " + q.options.map(o => o.text).join(" ")).toLowerCase();
+      if (!hay.includes(kw)) return false;
+    }
+    return true;
+  });
+  document.getElementById("fCount").textContent = `${pList.length} matching questions`;
+  const lastId = LS.get("pl300_lastq", null);
+  const keep = pList.findIndex(q => q.id === lastId);
+  pIdx = keep >= 0 ? keep : 0;
+  renderPQ();
+}
+function renderPQ(scroll) {
+  const el = document.getElementById("pCard");
+  if (!pList.length) {
+    el.innerHTML = '<div class="card" style="text-align:center;color:var(--text-2)">No questions match the filters</div>';
+    document.getElementById("pPos").textContent = "0 / 0";
+    document.getElementById("pSideList").innerHTML = "";
+    return;
+  }
+  pIdx = Math.max(0, Math.min(pIdx, pList.length - 1));
+  const q = pList[pIdx];
+  LS.set("pl300_lastq", q.id);
+  const p = progress[q.id];
+  const stB = p ? (p.r ? '<span class="badge st-right">✓ Correct</span>' : '<span class="badge st-wrong">✗ Missed</span>') : "";
+  el.innerHTML = `<div class="qitem">
+    <div class="qhead" style="cursor:default">
+      <span class="qid">T${q.topic}#${q.num}</span>${typeBadge(q)}${stB}
+      <span style="flex:1"></span>
+      <button class="bookmark ${marks.has(q.id) ? "on" : ""}" onclick="toggleMark(${q.id},this)" title="Bookmark"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 2l1.8 3.8 4.2.5-3.1 2.9.8 4.1L8 11.2l-3.7 2.1.8-4.1L2 6.3l4.2-.5z"/></svg></button>
+    </div>
+    <div class="qdetail">${qDetailHTML(q)}</div>
+  </div>`;
+  document.getElementById("pPos").textContent = `${pIdx + 1} / ${pList.length}`;
+  renderPList();
+  if (scroll) window.scrollTo({ top: 0 });
+}
+function renderPList() {
+  const el = document.getElementById("pSideList");
+  el.innerHTML = pList.map((q, i) => {
+    const p = progress[q.id];
+    const cls = ["pitem"];
+    if (p) cls.push(p.r ? "r" : "w");
+    if (i === pIdx) cls.push("cur");
+    const icColor = marks.has(q.id) ? "var(--warn)" : (p ? (p.r ? "var(--ok)" : "var(--bad)") : "var(--text-3)");
+    const icon = marks.has(q.id) ? "★" : (p ? (p.r ? "✓" : "✗") : "");
+    return `<div class="${cls.join(" ")}" onclick="pIdx=${i};renderPQ(true);togglePSide(false)">
+      <span class="num">${String(i + 1).padStart(3, "0")}</span><span class="tno">T${q.topic}#${q.num}</span>
+      <span class="ic" style="color:${icColor}">${icon}</span></div>`;
+  }).join("");
+  const cur = el.children[pIdx];
+  if (cur && cur.offsetTop !== undefined) el.scrollTop = cur.offsetTop - el.clientHeight / 2;
+}
+function togglePSide(force) {
+  const s = document.getElementById("pSide");
+  const open = force === undefined ? !s.classList.contains("open") : force;
+  s.classList.toggle("open", open);
+  document.getElementById("pBackdrop").classList.toggle("show", open);
+}
+function pMove(d) {
+  const n = pIdx + d;
+  if (n < 0 || n >= pList.length) return;
+  pIdx = n;
+  renderPQ(true);
+}
+document.addEventListener("keydown", e => {
+  if (!document.getElementById("page-practice").classList.contains("active")) return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (/INPUT|SELECT|TEXTAREA/.test(tag)) return;
+  if (e.key === "ArrowLeft") pMove(-1);
+  if (e.key === "ArrowRight") pMove(1);
+});
+function toggleMark(id, btn) {
+  marks.has(id) ? marks.delete(id) : marks.add(id);
+  LS.set("pl300_marks", [...marks]);
+  btn.classList.toggle("on", marks.has(id));
+  if (document.getElementById("page-practice").classList.contains("active")) renderPList();
+}
+
+function qDetailHTML(q) {
+  let html = caseBox(q) + `<div class="qbody">${renderLines(q.body)}</div>`;
+  if (q.type === "choice") {
+    html += `<ul class="opts" id="opts${q.id}">` + q.options.map(o =>
+      `<li onclick="pickOpt(${q.id},'${o.letter}',this)"><span class="letter">${o.letter}</span><span>${esc(o.text)}</span></li>`).join("") + "</ul>";
+    if (q.multi) html += `<div class="rowbtns"><button class="btn small primary" onclick="gradeMulti(${q.id})">Submit (choose ${q.correct.length})</button></div>`;
+    html += `<div id="fb${q.id}"></div>`;
+  } else {
+    html += `<div class="rowbtns"><button class="btn small primary" onclick="revealAns(${q.id},this)">Show answer &amp; explanation</button></div><div id="fb${q.id}"></div>`;
+  }
+  return html;
+}
+function explHTML(q) {
+  let h = "";
+  if (q.type === "choice") {
+    h += `<div class="expl"><div class="hd">Correct answer: ${q.correct.split("").join(", ")}${q.mostVoted && q.mostVoted !== q.correct ? ` (community top vote: ${q.mostVoted})` : ""}</div>`;
+  } else {
+    h += `<div class="expl"><div class="hd">Official answer &amp; explanation</div>`;
+  }
+  if (q.explanation.length) h += renderLines(q.explanation);
+  h += "</div>";
+  return h;
+}
+function saveResult(qid, right) {
+  progress[qid] = { r: right };
+  LS.set("pl300_progress", progress);
+  if (document.getElementById("page-practice").classList.contains("active")) renderPList();
+}
+function pickOpt(qid, letter, li) {
+  const q = QS.find(x => x.id === qid);
+  const ul = document.getElementById("opts" + qid);
+  if (ul.dataset.locked) return;
+  if (q.multi) { li.classList.toggle("sel"); return; }
+  ul.dataset.locked = "1";
+  const right = letter === q.correct;
+  [...ul.children].forEach(el => {
+    const L = el.querySelector(".letter").textContent;
+    el.classList.add("locked");
+    if (q.correct.includes(L)) el.classList.add("right");
+    else if (L === letter) el.classList.add("wrong");
+    else el.classList.add("dim");
+  });
+  saveResult(qid, right);
+  document.getElementById("fb" + qid).innerHTML =
+    `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ Correct!" : "✗ Incorrect"}</div>` + explHTML(q);
+}
+function gradeMulti(qid) {
+  const q = QS.find(x => x.id === qid);
+  const ul = document.getElementById("opts" + qid);
+  if (ul.dataset.locked) return;
+  const sel = [...ul.children].filter(el => el.classList.contains("sel")).map(el => el.querySelector(".letter").textContent);
+  if (!sel.length) { alert("Pick an answer first"); return; }
+  ul.dataset.locked = "1";
+  const right = sel.slice().sort().join("") === q.correct.split("").sort().join("");
+  [...ul.children].forEach(el => {
+    const L = el.querySelector(".letter").textContent;
+    el.classList.add("locked");
+    if (q.correct.includes(L)) el.classList.add("right");
+    else if (sel.includes(L)) el.classList.add("wrong");
+    else el.classList.add("dim");
+  });
+  saveResult(qid, right);
+  document.getElementById("fb" + qid).innerHTML =
+    `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ Correct!" : "✗ Incorrect"}</div>` + explHTML(q);
+}
+function revealAns(qid, btn) {
+  const q = QS.find(x => x.id === qid);
+  btn.style.display = "none";
+  document.getElementById("fb" + qid).innerHTML = explHTML(q) + `
+    <div class="rowbtns"><span style="font-size:13.5px;color:var(--text-2);align-self:center">Self-grade:</span>
+      <button class="btn small" style="color:var(--ok);border-color:var(--ok)" onclick="saveResult(${qid},true);this.parentElement.innerHTML='<span class=verdict style=color:var(--ok)>Recorded as correct ✓</span>'">I got it right</button>
+      <button class="btn small danger" onclick="saveResult(${qid},false);this.parentElement.innerHTML='<span class=verdict style=color:var(--bad)>Recorded as incorrect ✗</span>'">I got it wrong</button>
+    </div>`;
+}
+
+/* ================= exam ================= */
+let examState = null;
+let examTimerId = null;
+
+function renderExamSetup() {
+  const h = document.getElementById("examHistory");
+  if (!history.length) { h.innerHTML = "<strong>Exam history</strong><p style='font-size:14px;color:var(--text-2)'>No records yet. Finish a mock exam and your scores will appear here.</p>"; return; }
+  h.innerHTML = "<strong>Exam history</strong><table style='width:100%;border-collapse:collapse;margin-top:8px;font-size:13.5px'>" +
+    "<tr><th style='text-align:left;padding:5px;border-bottom:1px solid var(--hairline)'>Date</th><th style='text-align:left;padding:5px;border-bottom:1px solid var(--hairline)'>Score</th><th style='text-align:left;padding:5px;border-bottom:1px solid var(--hairline)'>Correct</th><th style='text-align:left;padding:5px;border-bottom:1px solid var(--hairline)'>Result</th></tr>" +
+    history.slice(-10).reverse().map(x =>
+      `<tr><td style="padding:5px;border-bottom:1px solid var(--hairline)">${x.date}</td>
+       <td style="padding:5px;border-bottom:1px solid var(--hairline)">${x.score} / 1000</td>
+       <td style="padding:5px;border-bottom:1px solid var(--hairline)">${x.correct} / ${x.total}</td>
+       <td style="padding:5px;border-bottom:1px solid var(--hairline);font-weight:600;color:${x.score >= 700 ? "var(--ok)" : "var(--bad)"}">${x.score >= 700 ? "✓ Pass" : "✗ Fail"}</td></tr>`).join("") + "</table>";
+}
+
+function startExam() {
+  const count = +document.querySelector("input[name=exCount]:checked").value;
+  const mins = +document.querySelector("input[name=exTime]:checked").value;
+  const poolMode = document.querySelector("input[name=exPool]:checked").value;
+  let pool = QS.filter(q => q.type === "choice");
+  if (poolMode === "unseen") {
+    const unseen = pool.filter(q => !progress[q.id]);
+    pool = unseen.length >= count ? unseen : unseen.concat(pool.filter(q => progress[q.id]));
+  } else if (poolMode === "wrong") {
+    pool = pool.filter(q => progress[q.id] && !progress[q.id].r);
+    if (!pool.length) { alert("No missed choice questions on record yet. Practice first, or pick another pool."); return; }
+  }
+  const shuffled = pool.slice();
+  for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
+  const qs = shuffled.slice(0, Math.min(count, shuffled.length));
+  examState = { qs, cur: 0, ans: {}, flags: new Set(), mins, endAt: mins ? Date.now() + mins * 60000 : null, startAt: Date.now(), done: false };
+  document.getElementById("examSetup").style.display = "none";
+  document.getElementById("examResult").style.display = "none";
+  document.getElementById("examRun").style.display = "block";
+  if (examTimerId) clearInterval(examTimerId);
+  if (mins) examTimerId = setInterval(tickTimer, 1000);
+  tickTimer();
+  renderExamQ();
+}
+function tickTimer() {
+  const el = document.getElementById("examTimer");
+  if (!examState || !examState.endAt) { el.textContent = "Untimed"; el.classList.remove("low"); return; }
+  const left = examState.endAt - Date.now();
+  if (left <= 0) { el.textContent = "00:00"; finishExam(true); return; }
+  const m = Math.floor(left / 60000), s = Math.floor(left % 60000 / 1000);
+  el.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  el.classList.toggle("low", left < 5 * 60000);
+}
+function renderExamNav(review) {
+  const st = examState;
+  document.getElementById("examNav").innerHTML = st.qs.map((q, i) => {
+    let cls = [];
+    if (review) cls.push(examRight(q, st.ans[q.id]) ? "rv-right" : "rv-wrong");
+    else { if (st.ans[q.id] && st.ans[q.id].length) cls.push("answered"); if (st.flags.has(q.id)) cls.push("flagged"); }
+    if (i === st.cur) cls.push("cur");
+    return `<button class="${cls.join(" ")}" onclick="examGoto(${i})">${i + 1}</button>`;
+  }).join("");
+}
+function examGoto(i) { examState.cur = i; examState.done ? renderReviewQ() : renderExamQ(); }
+function examMove(d) {
+  const st = examState;
+  const n = st.cur + d;
+  if (n < 0) return;
+  if (n >= st.qs.length) { if (!st.done) confirmSubmit(); return; }
+  st.cur = n;
+  st.done ? renderReviewQ() : renderExamQ();
+}
+function toggleFlag() {
+  const st = examState, q = st.qs[st.cur];
+  st.flags.has(q.id) ? st.flags.delete(q.id) : st.flags.add(q.id);
+  document.getElementById("flagBtn").classList.toggle("flag-on", st.flags.has(q.id));
+  renderExamNav(false);
+}
+function renderExamQ() {
+  const st = examState, q = st.qs[st.cur];
+  document.getElementById("examPos").textContent = `${st.cur + 1} / ${st.qs.length} · T${q.topic}#${q.num}` + (q.multi ? ` · multi (${q.correct.length})` : "");
+  document.getElementById("flagBtn").classList.toggle("flag-on", st.flags.has(q.id));
+  renderExamNav(false);
+  const sel = st.ans[q.id] || [];
+  document.getElementById("examQ").innerHTML = caseBox(q) + `<div class="qbody">${renderLines(q.body)}</div>
+    <ul class="opts">` + q.options.map(o =>
+      `<li class="${sel.includes(o.letter) ? "sel" : ""}" onclick="examPick('${o.letter}')"><span class="letter">${o.letter}</span><span>${esc(o.text)}</span></li>`).join("") + "</ul>";
+}
+function examPick(letter) {
+  const st = examState, q = st.qs[st.cur];
+  let sel = st.ans[q.id] || [];
+  if (q.multi) sel = sel.includes(letter) ? sel.filter(x => x !== letter) : sel.concat(letter);
+  else sel = [letter];
+  st.ans[q.id] = sel;
+  renderExamQ();
+}
+function examRight(q, sel) {
+  if (!sel || !sel.length) return false;
+  return sel.slice().sort().join("") === q.correct.split("").sort().join("");
+}
+function confirmSubmit() {
+  const st = examState;
+  const un = st.qs.filter(q => !(st.ans[q.id] && st.ans[q.id].length)).length;
+  if (!confirm(un ? `${un} question${un > 1 ? "s" : ""} still unanswered. Submit anyway?` : "Submit the exam?")) return;
+  finishExam(false);
+}
+function finishExam(auto) {
+  const st = examState;
+  if (st.done) return;
+  st.done = true;
+  if (examTimerId) { clearInterval(examTimerId); examTimerId = null; }
+  let correct = 0;
+  st.qs.forEach(q => {
+    const r = examRight(q, st.ans[q.id]);
+    if (r) correct++;
+    saveResult(q.id, r);
+  });
+  const score = Math.round(correct / st.qs.length * 1000);
+  const usedMin = Math.round((Date.now() - st.startAt) / 60000);
+  const rec = { date: new Date().toLocaleString("en-US", { hour12: false }).slice(0, 16), total: st.qs.length, correct, score, mins: usedMin };
+  history.push(rec); LS.set("pl300_history", history);
+  const pass = score >= 700;
+  document.getElementById("examRun").style.display = "none";
+  const res = document.getElementById("examResult");
+  res.style.display = "block";
+  res.innerHTML = `
+    <h1>Results</h1>
+    ${auto ? '<p class="sub" style="color:var(--bad)">Time is up — the exam was submitted automatically.</p>' : ""}
+    <div class="tiles">
+      <div class="tile"><div class="v">${score}<small> / 1000</small></div><div class="l">Score (700 to pass)</div></div>
+      <div class="tile"><div class="v">${correct}<small> / ${st.qs.length}</small></div><div class="l">Correct answers</div></div>
+      <div class="tile"><div class="v">${usedMin}<small> min</small></div><div class="l">Time taken</div></div>
+      <div class="tile"><div class="v" style="color:${pass ? "var(--ok)" : "var(--bad)"}">${pass ? "✓ Pass" : "✗ Fail"}</div><div class="l">${pass ? "Congratulations — passing standard met" : "Keep at it"}</div></div>
+    </div>
+    <div class="card">
+      <strong>Answer breakdown</strong>
+      <div class="scorebar"><div class="ok" style="width:${correct / st.qs.length * 100}%"></div><div class="bad" style="flex:1"></div></div>
+      <div class="passline">Green = ${correct} correct, red = ${st.qs.length - correct} missed/unanswered</div>
+      <div class="rowbtns">
+        <button class="btn primary" onclick="startReview()">Review answers</button>
+        <button class="btn" onclick="exitExam()">Back to setup</button>
+      </div>
+    </div>`;
+  window.scrollTo(0, 0);
+}
+function startReview() {
+  examState.cur = 0;
+  document.getElementById("examResult").style.display = "none";
+  document.getElementById("examRun").style.display = "block";
+  document.getElementById("examTimer").textContent = "Review";
+  document.getElementById("flagBtn").style.display = "none";
+  renderReviewQ();
+}
+function renderReviewQ() {
+  const st = examState, q = st.qs[st.cur];
+  const sel = st.ans[q.id] || [];
+  const right = examRight(q, sel);
+  document.getElementById("examPos").textContent = `${st.cur + 1} / ${st.qs.length} · T${q.topic}#${q.num}`;
+  renderExamNav(true);
+  document.getElementById("examQ").innerHTML = caseBox(q) + `<div class="qbody">${renderLines(q.body)}</div>
+    <ul class="opts">` + q.options.map(o => {
+      let cls = ["locked"];
+      if (q.correct.includes(o.letter)) cls.push("right");
+      else if (sel.includes(o.letter)) cls.push("wrong");
+      else cls.push("dim");
+      return `<li class="${cls.join(" ")}"><span class="letter">${o.letter}</span><span>${esc(o.text)}</span></li>`;
+    }).join("") + "</ul>" +
+    `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ Correct" : (sel.length ? "✗ Incorrect" : "— Unanswered")} (your answer: ${sel.length ? sel.join(", ") : "none"})</div>` +
+    explHTML(q);
+}
+function exitExam() {
+  examState = null;
+  if (examTimerId) { clearInterval(examTimerId); examTimerId = null; }
+  document.getElementById("examResult").style.display = "none";
+  document.getElementById("examRun").style.display = "none";
+  document.getElementById("examSetup").style.display = "block";
+  document.getElementById("flagBtn").style.display = "";
+  renderExamSetup();
+}
+
+/* init */
+showPage(LS.get("pl300_page", "home"));
+</script>
+</body>
+</html>
