@@ -357,6 +357,42 @@ pre.dax {
 .tip strong { color: var(--ok); }
 .warn strong { color: var(--warn); }
 
+
+/* ---------- interactive hotspot/dragdrop ---------- */
+.inter { margin: 14px 0; display: flex; flex-direction: column; gap: 10px; }
+.inter.locked { pointer-events: none; }
+.yn-row, .ibox {
+  border: 1px solid var(--hairline); border-radius: 6px; padding: 10px 14px;
+}
+.yn-row { display: flex; gap: 12px; align-items: center; }
+.yn-row .yn-text { flex: 1; font-size: 14.5px; }
+.yn-btns { display: flex; gap: 6px; flex: none; }
+.yn-btns .btn.sel { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-text); }
+.yn-row.right, .ibox.right, .order-wrap.right { border-color: color-mix(in srgb, var(--ok) 55%, transparent); background: var(--ok-soft); }
+.yn-row.wrong, .ibox.wrong, .order-wrap.wrong { border-color: color-mix(in srgb, var(--bad) 55%, transparent); background: var(--bad-soft); }
+.ibox { display: flex; flex-direction: column; gap: 6px; }
+.ibox .ilabel { font-size: 13.5px; color: var(--text-2); }
+.ibox select {
+  background: var(--surface-1); color: var(--text-1); border: 1px solid var(--hairline-strong);
+  border-radius: 6px; padding: 8px 10px; font-size: 14px; font-family: inherit; max-width: 100%;
+}
+.corr { font-size: 13px; color: var(--ok); }
+.order-wrap { border: 1px solid var(--hairline); border-radius: 6px; padding: 12px 14px; }
+.order-pool { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.order-pool button {
+  text-align: left; display: flex; gap: 10px; align-items: baseline;
+  border: 1px solid var(--hairline-strong); background: var(--surface-2); color: var(--text-1);
+  border-radius: 6px; padding: 10px 14px; font-size: 14px; cursor: pointer;
+}
+.order-pool button .seqn {
+  font-family: "JetBrains Mono", monospace; font-size: 12px; min-width: 18px;
+  color: var(--accent-text);
+}
+.order-pool button.picked { border-color: var(--accent); background: var(--accent-soft); }
+.inter-note { font-size: 12px; color: var(--text-3); }
+.expl.ai { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.expl.ai .hd { color: var(--accent-text); }
+
 /* ---------- lightbox & misc ---------- */
 #lightbox {
   display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 100;
@@ -1003,6 +1039,8 @@ function qDetailHTML(q) {
       `<li onclick="pickOpt(${q.id},'${o.letter}',this)"><span class="letter">${o.letter}</span><span>${esc(o.text)}</span></li>`).join("") + "</ul>";
     if (q.multi) html += `<div class="rowbtns"><button class="btn small primary" onclick="gradeMulti(${q.id})">Submit (choose ${q.correct.length})</button></div>`;
     html += `<div id="fb${q.id}"></div>`;
+  } else if (q.inter && q.inter.kind !== "manual") {
+    html += interHTML(q);
   } else {
     html += `<div class="rowbtns"><button class="btn small primary" onclick="revealAns(${q.id},this)">Show answer &amp; explanation</button></div><div id="fb${q.id}"></div>`;
   }
@@ -1017,8 +1055,97 @@ function explHTML(q) {
   }
   if (q.explanation.length) h += renderLines(q.explanation);
   h += "</div>";
+  if (q.ai) h += `<div class="expl ai"><div class="hd">Explanation (AI-generated, for reference)</div><p>${esc(q.ai.en)}</p></div>`;
   return h;
 }
+
+const interState = {};
+function interHTML(q) {
+  const it = q.inter;
+  interState[q.id] = { seq: [] };
+  let h = '<div class="inter" id="in' + q.id + '">';
+  if (it.kind === "yesno") {
+    h += it.statements.map((s, i) =>
+      `<div class="yn-row" data-i="${i}"><div class="yn-text">${esc(s.text)}</div>
+       <div class="yn-btns"><button class="btn small" onclick="ynPick(${q.id},${i},'Yes',this)">Yes</button><button class="btn small" onclick="ynPick(${q.id},${i},'No',this)">No</button></div></div>`).join("");
+  } else if (it.kind === "select") {
+    h += it.boxes.map((b, i) =>
+      `<div class="ibox" data-i="${i}"><span class="ilabel">${esc(b.label)}</span>
+       <select><option value="">${"-- choose --"}</option>${b.options.map(o => `<option>${esc(o)}</option>`).join("")}</select>
+       <span class="corr" style="display:none"></span></div>`).join("");
+  } else if (it.kind === "order") {
+    h += `<div class="order-wrap"><div class="inter-note">${"Tap the actions in the correct order; tap again to undo:"}</div><div class="order-pool">` +
+      it.pool.map((p, i) => `<button data-i="${i}" onclick="orderPick(${q.id},${i},this)"><span class="seqn"></span><span>${esc(p)}</span></button>`).join("") +
+      `</div></div>`;
+  }
+  h += "</div>";
+  h += `<div class="inter-note">${"※ This interactive version was auto-transcribed from the official exhibit (AI). If it conflicts with the image above, trust the image."}</div>`;
+  h += `<div class="rowbtns"><button class="btn small primary" onclick="gradeInter(${q.id})">${"Submit answer"}</button></div><div id="fb${q.id}"></div>`;
+  return h;
+}
+function ynPick(qid, i, val, btn) {
+  const row = btn.closest(".yn-row");
+  row.dataset.pick = val;
+  [...row.querySelectorAll(".yn-btns .btn")].forEach(b => b.classList.toggle("sel", b === btn));
+}
+function orderPick(qid, i, btn) {
+  const st = interState[qid];
+  const pos = st.seq.indexOf(i);
+  if (pos >= 0) st.seq.splice(pos, 1);
+  else st.seq.push(i);
+  const pool = btn.closest(".order-pool");
+  [...pool.querySelectorAll("button")].forEach(b => {
+    const bi = parseInt(b.dataset.i);
+    const p = st.seq.indexOf(bi);
+    b.classList.toggle("picked", p >= 0);
+    b.querySelector(".seqn").textContent = p >= 0 ? (p + 1) : "";
+  });
+}
+function gradeInter(qid) {
+  const q = QS.find(x => x.id === qid);
+  const it = q.inter;
+  const root = document.getElementById("in" + qid);
+  let total = 0, good = 0;
+  if (it.kind === "yesno") {
+    const rows = [...root.querySelectorAll(".yn-row")];
+    if (rows.some(r => !r.dataset.pick)) { alert("Please answer every part first"); return; }
+    rows.forEach(r => {
+      const s = it.statements[parseInt(r.dataset.i)];
+      total++;
+      const ok = r.dataset.pick === s.answer;
+      if (ok) good++;
+      r.classList.add(ok ? "right" : "wrong");
+      if (!ok) r.querySelector(".yn-text").insertAdjacentHTML("beforeend", `<div class="corr">${"Correct: "}${esc(s.answer)}</div>`);
+    });
+  } else if (it.kind === "select") {
+    const boxes = [...root.querySelectorAll(".ibox")];
+    if (boxes.some(b => !b.querySelector("select").value)) { alert("Please answer every part first"); return; }
+    boxes.forEach(b => {
+      const spec = it.boxes[parseInt(b.dataset.i)];
+      total++;
+      const ok = b.querySelector("select").value === spec.answer;
+      if (ok) good++;
+      b.classList.add(ok ? "right" : "wrong");
+      if (!ok) { const c = b.querySelector(".corr"); c.style.display = ""; c.textContent = "Correct: " + spec.answer; }
+    });
+  } else if (it.kind === "order") {
+    const st = interState[qid];
+    if (st.seq.length !== it.sequence.length) { alert("Pick {n} actions in order for this question".replace("{n}", it.sequence.length)); return; }
+    total = 1;
+    const picked = st.seq.map(i => it.pool[i]);
+    const ok = picked.join("\u0001") === it.sequence.join("\u0001");
+    if (ok) good = 1;
+    root.querySelector(".order-wrap").classList.add(ok ? "right" : "wrong");
+    if (!ok) root.querySelector(".order-wrap").insertAdjacentHTML("beforeend",
+      `<div class="corr">${"Correct: "}${it.sequence.map((x, n) => (n + 1) + ". " + esc(x)).join("&nbsp;&nbsp;")}</div>`);
+  }
+  root.classList.add("locked");
+  const allOk = good === total;
+  saveResult(qid, allOk);
+  document.getElementById("fb" + qid).innerHTML =
+    `<div class="verdict ${allOk ? "ok" : "no"}">${allOk ? "✓ All correct!" : "{g} / {t} parts correct".replace("{g}", good).replace("{t}", total)}</div>` + explHTML(q);
+}
+
 function clearRecord(qid) {
   delete progress[qid];
   LS.set("pl300_progress", progress);
