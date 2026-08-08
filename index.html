@@ -394,6 +394,21 @@ pre.dax {
 .expl.ai .hd { color: var(--accent-text); }
 
 /* ---------- 燈箱與其他 ---------- */
+
+.opts { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--hairline); }
+.opts li { background: var(--surface-2); }
+.opts li:hover { background: var(--surface-3); }
+.opts li .letter {
+  display: grid; place-items: center; min-width: 26px; height: 26px; padding: 0;
+  border: 1px solid var(--hairline-strong); border-radius: 6px; background: var(--surface-1);
+  font-size: 12.5px; align-self: flex-start; margin-top: 1px;
+}
+.opts li.sel .letter { border-color: var(--accent); }
+.opts li.right .letter { border-color: var(--ok); }
+.opts li.wrong .letter { border-color: var(--bad); }
+.inter { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--hairline); }
+.yn-row, .ibox, .order-wrap { background: var(--surface-2); }
+
 #lightbox {
   display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 100;
   align-items: center; justify-content: center; cursor: zoom-out; padding: 24px;
@@ -1143,7 +1158,7 @@ function gradeInter(qid) {
   const allOk = good === total;
   saveResult(qid, allOk);
   document.getElementById("fb" + qid).innerHTML =
-    `<div class="verdict ${allOk ? "ok" : "no"}">${allOk ? "✓ 全部答對！" : "答對 {g} / {t} 部分".replace("{g}", good).replace("{t}", total)}</div>` + explHTML(q);
+    `<div class="verdict ${allOk ? "ok" : "no"}">${allOk ? "✓ 全部答對！" : "答對 {g} / {t} 部分".replace("{g}", good).replace("{t}", total)}</div>` + explHTML(q) + `<div class="rowbtns"><button class="btn small" onclick="clearRecord(${qid})">重新作答（清除此題紀錄）</button></div>`;
 }
 
 function clearRecord(qid) {
@@ -1172,7 +1187,7 @@ function pickOpt(qid, letter, li) {
   });
   saveResult(qid, right);
   document.getElementById("fb" + qid).innerHTML =
-    `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ 答對了！" : "✗ 答錯了"}</div>` + explHTML(q);
+    `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ 答對了！" : "✗ 答錯了"}</div>` + explHTML(q) + `<div class="rowbtns"><button class="btn small" onclick="clearRecord(${qid})">重新作答（清除此題紀錄）</button></div>`;
 }
 function gradeMulti(qid) {
   const q = QS.find(x => x.id === qid);
@@ -1191,7 +1206,7 @@ function gradeMulti(qid) {
   });
   saveResult(qid, right);
   document.getElementById("fb" + qid).innerHTML =
-    `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ 答對了！" : "✗ 答錯了"}</div>` + explHTML(q);
+    `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ 答對了！" : "✗ 答錯了"}</div>` + explHTML(q) + `<div class="rowbtns"><button class="btn small" onclick="clearRecord(${qid})">重新作答（清除此題紀錄）</button></div>`;
 }
 function revealAns(qid, btn) {
   const q = QS.find(x => x.id === qid);
