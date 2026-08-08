@@ -220,7 +220,7 @@ pre.dax {
 .filters select:focus, .filters input[type=text]:focus { outline: none; border-color: var(--accent); }
 .filters input[type=text] { flex: 1; min-width: 180px; }
 
-/* ---------- 題目卡(練習) ---------- */
+/* ---------- 題目卡（練習） ---------- */
 .qitem { background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px; margin-bottom: 10px; overflow: hidden; box-shadow: var(--shadow); }
 .qitem > .qhead {
   padding: 12px 20px; display: flex; gap: 10px; align-items: center;
@@ -805,7 +805,7 @@ function typeBadge(q) {
   const k = typeKey(q);
   const cls = { single: "t-choice", multi: "t-multi", hotspot: "t-hotspot", dragdrop: "t-dragdrop" }[k];
   const lbl = { single: "單選", multi: "多選", hotspot: "熱區", dragdrop: "拖曳" }[k];
-  return `<span class="badge ${cls}">${lbl}</span>` + (q.hasCase ? '<span class="badge t-case">案例</span>' : "");
+  return `<span class="badge ${cls}">${lbl}</span>` + （q.hasCase ? '<span class="badge t-case">案例</span>' : ""）；
 }
 function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
@@ -860,7 +860,7 @@ function renderLines(lines) {
     }
     if (/^Box \d|^Reference:|^Note:|^NOTE:|^Incorrect|^Correct Answer/.test(raw)) flush();
     para.push(esc(raw));
-    if (/[.:;?!。:;?!]$/.test(raw.trim())) flush();
+    if (/[.:;?!。：；？！]$/.test(raw.trim())) flush();
   }
   flushCode(); flush(); closeList();
   return html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
@@ -967,7 +967,7 @@ function renderPQ(scroll) {
   const q = pList[pIdx];
   LS.set("pl300_lastq", q.id);
   const p = progress[q.id];
-  const stB = p ? (p.r ? '<span class="badge st-right">✓ 答對過</span>' : '<span class="badge st-wrong">✗ 答錯過</span>') : "";
+  const stB = p ? （p.r ? '<span class="badge st-right">✓ 答對過</span>' : '<span class="badge st-wrong">✗ 答錯過</span>'） : "";
   el.innerHTML = `<div class="qitem">
     <div class="qhead" style="cursor:default">
       <span class="qid">T${q.topic}#${q.num}</span>${typeBadge(q)}${stB}
@@ -1055,7 +1055,7 @@ function explHTML(q) {
   }
   if (q.explanation.length) h += renderLines(q.explanation);
   h += "</div>";
-  if (q.ai) h += `<div class="expl ai"><div class="hd">解析（AI 產生,僅供參考）</div><p>${esc(q.ai.zh)}</p></div>`;
+  if (q.ai) h += `<div class="expl ai"><div class="hd">解析（AI 產生，僅供參考）</div><p>${esc(q.ai.zh)}</p></div>`;
   return h;
 }
 
@@ -1074,12 +1074,12 @@ function interHTML(q) {
        <select><option value="">${"-- 請選擇 --"}</option>${b.options.map(o => `<option>${esc(o)}</option>`).join("")}</select>
        <span class="corr" style="display:none"></span></div>`).join("");
   } else if (it.kind === "order") {
-    h += `<div class="order-wrap"><div class="inter-note">${"依正確順序點選動作,再點一次可取消:"}</div><div class="order-pool">` +
+    h += `<div class="order-wrap"><div class="inter-note">${"依正確順序點選動作，再點一次可取消："}</div><div class="order-pool">` +
       it.pool.map((p, i) => `<button data-i="${i}" onclick="orderPick(${q.id},${i},this)"><span class="seqn"></span><span>${esc(p)}</span></button>`).join("") +
       `</div></div>`;
   }
   h += "</div>";
-  h += `<div class="inter-note">${"※ 本互動題由官方題目圖片自動轉譯（AI）,若與上方圖片不符,請以圖片為準。"}</div>`;
+  h += `<div class="inter-note">${"※ 本互動題由官方題目圖片自動轉譯（AI），若與上方圖片不符，請以圖片為準。"}</div>`;
   h += `<div class="rowbtns"><button class="btn small primary" onclick="gradeInter(${q.id})">${"送出答案"}</button></div><div id="fb${q.id}"></div>`;
   return h;
 }
@@ -1143,7 +1143,7 @@ function gradeInter(qid) {
   const allOk = good === total;
   saveResult(qid, allOk);
   document.getElementById("fb" + qid).innerHTML =
-    `<div class="verdict ${allOk ? "ok" : "no"}">${allOk ? "✓ 全部答對!" : "答對 {g} / {t} 部分".replace("{g}", good).replace("{t}", total)}</div>` + explHTML(q);
+    `<div class="verdict ${allOk ? "ok" : "no"}">${allOk ? "✓ 全部答對！" : "答對 {g} / {t} 部分".replace("{g}", good).replace("{t}", total)}</div>` + explHTML(q);
 }
 
 function clearRecord(qid) {
@@ -1279,7 +1279,7 @@ function toggleFlag() {
 }
 function renderExamQ() {
   const st = examState, q = st.qs[st.cur];
-  document.getElementById("examPos").textContent = `第 ${st.cur + 1} / ${st.qs.length} 題 · T${q.topic}#${q.num}` + (q.multi ? ` · 多選（${q.correct.length} 項）` : "");
+  document.getElementById("examPos").textContent = `第 ${st.cur + 1} / ${st.qs.length} 題 · T${q.topic}#${q.num}` + （q.multi ? ` · 多選（${q.correct.length} 項）` : ""）；
   document.getElementById("flagBtn").classList.toggle("flag-on", st.flags.has(q.id));
   renderExamNav(false);
   const sel = st.ans[q.id] || [];
@@ -1366,7 +1366,7 @@ function renderReviewQ() {
       else cls.push("dim");
       return `<li class="${cls.join(" ")}"><span class="letter">${o.letter}</span><span>${esc(o.text)}</span></li>`;
     }).join("") + "</ul>" +
-    `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ 答對" : (sel.length ? "✗ 答錯" : "— 未作答")}（你的答案：${sel.length ? sel.join("、") : "無"}）</div>` +
+    `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ 答對" : （sel.length ? "✗ 答錯" : "— 未作答"）}（你的答案：${sel.length ? sel.join("、") : "無"}）</div>` +
     explHTML(q);
 }
 function exitExam() {
