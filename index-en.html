@@ -369,7 +369,7 @@ pre.dax {
 @media (max-width: 860px) {
   .psplit { display: block; }
   .pside {
-    position: fixed; top: 54px; left: 0; bottom: 0; width: min(80vw, 300px);
+    position: fixed; top: 54px; left: 0; bottom: 0; width: min(50vw, 300px);
     max-height: none; z-index: 60; border-radius: 0 12px 0 0;
     transform: translateX(-105%);
     transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1);
@@ -394,6 +394,8 @@ pre.dax {
   .pbar { flex-wrap: nowrap; }
   .pbar .ppos { white-space: nowrap; font-size: 11.5px; flex: none; }
   .pbar .btn { padding: 8px 10px; font-size: 13px; white-space: nowrap; }
+  .filters select { flex: 1 1 0; min-width: 0; padding: 8px 6px; font-size: 13px; }
+  .filters input[type=text] { flex: 1 1 100%; min-width: 0; }
   #pSideBtn .pslabel { display: none; }
   #pSideBtn { padding: 8px 9px; }
   main { padding: 18px 12px 72px; }
