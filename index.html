@@ -988,6 +988,16 @@ function toggleMark(id, btn) {
 
 function qDetailHTML(q) {
   let html = caseBox(q) + `<div class="qbody">${renderLines(q.body)}</div>`;
+  const prev = progress[q.id];
+  if (prev) {
+    if (q.type === "choice") {
+      html += `<ul class="opts">` + q.options.map(o =>
+        `<li class="locked ${q.correct.includes(o.letter) ? "right" : "dim"}"><span class="letter">${o.letter}</span><span>${esc(o.text)}</span></li>`).join("") + "</ul>";
+    }
+    html += `<div class="verdict ${prev.r ? "ok" : "no"}">上次作答：${prev.r ? "✓ 答對" : "✗ 答錯"}</div>` + explHTML(q) +
+      `<div class="rowbtns"><button class="btn small" onclick="clearRecord(${q.id})">重新作答（清除此題紀錄）</button></div>`;
+    return html;
+  }
   if (q.type === "choice") {
     html += `<ul class="opts" id="opts${q.id}">` + q.options.map(o =>
       `<li onclick="pickOpt(${q.id},'${o.letter}',this)"><span class="letter">${o.letter}</span><span>${esc(o.text)}</span></li>`).join("") + "</ul>";
@@ -1008,6 +1018,11 @@ function explHTML(q) {
   if (q.explanation.length) h += renderLines(q.explanation);
   h += "</div>";
   return h;
+}
+function clearRecord(qid) {
+  delete progress[qid];
+  LS.set("pl300_progress", progress);
+  renderPQ();
 }
 function saveResult(qid, right) {
   progress[qid] = { r: right };
