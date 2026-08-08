@@ -396,8 +396,8 @@ pre.dax {
 /* ---------- lightbox & misc ---------- */
 
 .opts { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--hairline); }
-.opts li { background: var(--surface-2); }
-.opts li:hover { background: var(--surface-3); }
+.opts li { background: var(--surface-3); border-color: var(--hairline-strong); }
+.opts li:hover { background: color-mix(in srgb, var(--surface-3) 80%, var(--text-3)); }
 .opts li .letter {
   display: grid; place-items: center; min-width: 26px; height: 26px; padding: 0;
   border: 1px solid var(--hairline-strong); border-radius: 6px; background: var(--surface-1);
@@ -407,7 +407,7 @@ pre.dax {
 .opts li.right .letter { border-color: var(--ok); }
 .opts li.wrong .letter { border-color: var(--bad); }
 .inter { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--hairline); }
-.yn-row, .ibox, .order-wrap { background: var(--surface-2); }
+.yn-row, .ibox, .order-wrap { background: var(--surface-3); border-color: var(--hairline-strong); }
 
 #lightbox {
   display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 100;
@@ -1070,7 +1070,7 @@ function explHTML(q) {
   }
   if (q.explanation.length) h += renderLines(q.explanation);
   h += "</div>";
-  if (q.ai) h += `<div class="expl ai"><div class="hd">Explanation (AI-generated, for reference)</div><p>${esc(q.ai.en)}</p></div>`;
+  if (q.ai) h += `<div class="expl ai"><div class="hd">Explanation (AI-generated, for reference)</div>${esc(q.ai.en).split(String.fromCharCode(10)).filter(Boolean).map(x => `<p>${x}</p>`).join("")}</div>`;
   return h;
 }
 
