@@ -220,7 +220,7 @@ pre.dax {
 .filters select:focus, .filters input[type=text]:focus { outline: none; border-color: var(--accent); }
 .filters input[type=text] { flex: 1; min-width: 180px; }
 
-/* ---------- 題目卡（練習） ---------- */
+/* ---------- 題目卡(練習) ---------- */
 .qitem { background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px; margin-bottom: 10px; overflow: hidden; box-shadow: var(--shadow); }
 .qitem > .qhead {
   padding: 12px 20px; display: flex; gap: 10px; align-items: center;
@@ -805,7 +805,7 @@ function typeBadge(q) {
   const k = typeKey(q);
   const cls = { single: "t-choice", multi: "t-multi", hotspot: "t-hotspot", dragdrop: "t-dragdrop" }[k];
   const lbl = { single: "單選", multi: "多選", hotspot: "熱區", dragdrop: "拖曳" }[k];
-  return `<span class="badge ${cls}">${lbl}</span>` + （q.hasCase ? '<span class="badge t-case">案例</span>' : ""）；
+  return `<span class="badge ${cls}">${lbl}</span>` + (q.hasCase ? '<span class="badge t-case">案例</span>' : "");
 }
 function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
@@ -860,7 +860,7 @@ function renderLines(lines) {
     }
     if (/^Box \d|^Reference:|^Note:|^NOTE:|^Incorrect|^Correct Answer/.test(raw)) flush();
     para.push(esc(raw));
-    if (/[.:;?!。：；？！]$/.test(raw.trim())) flush();
+    if (/[.:;?!。:;?!]$/.test(raw.trim())) flush();
   }
   flushCode(); flush(); closeList();
   return html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
@@ -967,7 +967,7 @@ function renderPQ(scroll) {
   const q = pList[pIdx];
   LS.set("pl300_lastq", q.id);
   const p = progress[q.id];
-  const stB = p ? （p.r ? '<span class="badge st-right">✓ 答對過</span>' : '<span class="badge st-wrong">✗ 答錯過</span>'） : "";
+  const stB = p ? (p.r ? '<span class="badge st-right">✓ 答對過</span>' : '<span class="badge st-wrong">✗ 答錯過</span>') : "";
   el.innerHTML = `<div class="qitem">
     <div class="qhead" style="cursor:default">
       <span class="qid">T${q.topic}#${q.num}</span>${typeBadge(q)}${stB}
@@ -1279,7 +1279,7 @@ function toggleFlag() {
 }
 function renderExamQ() {
   const st = examState, q = st.qs[st.cur];
-  document.getElementById("examPos").textContent = `第 ${st.cur + 1} / ${st.qs.length} 題 · T${q.topic}#${q.num}` + （q.multi ? ` · 多選（${q.correct.length} 項）` : ""）；
+  document.getElementById("examPos").textContent = `第 ${st.cur + 1} / ${st.qs.length} 題 · T${q.topic}#${q.num}` + (q.multi ? ` · 多選（${q.correct.length} 項）` : "");
   document.getElementById("flagBtn").classList.toggle("flag-on", st.flags.has(q.id));
   renderExamNav(false);
   const sel = st.ans[q.id] || [];
@@ -1366,7 +1366,7 @@ function renderReviewQ() {
       else cls.push("dim");
       return `<li class="${cls.join(" ")}"><span class="letter">${o.letter}</span><span>${esc(o.text)}</span></li>`;
     }).join("") + "</ul>" +
-    `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ 答對" : （sel.length ? "✗ 答錯" : "— 未作答"）}（你的答案：${sel.length ? sel.join("、") : "無"}）</div>` +
+    `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ 答對" : (sel.length ? "✗ 答錯" : "— 未作答")}（你的答案：${sel.length ? sel.join("、") : "無"}）</div>` +
     explHTML(q);
 }
 function exitExam() {
