@@ -323,10 +323,10 @@ pre.dax {
 #flagBtn.flag-on { border-color: color-mix(in srgb, var(--warn) 55%, transparent); color: var(--warn); }
 
 /* ---------- guide ---------- */
-.toc { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 28px; }
+.toc { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 28px; }
 .toc a {
   display: block; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px;
-  padding: 11px 13px; text-decoration: none; color: var(--text-1); font-size: 13.5px; font-weight: 600;
+  padding: 10px 11px; text-decoration: none; color: var(--text-1); font-size: 13px; font-weight: 600;
   transition: border-color .15s ease-out, background .15s ease-out;
 }
 .toc a:hover { border-color: var(--hairline-strong); background: var(--surface-2); }
@@ -452,7 +452,7 @@ pre.dax {
   .pbar .btn { padding: 8px 12px; font-size: 13px; }
 }
 @media (max-width: 1100px) {
-  .toc { grid-template-columns: repeat(3, 1fr); }
+  .toc { grid-template-columns: repeat(4, 1fr); }
 }
 @media (max-width: 640px) {
   header.topbar { flex-wrap: wrap; height: auto; padding: 8px 12px 8px; row-gap: 6px; }
@@ -509,6 +509,7 @@ pre.dax {
       <button class="btn small danger" onclick="resetProgress()">Clear all records</button>
     </div>
   </div>
+  <div class="card" id="syncCard"></div>
   <div class="card">
     <strong>Skills measured (post-2024 outline)</strong>
     <table style="border-collapse:collapse;width:100%;margin-top:10px;font-size:13.5px">
@@ -889,7 +890,7 @@ Rolling12 = CALCULATE ( [Sales Amount],
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786250565"></script>
+<script src="data.js?v=1786250986"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;
@@ -1021,6 +1022,7 @@ function renderHome() {
 function resetProgress() {
   if (!confirm("Clear all practice records, bookmarks, and exam history?")) return;
   progress = {}; marks = new Set(); history = [];
+  schedSync();
   LS.set("pl300_progress", {}); LS.set("pl300_marks", []); LS.set("pl300_history", []);
   renderHome();
 }
@@ -1121,6 +1123,7 @@ document.addEventListener("keydown", e => {
 function toggleMark(id, btn) {
   marks.has(id) ? marks.delete(id) : marks.add(id);
   LS.set("pl300_marks", [...marks]);
+  schedSync();
   btn.classList.toggle("on", marks.has(id));
   if (document.getElementById("page-practice").classList.contains("active")) renderPList();
 }
@@ -1256,14 +1259,119 @@ function gradeInter(qid) {
     `<div class="verdict ${allOk ? "ok" : "no"}">${allOk ? "✓ All correct!" : "{g} / {t} parts correct".replace("{g}", good).replace("{t}", total)}</div>` + explHTML(q) + `<div class="rowbtns"><button class="btn small" onclick="clearRecord(${qid})">Retry (clear this record)</button></div>`;
 }
 
+
+/* ---- cross-device sync (GitHub Gist) ---- */
+const SYNC_FILE = "pl300-progress.json";
+let syncTimer = null;
+function syncToken() { return localStorage.getItem("pl300_sync_token") || ""; }
+function syncStatus(msg, ok) {
+  const el = document.getElementById("syncStatus");
+  if (el) { el.textContent = msg; el.style.color = ok ? "var(--ok)" : "var(--text-3)"; }
+}
+async function ghFetch(url, opts) {
+  opts = opts || {};
+  opts.headers = Object.assign({ "Authorization": "Bearer " + syncToken(), "Accept": "application/vnd.github+json" }, opts.headers || {});
+  const r = await fetch(url, opts);
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}
+async function findOrCreateGist() {
+  let id = localStorage.getItem("pl300_sync_gist");
+  if (id) return id;
+  const gists = await ghFetch("https://api.github.com/gists?per_page=100");
+  const hit = gists.find(g => g.files && g.files[SYNC_FILE]);
+  if (hit) { id = hit.id; }
+  else {
+    const created = await ghFetch("https://api.github.com/gists", { method: "POST",
+      body: JSON.stringify({ description: "PL-300 study progress (auto-synced)", public: false,
+        files: { [SYNC_FILE]: { content: "{}" } } }) });
+    id = created.id;
+  }
+  localStorage.setItem("pl300_sync_gist", id);
+  return id;
+}
+function collectSync() {
+  return { progress, marks: [...marks], history, updatedAt: new Date().toISOString() };
+}
+function applySync(remote) {
+  if (!remote || typeof remote !== "object") return;
+  progress = Object.assign({}, remote.progress || {}, progress);
+  (remote.marks || []).forEach(m => marks.add(m));
+  const seen = new Set(history.map(h => h.date + "/" + h.score));
+  (remote.history || []).forEach(h => { const k = h.date + "/" + h.score; if (!seen.has(k)) { history.push(h); seen.add(k); } });
+  history.sort((a, b) => a.date < b.date ? -1 : 1);
+  LS.set("pl300_progress", progress); LS.set("pl300_marks", [...marks]); LS.set("pl300_history", history);
+}
+async function syncPushNow() {
+  const id = await findOrCreateGist();
+  await ghFetch("https://api.github.com/gists/" + id, { method: "PATCH",
+    body: JSON.stringify({ files: { [SYNC_FILE]: { content: JSON.stringify(collectSync()) } } }) });
+}
+async function syncPull() {
+  if (!syncToken() || typeof fetch === "undefined") return;
+  try {
+    syncStatus("Syncing…", false);
+    const id = await findOrCreateGist();
+    const g = await ghFetch("https://api.github.com/gists/" + id);
+    const f = g.files && g.files[SYNC_FILE];
+    if (f && f.content) applySync(JSON.parse(f.content));
+    await syncPushNow();
+    syncStatus("Synced " + new Date().toLocaleTimeString(), true);
+    renderHome();
+    if (document.getElementById("page-practice").classList.contains("active")) { renderList(); }
+  } catch (e) { syncStatus("Sync failed: " + e.message, false); }
+}
+function schedSync() {
+  if (!syncToken() || typeof fetch === "undefined") return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => {
+    syncPushNow().then(() => syncStatus("Synced " + new Date().toLocaleTimeString(), true))
+      .catch(e => syncStatus("Sync failed: " + e.message, false));
+  }, 2500);
+}
+function enableSync() {
+  const v = document.getElementById("syncInput").value.trim();
+  if (!v) { alert("Paste your sync code first"); return; }
+  localStorage.setItem("pl300_sync_token", v);
+  localStorage.removeItem("pl300_sync_gist");
+  renderSyncUI();
+  syncPull();
+}
+function disableSync() {
+  localStorage.removeItem("pl300_sync_token");
+  localStorage.removeItem("pl300_sync_gist");
+  renderSyncUI();
+}
+function renderSyncUI() {
+  const el = document.getElementById("syncCard");
+  if (!el) return;
+  if (syncToken()) {
+    el.innerHTML = `<strong>Cross-device sync</strong>
+      <p style="font-size:13.5px;color:var(--text-2);margin:6px 0 10px">Enabled: practice records, bookmarks, and exam history auto-save to a private Gist in your GitHub account. Paste the same code on another device to continue there.</p>
+      <div id="syncStatus" style="font-size:13px;color:var(--text-3)"></div>
+      <div class="rowbtns"><button class="btn small" onclick="syncPull()">Sync now</button>
+      <button class="btn small danger" onclick="disableSync()">Disable sync</button></div>`;
+  } else {
+    el.innerHTML = `<strong>Cross-device sync</strong>
+      <p style="font-size:13.5px;color:var(--text-2);margin:6px 0 10px">No signup, no password: generate one sync code, paste it once on each device, and progress stays in sync (stored in a private Gist in your own GitHub account — no third-party service).</p>
+      <div class="rowbtns" style="margin-top:6px">
+        <input type="text" id="syncInput" placeholder="Paste sync code (starts with ghp_)" style="flex:1;min-width:200px;background:var(--surface-1);color:var(--text-1);border:1px solid var(--hairline-strong);border-radius:6px;padding:8px 12px;font-size:13px;font-family:inherit">
+        <button class="btn small primary" onclick="enableSync()">Enable sync</button>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-3);margin-top:10px">To create a sync code: github.com/settings/tokens → Generate new token (classic) → tick only the gist scope → Generate, then paste the ghp_ string here. Keep the code private — anyone holding it can read/write this study record.</p>`;
+  }
+}
+
 function clearRecord(qid) {
   delete progress[qid];
   LS.set("pl300_progress", progress);
+  schedSync();
   renderPQ();
 }
 function saveResult(qid, right) {
   progress[qid] = { r: right };
   LS.set("pl300_progress", progress);
+  schedSync();
   if (document.getElementById("page-practice").classList.contains("active")) renderPList();
 }
 function pickOpt(qid, letter, li) {
@@ -1506,6 +1614,7 @@ function finishExam(auto) {
   const usedMin = Math.round((Date.now() - st.startAt) / 60000);
   const rec = { date: new Date().toLocaleString("en-US", { hour12: false }).slice(0, 16), total: st.qs.length, correct, score, mins: usedMin };
   history.push(rec); LS.set("pl300_history", history);
+  schedSync();
   const pass = score >= 700;
   document.getElementById("examRun").style.display = "none";
   const res = document.getElementById("examResult");
@@ -1572,6 +1681,8 @@ function exitExam() {
 }
 
 /* init */
+renderSyncUI();
+if (syncToken()) syncPull();
 const _hashPage = location.hash.replace("#", "");
 showPage(["home", "exam", "practice", "guide"].includes(_hashPage) ? _hashPage : LS.get("pl300_page", "home"));
 </script>

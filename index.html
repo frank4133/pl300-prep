@@ -323,10 +323,10 @@ pre.dax {
 #flagBtn.flag-on { border-color: color-mix(in srgb, var(--warn) 55%, transparent); color: var(--warn); }
 
 /* ---------- 講義 ---------- */
-.toc { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 28px; }
+.toc { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 28px; }
 .toc a {
   display: block; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px;
-  padding: 11px 13px; text-decoration: none; color: var(--text-1); font-size: 13.5px; font-weight: 600;
+  padding: 10px 11px; text-decoration: none; color: var(--text-1); font-size: 13px; font-weight: 600;
   transition: border-color .15s ease-out, background .15s ease-out;
 }
 .toc a:hover { border-color: var(--hairline-strong); background: var(--surface-2); }
@@ -452,7 +452,7 @@ pre.dax {
   .pbar .btn { padding: 8px 12px; font-size: 13px; }
 }
 @media (max-width: 1100px) {
-  .toc { grid-template-columns: repeat(3, 1fr); }
+  .toc { grid-template-columns: repeat(4, 1fr); }
 }
 @media (max-width: 640px) {
   header.topbar { flex-wrap: wrap; height: auto; padding: 8px 12px 8px; row-gap: 6px; }
@@ -509,6 +509,7 @@ pre.dax {
       <button class="btn small danger" onclick="resetProgress()">清除所有紀錄</button>
     </div>
   </div>
+  <div class="card" id="syncCard"></div>
   <div class="card">
     <strong>考試範圍（2024 年後版本）</strong>
     <table style="border-collapse:collapse;width:100%;margin-top:10px;font-size:13.5px">
@@ -890,7 +891,7 @@ Rolling12 = CALCULATE ( [Sales Amount],
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786250565"></script>
+<script src="data.js?v=1786250986"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;
@@ -1022,6 +1023,7 @@ function renderHome() {
 function resetProgress() {
   if (!confirm("確定要清除所有練習紀錄、收藏與測驗歷史嗎？")) return;
   progress = {}; marks = new Set(); history = [];
+  schedSync();
   LS.set("pl300_progress", {}); LS.set("pl300_marks", []); LS.set("pl300_history", []);
   renderHome();
 }
@@ -1122,6 +1124,7 @@ document.addEventListener("keydown", e => {
 function toggleMark(id, btn) {
   marks.has(id) ? marks.delete(id) : marks.add(id);
   LS.set("pl300_marks", [...marks]);
+  schedSync();
   btn.classList.toggle("on", marks.has(id));
   if (document.getElementById("page-practice").classList.contains("active")) renderPList();
 }
@@ -1257,14 +1260,119 @@ function gradeInter(qid) {
     `<div class="verdict ${allOk ? "ok" : "no"}">${allOk ? "✓ 全部答對！" : "答對 {g} / {t} 部分".replace("{g}", good).replace("{t}", total)}</div>` + explHTML(q) + `<div class="rowbtns"><button class="btn small" onclick="clearRecord(${qid})">重新作答（清除此題紀錄）</button></div>`;
 }
 
+
+/* ---- cross-device sync (GitHub Gist) ---- */
+const SYNC_FILE = "pl300-progress.json";
+let syncTimer = null;
+function syncToken() { return localStorage.getItem("pl300_sync_token") || ""; }
+function syncStatus(msg, ok) {
+  const el = document.getElementById("syncStatus");
+  if (el) { el.textContent = msg; el.style.color = ok ? "var(--ok)" : "var(--text-3)"; }
+}
+async function ghFetch(url, opts) {
+  opts = opts || {};
+  opts.headers = Object.assign({ "Authorization": "Bearer " + syncToken(), "Accept": "application/vnd.github+json" }, opts.headers || {});
+  const r = await fetch(url, opts);
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}
+async function findOrCreateGist() {
+  let id = localStorage.getItem("pl300_sync_gist");
+  if (id) return id;
+  const gists = await ghFetch("https://api.github.com/gists?per_page=100");
+  const hit = gists.find(g => g.files && g.files[SYNC_FILE]);
+  if (hit) { id = hit.id; }
+  else {
+    const created = await ghFetch("https://api.github.com/gists", { method: "POST",
+      body: JSON.stringify({ description: "PL-300 study progress (auto-synced)", public: false,
+        files: { [SYNC_FILE]: { content: "{}" } } }) });
+    id = created.id;
+  }
+  localStorage.setItem("pl300_sync_gist", id);
+  return id;
+}
+function collectSync() {
+  return { progress, marks: [...marks], history, updatedAt: new Date().toISOString() };
+}
+function applySync(remote) {
+  if (!remote || typeof remote !== "object") return;
+  progress = Object.assign({}, remote.progress || {}, progress);
+  (remote.marks || []).forEach(m => marks.add(m));
+  const seen = new Set(history.map(h => h.date + "/" + h.score));
+  (remote.history || []).forEach(h => { const k = h.date + "/" + h.score; if (!seen.has(k)) { history.push(h); seen.add(k); } });
+  history.sort((a, b) => a.date < b.date ? -1 : 1);
+  LS.set("pl300_progress", progress); LS.set("pl300_marks", [...marks]); LS.set("pl300_history", history);
+}
+async function syncPushNow() {
+  const id = await findOrCreateGist();
+  await ghFetch("https://api.github.com/gists/" + id, { method: "PATCH",
+    body: JSON.stringify({ files: { [SYNC_FILE]: { content: JSON.stringify(collectSync()) } } }) });
+}
+async function syncPull() {
+  if (!syncToken() || typeof fetch === "undefined") return;
+  try {
+    syncStatus("同步中…", false);
+    const id = await findOrCreateGist();
+    const g = await ghFetch("https://api.github.com/gists/" + id);
+    const f = g.files && g.files[SYNC_FILE];
+    if (f && f.content) applySync(JSON.parse(f.content));
+    await syncPushNow();
+    syncStatus("已同步 " + new Date().toLocaleTimeString(), true);
+    renderHome();
+    if (document.getElementById("page-practice").classList.contains("active")) { renderList(); }
+  } catch (e) { syncStatus("同步失敗：" + e.message, false); }
+}
+function schedSync() {
+  if (!syncToken() || typeof fetch === "undefined") return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => {
+    syncPushNow().then(() => syncStatus("已同步 " + new Date().toLocaleTimeString(), true))
+      .catch(e => syncStatus("同步失敗：" + e.message, false));
+  }, 2500);
+}
+function enableSync() {
+  const v = document.getElementById("syncInput").value.trim();
+  if (!v) { alert("請先貼上同步碼"); return; }
+  localStorage.setItem("pl300_sync_token", v);
+  localStorage.removeItem("pl300_sync_gist");
+  renderSyncUI();
+  syncPull();
+}
+function disableSync() {
+  localStorage.removeItem("pl300_sync_token");
+  localStorage.removeItem("pl300_sync_gist");
+  renderSyncUI();
+}
+function renderSyncUI() {
+  const el = document.getElementById("syncCard");
+  if (!el) return;
+  if (syncToken()) {
+    el.innerHTML = `<strong>跨裝置同步</strong>
+      <p style="font-size:13.5px;color:var(--text-2);margin:6px 0 10px">已啟用：練習紀錄、收藏與測驗歷史會自動存到你 GitHub 帳號的私人 Gist，換裝置貼同一組同步碼即可接續。</p>
+      <div id="syncStatus" style="font-size:13px;color:var(--text-3)"></div>
+      <div class="rowbtns"><button class="btn small" onclick="syncPull()">立即同步</button>
+      <button class="btn small danger" onclick="disableSync()">停用同步</button></div>`;
+  } else {
+    el.innerHTML = `<strong>跨裝置同步</strong>
+      <p style="font-size:13.5px;color:var(--text-2);margin:6px 0 10px">免註冊免密碼：產生一組同步碼，在電腦與手機各貼一次，進度就會自動互通（存在你自己 GitHub 帳號的私人 Gist，不經第三方）。</p>
+      <div class="rowbtns" style="margin-top:6px">
+        <input type="text" id="syncInput" placeholder="貼上同步碼（ghp_ 開頭）" style="flex:1;min-width:200px;background:var(--surface-1);color:var(--text-1);border:1px solid var(--hairline-strong);border-radius:6px;padding:8px 12px;font-size:13px;font-family:inherit">
+        <button class="btn small primary" onclick="enableSync()">啟用同步</button>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-3);margin-top:10px">產生同步碼：github.com/settings/tokens → Generate new token (classic) → 只勾選 gist 權限 → Generate，把 ghp_ 開頭的字串貼到這裡。同步碼請自己保管，拿到碼的人可讀寫這份讀書紀錄。</p>`;
+  }
+}
+
 function clearRecord(qid) {
   delete progress[qid];
   LS.set("pl300_progress", progress);
+  schedSync();
   renderPQ();
 }
 function saveResult(qid, right) {
   progress[qid] = { r: right };
   LS.set("pl300_progress", progress);
+  schedSync();
   if (document.getElementById("page-practice").classList.contains("active")) renderPList();
 }
 function pickOpt(qid, letter, li) {
@@ -1507,6 +1615,7 @@ function finishExam(auto) {
   const usedMin = Math.round((Date.now() - st.startAt) / 60000);
   const rec = { date: new Date().toLocaleString("zh-TW", { hour12: false }).slice(0, 16), total: st.qs.length, correct, score, mins: usedMin };
   history.push(rec); LS.set("pl300_history", history);
+  schedSync();
   const pass = score >= 700;
   document.getElementById("examRun").style.display = "none";
   const res = document.getElementById("examResult");
@@ -1573,6 +1682,8 @@ function exitExam() {
 }
 
 /* init */
+renderSyncUI();
+if (syncToken()) syncPull();
 const _hashPage = location.hash.replace("#", "");
 showPage(["home", "exam", "practice", "guide"].includes(_hashPage) ? _hashPage : LS.get("pl300_page", "home"));
 </script>
