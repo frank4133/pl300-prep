@@ -323,7 +323,7 @@ pre.dax {
 #flagBtn.flag-on { border-color: color-mix(in srgb, var(--warn) 55%, transparent); color: var(--warn); }
 
 /* ---------- guide ---------- */
-.toc { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 28px; }
+.toc { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 28px; }
 .toc a {
   display: block; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px;
   padding: 10px 11px; text-decoration: none; color: var(--text-1); font-size: 13px; font-weight: 600;
@@ -339,6 +339,12 @@ pre.dax {
 .ggrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0 20px; }
 .ggrid .gfig { margin: 0; }
 .ggrid .gfig img { width: 100%; }
+
+
+.guide table.mini { width: auto; min-width: 200px; }
+.guide table.mini caption { caption-side: top; text-align: left; font-size: 12.5px; color: var(--text-3); padding-bottom: 6px; }
+.guide td.hl, .guide th.hl { color: var(--accent-text); font-weight: 600; }
+.exgrid { display: flex; gap: 24px; flex-wrap: wrap; margin: 12px 0 16px; }
 
 .guide h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin: 40px 0 12px; padding-top: 20px; border-top: 1px solid var(--hairline); }
 .guide h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; color: var(--accent-text); }
@@ -621,8 +627,7 @@ pre.dax {
   <h1>PL-300 Study Guide</h1>
   <p class="sub">A from-zero Power BI study guide — written for first-time users, building from core concepts up to exam-critical details, illustrated with real exhibits from the question bank.</p>
   <div class="toc">
-    <a href="#gs">Getting started<span class="w">What Power BI is &middot; workflow</span></a>
-    <a href="#g0">Exam overview &amp; strategy<span class="w">Format, scoring, pacing</span></a>
+    <a href="#gs">Getting started &amp; the exam<span class="w">What Power BI is &middot; format &amp; scoring</span></a>
     <a href="#g1">1. Prepare the data<span class="w">25&ndash;30% &middot; Power Query</span></a>
     <a href="#g2">2. Model the data<span class="w">25&ndash;30% &middot; Star schema &amp; DAX</span></a>
     <a href="#g3">3. Visualize &amp; analyze<span class="w">25&ndash;30% &middot; Reports &amp; AI visuals</span></a>
@@ -673,7 +678,7 @@ pre.dax {
   </ul>
   <div class="tip"><strong>Study advice:</strong> download Desktop for free from powerbi.microsoft.com, follow Microsoft Learn's beginner tutorial once (import Excel &rarr; build a chart &rarr; publish), then come back — everything below will land much faster.</div>
 
-  <h2 id="g0">Exam overview &amp; strategy</h2>
+  <h3 id="g0">How the exam works: format, scoring, strategy</h3>
   <p>PL-300 validates your ability to prepare, model, visualize, and analyze data with Power BI, and to deploy and maintain those assets.</p>
   <table>
     <tr><th>Item</th><th>Details</th></tr>
@@ -771,20 +776,67 @@ pre.dax {
     <tr><td>Use for</td><td>Fields for slicers/axes/grouping</td><td>Aggregations and KPIs — <em>the answer when the exam says "minimize model size"</em></td></tr>
   </table>
   <p>Analogy: a calculated column is like dragging a formula down a new Excel column; a measure is like a PivotTable value that recalculates whenever you re-slice.</p>
-  <h3>Core DAX concepts &amp; functions</h3>
+  <h3>Core DAX, learned on one tiny dataset</h3>
+  <p>Every example below uses these two small tables (Products is a dimension, Sales a fact, related one-to-many on PID):</p>
+  <div class="exgrid">
+    <table class="mini"><caption>Products (dimension)</caption>
+      <tr><th>ID</th><th>Name</th><th>Category</th></tr>
+      <tr><td>P1</td><td>Laptop</td><td>Computers</td></tr>
+      <tr><td>P2</td><td>Mouse</td><td>Accessories</td></tr>
+      <tr><td>P3</td><td>Keyboard</td><td>Accessories</td></tr>
+    </table>
+    <table class="mini"><caption>Sales (fact)</caption>
+      <tr><th>Order</th><th>PID</th><th>Qty</th><th>Price</th></tr>
+      <tr><td>S1</td><td>P1</td><td>1</td><td>30000</td></tr>
+      <tr><td>S2</td><td>P2</td><td>2</td><td>500</td></tr>
+      <tr><td>S3</td><td>P2</td><td>1</td><td>500</td></tr>
+      <tr><td>S4</td><td>P3</td><td>3</td><td>900</td></tr>
+      <tr><td>S5</td><td>P1</td><td>1</td><td>28000</td></tr>
+    </table>
+  </div>
+  <h3>Iterators (SUMX): compute per row, then total</h3>
+  <p><code>SUM</code> can only add up an existing column; when the amount must be computed as quantity &times; price, use <code>SUMX</code> to iterate:</p>
+  <pre><code>Revenue = SUMX ( Sales, Sales[Qty] * Sales[Price] )</code></pre>
+  <p>Row by row: 1&times;30000 + 2&times;500 + 1&times;500 + 3&times;900 + 1&times;28000 = <strong>62,200</strong>. Every X-function (SUMX/AVERAGEX/COUNTX/MAXX) follows this compute-per-row-then-aggregate pattern.</p>
+  <h3>CALCULATE: rewrite the filters, then evaluate</h3>
+  <p>First understand <strong>filter context</strong>: a measure's result always depends on which rows survive the current filters. Click "Accessories" in a slicer and <code>Revenue</code> only adds S2, S3, S4 = 3,700. <code>CALCULATE</code> exists to <strong>override those filters with conditions you specify</strong>:</p>
+  <pre><code>Accessory Revenue = CALCULATE ( [Revenue], Products[Category] = "Accessories" )
+Grand Total       = CALCULATE ( [Revenue], ALL ( Products ) )   -- drop all Products filters
+Share             = DIVIDE ( [Revenue], CALCULATE ( [Revenue], ALL ( Products ) ) )</code></pre>
+  <p>"Share" is the classic combo: the numerator moves with the user's filters while <code>ALL</code> pins the denominator to the grand total — on the Accessories row you get 3700 / 62200 = 5.9%. Want the denominator to be the user's current selection instead? Use <code>ALLSELECTED()</code>.</p>
+  <h3>Reading across tables: RELATED, RELATEDTABLE, LOOKUPVALUE</h3>
+  <p>Mnemonic: <strong>which table you are standing on decides the function</strong>.</p>
+  <p><strong>1. RELATED — standing on the many side (Sales), fetch one value from the one side.</strong> Add a calculated column <code>ProductName = RELATED ( Products[Name] )</code> to Sales; each row walks the relationship and brings back its product name:</p>
+  <table class="mini">
+    <tr><th>Order</th><th>PID</th><th>Qty</th><th class="hl">ProductName (new)</th></tr>
+    <tr><td>S1</td><td>P1</td><td>1</td><td class="hl">Laptop</td></tr>
+    <tr><td>S2</td><td>P2</td><td>2</td><td class="hl">Mouse</td></tr>
+    <tr><td>S4</td><td>P3</td><td>3</td><td class="hl">Keyboard</td></tr>
+  </table>
+  <p><strong>2. RELATEDTABLE — standing on the one side (Products), grab all related rows from the many side.</strong> It returns a table, so wrap it in <code>COUNTROWS</code> or <code>SUMX</code>. Add <code>SalesCount = COUNTROWS ( RELATEDTABLE ( Sales ) )</code> to Products:</p>
+  <table class="mini">
+    <tr><th>ID</th><th>Name</th><th class="hl">SalesCount (new)</th></tr>
+    <tr><td>P1</td><td>Laptop</td><td class="hl">2</td></tr>
+    <tr><td>P2</td><td>Mouse</td><td class="hl">2</td></tr>
+    <tr><td>P3</td><td>Keyboard</td><td class="hl">1</td></tr>
+  </table>
+  <p><strong>3. LOOKUPVALUE — when no relationship exists at all.</strong> Works like Excel's VLOOKUP: <code>ProductName = LOOKUPVALUE ( Products[Name], Products[ID], Sales[PID] )</code> means "find the Products row whose ID equals my PID, return its Name." Prefer RELATED when a relationship exists (faster); keep LOOKUPVALUE for unrelated tables.</p>
+  <table>
+    <tr><th>You stand on</th><th>You want</th><th>Use</th></tr>
+    <tr><td>Many side (fact)</td><td>A single value from the one side</td><td><code>RELATED</code></td></tr>
+    <tr><td>One side (dimension)</td><td>All related many-side rows (then aggregate)</td><td><code>RELATEDTABLE</code> + COUNTROWS/SUMX</td></tr>
+    <tr><td>Any table</td><td>A value from an unrelated table</td><td><code>LOOKUPVALUE</code></td></tr>
+  </table>
+  <h3>Other must-know topics</h3>
   <ul>
-    <li><strong><code>CALCULATE(expression, filters…)</code></strong> — the most important function: evaluate under modified filters. Pair with <code>ALL</code> (drop filters, grand total), <code>ALLSELECTED</code> (respect the user's selection), <code>FILTER</code>, <code>REMOVEFILTERS</code>.</li>
-    <li><strong>Iterators (X functions)</strong>: <code>SUMX(Sales, Sales[Qty] * Sales[Price])</code> computes per row, then sums. <code>SUM</code> takes a single column only.</li>
-    <li><strong>Time intelligence</strong>: <code>TOTALYTD</code>, <code>SAMEPERIODLASTYEAR</code>, <code>DATESINPERIOD</code> (rolling N months), <code>DATEADD</code>.</li>
-    <li><strong>Counting family</strong>: <code>COUNT</code> / <code>COUNTA</code> / <code>COUNTROWS</code> / <code>DISTINCTCOUNT</code>.</li>
-    <li><strong>Across tables</strong>: <code>RELATED</code> (many side reads the one side), <code>RELATEDTABLE</code>, <code>LOOKUPVALUE</code> (no relationship needed).</li>
-    <li><code>VAR … RETURN</code>: compute once, reuse, stay readable.</li>
+    <li><strong>Time intelligence</strong>: <code>TOTALYTD</code>, <code>SAMEPERIODLASTYEAR</code>, <code>DATESINPERIOD</code> (rolling N months), <code>DATEADD</code>. Prerequisite: a contiguous, marked date table.</li>
+    <li><strong>Counting family</strong>: <code>COUNT</code> / <code>COUNTA</code> / <code>COUNTROWS</code> / <code>DISTINCTCOUNT</code> — on the Sales table above, <code>DISTINCTCOUNT(Sales[PID])</code> = 3.</li>
+    <li><code>VAR &hellip; RETURN</code>: store repeated expressions in a variable — computed once, easier to read.</li>
   </ul>
-  <pre><code>Sales YTD = TOTALYTD ( [Sales Amount], 'Date'[Date] )
-Sales LY  = CALCULATE ( [Sales Amount], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
-Rolling12 = CALCULATE ( [Sales Amount],
+  <pre><code>Sales YTD = TOTALYTD ( [Revenue], 'Date'[Date] )
+Sales LY  = CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+Rolling12 = CALCULATE ( [Revenue],
               DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -12, MONTH ) )</code></pre>
-  <figure class="gfig"><img src="images/60345e699047.jpeg" loading="lazy" onclick="zoom(this)" alt="The Quick measures dialog: generate rolling averages and other common calculations without writing DAX — then read the generated formula to learn."><figcaption>The Quick measures dialog: generate rolling averages and other common calculations without writing DAX — then read the generated formula to learn.</figcaption></figure>
   <h3>Row-level security (RLS)</h3>
   <p>Different people open the same report but see only their own data. Three steps:</p>
   <ol>
@@ -836,36 +888,57 @@ Rolling12 = CALCULATE ( [Sales Amount],
   </ul>
 
   <h2 id="g4">4. Manage and secure Power BI (15&ndash;20%)</h2>
-  <p>Once the report is in the cloud, this domain covers who can do what, and how data stays fresh and protected.</p>
-  <h3>The four workspace roles (memorize!)</h3>
+  <p>Once a report goes to the cloud, this domain revolves around four questions: <strong>who can do what? how does data stay fresh? how is it shared? how do we stop leaks?</strong> Think of the service as your company's shared cloud drive and everything falls into place.</p>
+  <h3>Workspaces and the four roles</h3>
+  <p>A workspace is a shared folder in the cloud holding semantic models, reports, and dashboards. Each member gets one role, from most to least powerful:</p>
   <table>
-    <tr><th>Role</th><th>Key rights</th></tr>
-    <tr><td><strong>Admin</strong></td><td>Everything + delete workspace, manage all members, update/delete the app</td></tr>
-    <tr><td><strong>Member</strong></td><td>Publish/update the app, add lower members, share content ("invite others + least privilege" &rarr; Member)</td></tr>
-    <tr><td><strong>Contributor</strong></td><td>Create/edit/delete content, schedule refresh; cannot share or publish the app</td></tr>
-    <tr><td><strong>Viewer</strong></td><td>View and interact only; the only role RLS applies to</td></tr>
+    <tr><th>Role</th><th>Analogy</th><th>Key rights</th></tr>
+    <tr><td><strong>Admin</strong></td><td>Folder owner</td><td>Everything, incl. deleting the workspace, managing all members, updating/deleting the app</td></tr>
+    <tr><td><strong>Member</strong></td><td>Senior collaborator</td><td>Publish/update the app, add lower-privileged members, share content</td></tr>
+    <tr><td><strong>Contributor</strong></td><td>Editor</td><td>Create/edit/delete content, schedule refresh; cannot share or publish the app</td></tr>
+    <tr><td><strong>Viewer</strong></td><td>Guest</td><td>View and interact only; the only role RLS applies to</td></tr>
   </table>
+  <div class="tip"><strong>Key boundaries:</strong> Member vs Contributor = "can they share / publish the app?"; Viewer vs the rest = "RLS applies only to Viewer."</div>
+  <h3>Scenario lookup table (90% of this domain's questions look like this)</h3>
+  <table>
+    <tr><th>Scenario in the question</th><th>Correct move</th><th>Why</th></tr>
+    <tr><td>Someone must invite others, with least privilege</td><td>Member</td><td>Contributor can't share; Admin is excessive</td></tr>
+    <tr><td>Someone only edits reports and schedules refresh</td><td>Contributor</td><td>Smallest role without sharing rights</td></tr>
+    <tr><td>Notify a group when the workspace has issues</td><td>Contact list</td><td>Notification needs no role at all — least privilege</td></tr>
+    <tr><td>Colleagues build their own reports on your model</td><td>Grant Build on the model</td><td>No workspace role needed; Analyze in Excel also requires Build</td></tr>
+    <tr><td>Distribute finished content to hundreds of viewers</td><td>Publish an App</td><td>The standard broad, read-only distribution channel</td></tr>
+    <tr><td>Financial data must be reviewed and approved</td><td>Endorse as Certified</td><td>Anyone can set Promoted; Certified needs authorized certifiers</td></tr>
+    <tr><td>Prevent PII reports from being exported/leaked</td><td>Sensitivity labels</td><td>Purview labels travel with exports; can encrypt or block</td></tr>
+    <tr><td>Assess which reports an upstream change breaks</td><td>Lineage view</td><td>Visualizes the source &rarr; model &rarr; report &rarr; dashboard chain</td></tr>
+  </table>
+  <h3>Refresh and gateways: how does the cloud reach on-prem data?</h3>
+  <p>After publishing, reports must fetch fresh data on a schedule. The catch: <strong>the cloud service cannot reach a database inside your company network</strong> — that is exactly why gateways exist:</p>
+  <figure class="gfig">
+    <svg viewBox="0 0 860 150" role="img" aria-label="Gateway diagram">
+      <g fill="none" stroke="var(--hairline-strong)"><path d="M232 50h80M534 50h80M232 118h382"/></g>
+      <g font-size="13" text-anchor="middle">
+        <g><rect x="40" y="26" width="192" height="48" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".6"/><text x="136" y="46" fill="var(--text-1)">Power BI Service (cloud)</text><text x="136" y="64" fill="var(--text-3)" font-size="11">scheduled refresh</text></g>
+        <g><rect x="312" y="26" width="222" height="48" rx="8" fill="var(--surface-2)" stroke="var(--warn)" stroke-opacity=".5"/><text x="423" y="46" fill="var(--text-1)">On-premises data gateway</text><text x="423" y="64" fill="var(--text-3)" font-size="11">installed on a machine in your network</text></g>
+        <g><rect x="614" y="26" width="206" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="717" y="46" fill="var(--text-1)">On-prem sources</text><text x="717" y="64" fill="var(--text-3)" font-size="11">SQL Server &middot; file servers</text></g>
+        <g><rect x="40" y="94" width="192" height="48" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".6"/><text x="136" y="114" fill="var(--text-1)">Power BI Service (cloud)</text><text x="136" y="132" fill="var(--text-3)" font-size="11">direct, no gateway</text></g>
+        <g><rect x="614" y="94" width="206" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="717" y="114" fill="var(--text-1)">Cloud sources</text><text x="717" y="132" fill="var(--text-3)" font-size="11">OneDrive &middot; SharePoint &middot; Azure SQL</text></g>
+      </g>
+    </svg>
+    <figcaption>Top row: on-prem source &rarr; a gateway is mandatory. Bottom row: cloud source &rarr; no gateway. "Does this need a gateway?" is the single most common question in this domain — just check where the source lives.</figcaption>
+  </figure>
   <ul>
-    <li>Just want a group notified about workspace issues? Add it to the workspace <strong>contact list</strong> — no role needed.</li>
-    <li>Semantic-model permissions: <strong>Read</strong> / <strong>Build</strong> (build reports on it; required by Analyze in Excel) / <strong>Reshare</strong> / <strong>Write</strong>. "Let colleagues build their own reports on the model" &rarr; grant Build.</li>
-    <li><strong>Endorsement</strong>: Promoted (any owner) vs <strong>Certified</strong> (authorized certifiers only) — "financial data must be reviewed and approved" &rarr; Certified.</li>
-    <li><strong>Sensitivity labels</strong> (Microsoft Purview): protection that travels with exports; encrypt PDF/Excel output, prevent PII leaks.</li>
-    <li><strong>Lineage view</strong>: the source &rarr; model &rarr; report &rarr; dashboard dependency chain, for impact analysis.</li>
+    <li>Gateway <strong>standard mode</strong>: install once, shared by many users and sources (the enterprise answer); <strong>personal mode</strong> is single-user.</li>
+    <li>Scheduled refresh limits: <strong>8/day</strong> on shared capacity, <strong>48/day</strong> on Premium.</li>
+    <li>A model unused for <strong>~2 months</strong> gets refresh "disabled for inactivity" — anyone opening a dependent report resumes it automatically.</li>
+    <li><strong>Incremental refresh</strong>: partition big tables with <code>RangeStart</code>/<code>RangeEnd</code> parameters and refresh only the newest slices; requires query folding.</li>
+    <li>.pbix files on OneDrive/SharePoint auto-sync roughly <strong>hourly</strong>, without consuming scheduled-refresh slots.</li>
   </ul>
-  <h3>Refresh &amp; gateways</h3>
+  <h3>From development to production: pipelines and templates</h3>
   <ul>
-    <li>On-premises sources (SQL Server on your network, file servers) need an <strong>on-premises data gateway</strong>; standard mode is shared, personal mode is single-user.</li>
-    <li>Cloud sources (OneDrive, SharePoint Online, Azure SQL) need no gateway; OneDrive/SharePoint .pbix files sync roughly hourly.</li>
-    <li>Scheduled refresh: up to <strong>8/day</strong> on shared capacity, <strong>48/day</strong> on Premium. After ~2 months unused, refresh is disabled for inactivity; anyone opening a dependent report resumes it.</li>
-    <li><strong>Incremental refresh</strong>: partition on <code>RangeStart</code>/<code>RangeEnd</code> parameters, refresh only the newest slices.</li>
+    <li><strong>Deployment pipelines</strong>: like software's Dev &rarr; Test &rarr; Prod environments — promote content stage by stage, with rules that swap in the test database automatically; needs Premium/Fabric capacity.</li>
+    <li><strong>.pbit templates</strong>: your finished work minus the data — colleagues open it, enter their parameters, and reuse your whole query/report structure without seeing your data.</li>
+    <li><strong>Usage metrics report</strong>: who views each report and how often — decide what to maintain and what to retire.</li>
   </ul>
-  <h3>Deployment &amp; governance</h3>
-  <ul>
-    <li><strong>Deployment pipelines</strong>: Development &rarr; Test &rarr; Production, with stage comparison and per-stage data-source rules; needs Premium/Fabric capacity.</li>
-    <li><strong>Usage metrics report</strong>: who viewed what, how often.</li>
-    <li><strong>Analyze in Excel</strong>: Excel PivotTables over a Power BI model (Build permission required).</li>
-  </ul>
-
   <h2 id="g5">DAX cheat sheet</h2>
   <table>
     <tr><th>Goal</th><th>Pattern</th></tr>
@@ -890,7 +963,7 @@ Rolling12 = CALCULATE ( [Sales Amount],
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786250986"></script>
+<script src="data.js?v=1786262657"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;

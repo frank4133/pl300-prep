@@ -323,7 +323,7 @@ pre.dax {
 #flagBtn.flag-on { border-color: color-mix(in srgb, var(--warn) 55%, transparent); color: var(--warn); }
 
 /* ---------- 講義 ---------- */
-.toc { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 28px; }
+.toc { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 28px; }
 .toc a {
   display: block; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px;
   padding: 10px 11px; text-decoration: none; color: var(--text-1); font-size: 13px; font-weight: 600;
@@ -339,6 +339,12 @@ pre.dax {
 .ggrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0 20px; }
 .ggrid .gfig { margin: 0; }
 .ggrid .gfig img { width: 100%; }
+
+
+.guide table.mini { width: auto; min-width: 200px; }
+.guide table.mini caption { caption-side: top; text-align: left; font-size: 12.5px; color: var(--text-3); padding-bottom: 6px; }
+.guide td.hl, .guide th.hl { color: var(--accent-text); font-weight: 600; }
+.exgrid { display: flex; gap: 24px; flex-wrap: wrap; margin: 12px 0 16px; }
 
 .guide h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin: 40px 0 12px; padding-top: 20px; border-top: 1px solid var(--hairline); }
 .guide h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; color: var(--accent-text); }
@@ -621,8 +627,7 @@ pre.dax {
   <h1>PL-300 講義教材</h1>
   <p class="sub">從零開始的 Power BI 學習講義——假設你是第一次接觸 Power BI，由基礎概念一路帶到考試重點，並以題庫實際圖例輔助說明。</p>
   <div class="toc">
-    <a href="#gs">新手入門<span class="w">什麼是 Power BI・工作流程</span></a>
-    <a href="#g0">考試簡介與策略<span class="w">題型、計分、時間分配</span></a>
+    <a href="#gs">新手入門與考試簡介<span class="w">什麼是 Power BI・題型計分</span></a>
     <a href="#g1">① 準備資料<span class="w">25–30% · Power Query</span></a>
     <a href="#g2">② 模型化資料<span class="w">25–30% · 星型結構與 DAX</span></a>
     <a href="#g3">③ 視覺化與分析<span class="w">25–30% · 報表與 AI 視覺效果</span></a>
@@ -673,7 +678,7 @@ pre.dax {
   </ul>
   <div class="tip"><strong>學習建議：</strong>先到 powerbi.microsoft.com 免費下載 Desktop，跟著微軟 Learn 的入門教學做一次「匯入 Excel → 做一張圖 → 發佈」，再回來讀後面的章節會事半功倍。</div>
 
-  <h2 id="g0">考試簡介與應試策略</h2>
+  <h3 id="g0">考試怎麼考：題型、計分與策略</h3>
   <p>PL-300 驗證使用 Microsoft Power BI 進行資料準備、建模、視覺化與分析，以及資產部署與維護的能力。</p>
   <table>
     <tr><th>項目</th><th>內容</th></tr>
@@ -772,20 +777,67 @@ pre.dax {
     <tr><td>用途</td><td>要放進交叉分析篩選器/座標軸的欄位</td><td>彙總數字、KPI——<em>考題問「最小化模型大小」時選它</em></td></tr>
   </table>
   <p>白話比喻：計算資料行像在 Excel 表格右邊多拉一欄公式；量值像樞紐分析表裡的「加總欄位」，換個篩選數字就跟著變。</p>
-  <h3>核心 DAX 觀念與函數</h3>
+  <h3>核心 DAX：用一組迷你資料學會</h3>
+  <p>下面所有例子都用這兩張小表（Products 是維度、Sales 是事實，以 PID 建立一對多關聯）：</p>
+  <div class="exgrid">
+    <table class="mini"><caption>Products(維度表)</caption>
+      <tr><th>ID</th><th>Name</th><th>Category</th></tr>
+      <tr><td>P1</td><td>筆電</td><td>電腦</td></tr>
+      <tr><td>P2</td><td>滑鼠</td><td>周邊</td></tr>
+      <tr><td>P3</td><td>鍵盤</td><td>周邊</td></tr>
+    </table>
+    <table class="mini"><caption>Sales(事實表)</caption>
+      <tr><th>單號</th><th>PID</th><th>Qty</th><th>單價</th></tr>
+      <tr><td>S1</td><td>P1</td><td>1</td><td>30000</td></tr>
+      <tr><td>S2</td><td>P2</td><td>2</td><td>500</td></tr>
+      <tr><td>S3</td><td>P2</td><td>1</td><td>500</td></tr>
+      <tr><td>S4</td><td>P3</td><td>3</td><td>900</td></tr>
+      <tr><td>S5</td><td>P1</td><td>1</td><td>28000</td></tr>
+    </table>
+  </div>
+  <h3>迭代函數（SUMX）：逐列算再加總</h3>
+  <p><code>SUM</code> 只能加「一個現成的欄位」；如果金額要用數量 × 單價現算，就要用 <code>SUMX</code> 逐列迭代：</p>
+  <pre><code>營收 = SUMX ( Sales, Sales[Qty] * Sales[單價] )</code></pre>
+  <p>它逐列計算：1×30000 + 2×500 + 1×500 + 3×900 + 1×28000 = <strong>62,200</strong>。X 結尾的函數（SUMX/AVERAGEX/COUNTX/MAXX）都是這個「一列一列算，最後彙總」的模式。</p>
+  <h3>CALCULATE：改寫篩選再計算</h3>
+  <p>先懂<strong>篩選內容（filter context）</strong>：量值的結果永遠取決於「當下被篩掉剩哪些列」。你點了交叉分析篩選器的「周邊」，<code>營收</code> 就只加 S2、S3、S4 = 3,700。<code>CALCULATE</code> 的作用是<strong>用你指定的條件覆寫這個篩選</strong>:</p>
+  <pre><code>周邊營收 = CALCULATE ( [營收], Products[Category] = "周邊" )      -- 強制只算周邊
+總營收   = CALCULATE ( [營收], ALL ( Products ) )                 -- 拿掉 Products 的所有篩選
+占比     = DIVIDE ( [營收], CALCULATE ( [營收], ALL ( Products ) ) )</code></pre>
+  <p>「占比」是最經典的組合：分子隨使用者篩選變動，分母被 <code>ALL</code> 固定成整體——在「周邊」列上會得到 3700 / 62200 = 5.9%。若希望分母只算「使用者選取範圍的總和」則改用 <code>ALLSELECTED()</code>。</p>
+  <h3>跨表取值：RELATED、RELATEDTABLE、LOOKUPVALUE</h3>
+  <p>口訣：<strong>站在哪張表，決定用哪個函數</strong>。</p>
+  <p><strong>1. RELATED——站在「多」端（Sales），去「一」端拿一個值。</strong>在 Sales 加計算資料行 <code>品名 = RELATED ( Products[Name] )</code>，每列沿著關聯把自己的產品名帶回來：</p>
+  <table class="mini">
+    <tr><th>單號</th><th>PID</th><th>Qty</th><th class="hl">品名（新欄）</th></tr>
+    <tr><td>S1</td><td>P1</td><td>1</td><td class="hl">筆電</td></tr>
+    <tr><td>S2</td><td>P2</td><td>2</td><td class="hl">滑鼠</td></tr>
+    <tr><td>S4</td><td>P3</td><td>3</td><td class="hl">鍵盤</td></tr>
+  </table>
+  <p><strong>2. RELATEDTABLE——站在「一」端（Products），抓「多」端整批相關列。</strong>它回傳的是一張表，所以通常包在 <code>COUNTROWS</code> 或 <code>SUMX</code> 裡。在 Products 加 <code>銷售筆數 = COUNTROWS ( RELATEDTABLE ( Sales ) )</code>:</p>
+  <table class="mini">
+    <tr><th>ID</th><th>Name</th><th class="hl">銷售筆數（新欄）</th></tr>
+    <tr><td>P1</td><td>筆電</td><td class="hl">2</td></tr>
+    <tr><td>P2</td><td>滑鼠</td><td class="hl">2</td></tr>
+    <tr><td>P3</td><td>鍵盤</td><td class="hl">1</td></tr>
+  </table>
+  <p><strong>3. LOOKUPVALUE——兩張表根本沒建關聯時的查表。</strong>像 Excel 的 VLOOKUP:<code>品名 = LOOKUPVALUE ( Products[Name], Products[ID], Sales[PID] )</code>，意思是「去 Products 找 ID 等於我這列 PID 的那一列，回傳它的 Name」。有關聯時用 RELATED 效能較好，LOOKUPVALUE 留給無關聯的場合。</p>
+  <table>
+    <tr><th>你站在</th><th>想拿</th><th>用</th></tr>
+    <tr><td>多端（事實表）</td><td>一端的單一值</td><td><code>RELATED</code></td></tr>
+    <tr><td>一端（維度表）</td><td>多端的整批列（再彙總）</td><td><code>RELATEDTABLE</code> + COUNTROWS/SUMX</td></tr>
+    <tr><td>任何表</td><td>無關聯表的值</td><td><code>LOOKUPVALUE</code></td></tr>
+  </table>
+  <h3>其他必考主題</h3>
   <ul>
-    <li><strong><code>CALCULATE(運算式, 篩選…)</code></strong>——DAX 最重要的函數：在指定的篩選條件下計算。搭配 <code>ALL</code>（拿掉篩選，算總體）、<code>ALLSELECTED</code>（尊重使用者的選取）、<code>FILTER</code>、<code>REMOVEFILTERS</code>。</li>
-    <li><strong>迭代函數（X 系列）</strong>:<code>SUMX(Sales, Sales[Qty] * Sales[Price])</code> 逐列算乘積再加總。<code>SUM</code> 只能吃單一欄位，要做列運算就用 X 版。</li>
-    <li><strong>時間智慧</strong>:<code>TOTALYTD</code>（年初至今）、<code>SAMEPERIODLASTYEAR</code>（去年同期）、<code>DATESINPERIOD</code>（近 N 個月滾動）、<code>DATEADD</code>（往前/後平移）。</li>
-    <li><strong>計數家族</strong>:<code>COUNT</code>（數值）/<code>COUNTA</code>（非空白）/<code>COUNTROWS</code>（列數）/<code>DISTINCTCOUNT</code>（相異值）。</li>
-    <li><strong>跨表取值</strong>:<code>RELATED</code>（多端拿一端的值）、<code>RELATEDTABLE</code>（一端拿多端）、<code>LOOKUPVALUE</code>（沒關聯也能查）。</li>
-    <li><code>VAR … RETURN</code> 宣告變數：重複的算式只算一次，又好讀。</li>
+    <li><strong>時間智慧</strong>:<code>TOTALYTD</code>（年初至今）、<code>SAMEPERIODLASTYEAR</code>（去年同期）、<code>DATESINPERIOD</code>（近 N 個月滾動）、<code>DATEADD</code>（平移）。前提：連續且「標示為日期資料表」的日期表。</li>
+    <li><strong>計數家族</strong>:<code>COUNT</code>（數值）/<code>COUNTA</code>（非空白）/<code>COUNTROWS</code>（列數）/<code>DISTINCTCOUNT</code>（相異值）——上面 Sales 表的 <code>DISTINCTCOUNT(Sales[PID])</code> = 3。</li>
+    <li><code>VAR … RETURN</code>：把重複的算式存進變數，只算一次又好讀。</li>
   </ul>
-  <pre><code>Sales YTD = TOTALYTD ( [Sales Amount], 'Date'[Date] )
-Sales LY  = CALCULATE ( [Sales Amount], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
-Rolling12 = CALCULATE ( [Sales Amount],
+  <pre><code>Sales YTD = TOTALYTD ( [營收], 'Date'[Date] )
+Sales LY  = CALCULATE ( [營收], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+Rolling12 = CALCULATE ( [營收],
               DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -12, MONTH ) )</code></pre>
-  <figure class="gfig"><img src="images/60345e699047.jpeg" loading="lazy" onclick="zoom(this)" alt="快速量值（Quick measures）對話框：不會寫 DAX 也能產生滾動平均等常見計算，並可查看產生的公式來學習。"><figcaption>快速量值（Quick measures）對話框：不會寫 DAX 也能產生滾動平均等常見計算，並可查看產生的公式來學習。</figcaption></figure>
   <h3>資料列層級安全性（RLS）</h3>
   <p>讓不同人看同一份報表卻只看到自己的資料。三步驟：</p>
   <ol>
@@ -837,36 +889,57 @@ Rolling12 = CALCULATE ( [Sales Amount],
   </ul>
 
   <h2 id="g4">④ 管理與保護 Power BI(Manage and secure,15–20%)</h2>
-  <p>報表做好要上雲分享，這個領域考「誰能做什麼」與「資料怎麼更新、怎麼保護」。</p>
-  <h3>工作區四種角色（必背！）</h3>
+  <p>報表做好後要放上雲端給別人用，這個領域全部圍繞四個問題：<strong>誰能做什麼？資料怎麼保持最新？怎麼分享出去？怎麼不外洩？</strong>把雲端服務想像成公司的共用雲端硬碟，概念就都好懂了。</p>
+  <h3>工作區與四種角色</h3>
+  <p>工作區就是雲端上的「共用資料夾」，裡面放語意模型、報表、儀表板。給每個成員指派一種角色，權限由大到小：</p>
   <table>
-    <tr><th>角色</th><th>關鍵權限</th></tr>
-    <tr><td><strong>Admin</strong></td><td>全部權限 + 刪除工作區、管理所有成員、更新/刪除 App</td></tr>
-    <tr><td><strong>Member</strong></td><td>發佈與更新 App、新增較低權限成員、共用內容（「能邀請他人 + 最小權限」→ Member）</td></tr>
-    <tr><td><strong>Contributor</strong></td><td>建立/編輯/刪除內容、排程更新；不能共用、不能發佈 App</td></tr>
-    <tr><td><strong>Viewer</strong></td><td>只能看與互動；唯一會套用 RLS 的角色</td></tr>
+    <tr><th>角色</th><th>比喻</th><th>關鍵權限</th></tr>
+    <tr><td><strong>Admin</strong></td><td>資料夾擁有者</td><td>什麼都能做，包含刪除工作區、管理所有成員、更新/刪除 App</td></tr>
+    <tr><td><strong>Member</strong></td><td>資深協作者</td><td>發佈與更新 App、加入權限較低的成員、共用內容</td></tr>
+    <tr><td><strong>Contributor</strong></td><td>一般編輯者</td><td>建立/修改/刪除內容、排程更新；但不能分享給別人、不能發佈 App</td></tr>
+    <tr><td><strong>Viewer</strong></td><td>訪客</td><td>只能看和互動；唯一會套用 RLS 的角色</td></tr>
   </table>
+  <div class="tip"><strong>記憶關鍵：</strong>Member 與 Contributor 的分水嶺是「能不能分享/發佈 App」；Viewer 與其他三者的分水嶺是「RLS 只對 Viewer 生效」。</div>
+  <h3>考題情境速查表（這個領域的題目九成長這樣）</h3>
+  <table>
+    <tr><th>題目情境</th><th>正確做法</th><th>為什麼</th></tr>
+    <tr><td>某人要能「邀請其他人進工作區」，且權限最小</td><td>Member</td><td>Contributor 不能共用；Admin 權限過大</td></tr>
+    <tr><td>某人只需要編輯報表與排程更新</td><td>Contributor</td><td>不需分享權的最小角色</td></tr>
+    <tr><td>工作區出問題時「通知」某群組</td><td>加入連絡人清單（Contact list）</td><td>通知不需要任何角色——最小權限原則</td></tr>
+    <tr><td>讓同事拿現成模型「自己做報表」</td><td>給模型的 Build 權限</td><td>不必給整個工作區的角色；Analyze in Excel 也需要 Build</td></tr>
+    <tr><td>把成品發給全公司幾百人看</td><td>發佈 App</td><td>App 是大規模散發唯讀內容的標準做法</td></tr>
+    <tr><td>財務資料「須審核核可後才能使用」</td><td>背書設為 Certified</td><td>Promoted 誰都能設；Certified 需管理員授權的認證者</td></tr>
+    <tr><td>防止含個資（PII）的報表被匯出外流</td><td>敏感度標籤（Sensitivity label）</td><td>Purview 標籤跟著匯出檔走，可加密、可禁止匯出</td></tr>
+    <tr><td>評估「改了上游資料表會影響哪些報表」</td><td>資料譜系（Lineage view）</td><td>可視化來源→模型→報表→儀表板的相依鏈</td></tr>
+  </table>
+  <h3>資料更新與閘道：雲端怎麼拿到公司內部的資料？</h3>
+  <p>發佈到雲端後，報表要定期回來源抓新資料。問題是：<strong>雲端服務碰不到你公司內網的資料庫</strong>——這就是閘道存在的原因：</p>
+  <figure class="gfig">
+    <svg viewBox="0 0 860 150" role="img" aria-label="閘道示意圖">
+      <g fill="none" stroke="var(--hairline-strong)"><path d="M232 50h80M534 50h80M232 118h382"/></g>
+      <g font-size="13" text-anchor="middle">
+        <g><rect x="40" y="26" width="192" height="48" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".6"/><text x="136" y="46" fill="var(--text-1)">Power BI 服務（雲端）</text><text x="136" y="64" fill="var(--text-3)" font-size="11">排程重新整理</text></g>
+        <g><rect x="312" y="26" width="222" height="48" rx="8" fill="var(--surface-2)" stroke="var(--warn)" stroke-opacity=".5"/><text x="423" y="46" fill="var(--text-1)">On-premises data gateway</text><text x="423" y="64" fill="var(--text-3)" font-size="11">裝在公司內網的一台電腦上</text></g>
+        <g><rect x="614" y="26" width="206" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="717" y="46" fill="var(--text-1)">地端來源</text><text x="717" y="64" fill="var(--text-3)" font-size="11">內網 SQL Server・檔案伺服器</text></g>
+        <g><rect x="40" y="94" width="192" height="48" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".6"/><text x="136" y="114" fill="var(--text-1)">Power BI 服務（雲端）</text><text x="136" y="132" fill="var(--text-3)" font-size="11">直接連線，不需閘道</text></g>
+        <g><rect x="614" y="94" width="206" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="717" y="114" fill="var(--text-1)">雲端來源</text><text x="717" y="132" fill="var(--text-3)" font-size="11">OneDrive・SharePoint・Azure SQL</text></g>
+      </g>
+    </svg>
+    <figcaption>上排：來源在公司內網 → 一定要經過閘道。下排：來源本身在雲端 → 不需要閘道。判斷「要不要閘道」就看來源在哪，是這個領域最常見的考點。</figcaption>
+  </figure>
   <ul>
-    <li>只想「出問題時通知某群組」：加進工作區<strong>連絡人清單</strong>即可，不用給角色（最小權限原則）。</li>
-    <li>語意模型層級的權限：<strong>Read</strong> / <strong>Build</strong>（用模型自建報表、Analyze in Excel 需要）/ <strong>Reshare</strong> / <strong>Write</strong>。「讓同事用現成模型做自己的報表」→ 給 Build 就好。</li>
-    <li><strong>背書</strong>:Promoted(推薦，擁有者可設)vs <strong>Certified</strong>（認證，需管理員授權的認證者）——「財務決策資料需審核」→ Certified。</li>
-    <li><strong>敏感度標籤</strong>(Microsoft Purview)：跟著匯出檔走的保護，可加密 PDF/Excel 匯出、防 PII 外洩。</li>
-    <li><strong>資料譜系（Lineage view）</strong>：視覺化「來源 → 模型 → 報表 → 儀表板」的相依鏈，評估上游改動影響。</li>
+    <li>閘道<strong>標準模式</strong>：裝一次、多人多來源共用（企業正解）；<strong>Personal mode</strong> 只限個人使用。</li>
+    <li>排程更新次數上限：共用容量 <strong>8 次/天</strong>,Premium <strong>48 次/天</strong>。</li>
+    <li>語意模型<strong>兩個月沒人使用</strong>會被「因閒置停用排程」——任何人再打開相關報表就自動恢復，不用重設。</li>
+    <li><strong>增量重新整理</strong>：用 <code>RangeStart</code>/<code>RangeEnd</code> 參數把大表切分割區，每次只更新最新的部分；需要來源支援查詢摺疊。</li>
+    <li>OneDrive/SharePoint 上的 .pbix 檔約<strong>每小時</strong>自動同步一次，不吃排程額度。</li>
   </ul>
-  <h3>重新整理與閘道</h3>
+  <h3>從開發到上線：部署管線與範本</h3>
   <ul>
-    <li>來源在<strong>地端</strong>（公司內網的 SQL Server、檔案伺服器）→ 雲端要透過 <strong>On-premises data gateway</strong> 才拿得到資料。標準模式多人共用；Personal mode 只限個人。</li>
-    <li>雲端來源（OneDrive、SharePoint Online、Azure SQL）不需要閘道；OneDrive/SharePoint 上的 .pbix 約每小時自動同步。</li>
-    <li>排程更新：共用容量每天最多 <strong>8 次</strong>,Premium <strong>48 次</strong>。兩個月沒人用會「因閒置停用」，任何人再開報表就恢復。</li>
-    <li><strong>增量重新整理</strong>：用 <code>RangeStart</code>/<code>RangeEnd</code> 參數切分割區，只更新最新的。</li>
+    <li><strong>部署管線（Deployment pipelines）</strong>：像軟體的「開發 → 測試 → 生產」三個環境，一鍵把內容往下一階段搬，並可設定規則讓測試環境自動改連測試資料庫；需 Premium/Fabric 容量。</li>
+    <li><strong>.pbit 範本</strong>：把做好的東西「去掉資料」存成範本發給同事——對方開啟時輸入自己的參數，重用你的整套查詢與報表，又不會看到你的資料。</li>
+    <li><strong>使用量計量報告（Usage metrics）</strong>：看每份報表誰在看、看了幾次，決定哪些該維護哪些該下架。</li>
   </ul>
-  <h3>部署與治理</h3>
-  <ul>
-    <li><strong>部署管線</strong>：開發 → 測試 → 生產三階段搬遷，支援階段比較與「換資料來源」的部署規則；需 Premium/Fabric 容量。</li>
-    <li><strong>使用量計量報告</strong>：誰看了報表、看幾次。</li>
-    <li><strong>Analyze in Excel</strong>：用 Excel 樞紐分析表連 Power BI 模型（需 Build 權限）。</li>
-  </ul>
-
   <h2 id="g5">DAX 速查表</h2>
   <table>
     <tr><th>目的</th><th>寫法</th></tr>
@@ -891,7 +964,7 @@ Rolling12 = CALCULATE ( [Sales Amount],
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786250986"></script>
+<script src="data.js?v=1786262657"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;
