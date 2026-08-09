@@ -331,6 +331,15 @@ pre.dax {
 }
 .toc a:hover { border-color: var(--hairline-strong); background: var(--surface-2); }
 .toc a .w { display: block; font-size: 11.5px; color: var(--text-3); font-weight: 400; margin-top: 3px; }
+
+.gfig { margin: 16px 0 20px; }
+.gfig img { max-width: min(100%, 680px); border: 1px solid var(--hairline-strong); border-radius: 6px; background: #fff; display: block; cursor: zoom-in; }
+.gfig svg { max-width: 100%; height: auto; display: block; color: var(--text-2); }
+.gfig figcaption { font-size: 13px; color: var(--text-3); margin-top: 8px; max-width: 680px; }
+.ggrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0 20px; }
+.ggrid .gfig { margin: 0; }
+.ggrid .gfig img { width: 100%; }
+
 .guide h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin: 40px 0 12px; padding-top: 20px; border-top: 1px solid var(--hairline); }
 .guide h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; color: var(--accent-text); }
 .guide p, .guide li { font-size: 15px; color: var(--text-2); }
@@ -609,15 +618,59 @@ pre.dax {
 <!-- ============ 講義教材 ============ -->
 <section id="page-guide" class="page guide">
   <h1>PL-300 講義教材</h1>
-  <p class="sub">依考試四大領域整理的重點講義，搭配題庫練習使用。</p>
+  <p class="sub">從零開始的 Power BI 學習講義——假設你是第一次接觸 Power BI，由基礎概念一路帶到考試重點，並以題庫實際圖例輔助說明。</p>
   <div class="toc">
-    <a href="#g0">考試簡介與應試策略<span class="w">題型、計分、時間分配</span></a>
+    <a href="#gs">新手入門<span class="w">什麼是 Power BI・工作流程</span></a>
+    <a href="#g0">考試簡介與策略<span class="w">題型、計分、時間分配</span></a>
     <a href="#g1">① 準備資料<span class="w">25–30% · Power Query</span></a>
     <a href="#g2">② 模型化資料<span class="w">25–30% · 星型結構與 DAX</span></a>
     <a href="#g3">③ 視覺化與分析<span class="w">25–30% · 報表與 AI 視覺效果</span></a>
     <a href="#g4">④ 管理與保護<span class="w">15–20% · 工作區、RLS、部署</span></a>
     <a href="#g5">DAX 速查表<span class="w">常考函數整理</span></a>
   </div>
+
+  <h2 id="gs">新手入門：什麼是 Power BI?</h2>
+  <p>Power BI 是微軟的<strong>商業智慧（BI）工具</strong>：把散落在 Excel、資料庫、雲端服務裡的原始資料，整理成互動式的圖表報表，讓你和團隊「用資料回答問題」。它由三個部分組成：</p>
+  <table>
+    <tr><th>元件</th><th>是什麼</th><th>你會用它做什麼</th></tr>
+    <tr><td><strong>Power BI Desktop</strong></td><td>安裝在 Windows 的免費開發工具</td><td>連接資料、清理轉換、建立模型與報表（考試的主戰場）</td></tr>
+    <tr><td><strong>Power BI 服務（Service）</strong></td><td>雲端網站 app.powerbi.com</td><td>發佈報表、排程更新、分享給同事、建儀表板</td></tr>
+    <tr><td><strong>Power BI Mobile</strong></td><td>手機/平板 App</td><td>隨時檢視報表與接收警示</td></tr>
+  </table>
+  <h3>整體工作流程</h3>
+  <p>做一份報表的完整旅程如下，考試的四大領域就是沿著這條流程切分的：</p>
+  <figure class="gfig">
+    <svg viewBox="0 0 920 96" role="img" aria-label="Power BI 工作流程圖">
+      <g fill="none" stroke="currentColor" stroke-opacity=".35">
+        <path d="M138 48h24m118 0h24m118 0h24m118 0h24m118 0h24" stroke-width="1.5" marker-end="none"/>
+      </g>
+      <g font-family="inherit" font-size="14" text-anchor="middle">
+        <g><rect x="10" y="24" width="128" height="48" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".6"/><text x="74" y="44" fill="var(--text-1)">取得資料</text><text x="74" y="62" fill="var(--text-3)" font-size="11">Get Data</text></g>
+        <g><rect x="162" y="24" width="128" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="226" y="44" fill="var(--text-1)">清理轉換</text><text x="226" y="62" fill="var(--text-3)" font-size="11">Power Query</text></g>
+        <g><rect x="314" y="24" width="128" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="378" y="44" fill="var(--text-1)">建立模型</text><text x="378" y="62" fill="var(--text-3)" font-size="11">關聯 + DAX</text></g>
+        <g><rect x="466" y="24" width="128" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="530" y="44" fill="var(--text-1)">視覺化</text><text x="530" y="62" fill="var(--text-3)" font-size="11">報表頁面</text></g>
+        <g><rect x="618" y="24" width="128" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="682" y="44" fill="var(--text-1)">發佈</text><text x="682" y="62" fill="var(--text-3)" font-size="11">Power BI 服務</text></g>
+        <g><rect x="770" y="24" width="128" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="834" y="44" fill="var(--text-1)">分享協作</text><text x="834" y="62" fill="var(--text-3)" font-size="11">工作區 / App</text></g>
+      </g>
+    </svg>
+    <figcaption>從原始資料到分享報表的六個階段。①準備資料對應前兩步，②模型化對應第三步，③視覺化對應第四步，④管理與保護對應最後兩步。</figcaption>
+  </figure>
+  <h3>五個必懂名詞</h3>
+  <table>
+    <tr><th>名詞</th><th>白話解釋</th></tr>
+    <tr><td><strong>語意模型（Semantic model，舊稱資料集）</strong></td><td>整理好的資料 + 資料表關聯 + 量值的組合，是報表背後的「資料引擎」。一個模型可以供多份報表使用</td></tr>
+    <tr><td><strong>報表（Report）</strong></td><td>一頁到多頁的互動式視覺效果集合，在 Desktop 製作</td></tr>
+    <tr><td><strong>儀表板（Dashboard）</strong></td><td>只存在於雲端服務，把多份報表的重點圖「釘選」成一頁總覽</td></tr>
+    <tr><td><strong>工作區（Workspace）</strong></td><td>雲端上的協作資料夾，放模型、報表、儀表板，用角色控制誰能做什麼</td></tr>
+    <tr><td><strong>App</strong></td><td>把工作區內容打包成唯讀的成品發給大量使用者的方式</td></tr>
+  </table>
+  <h3>檔案格式</h3>
+  <ul>
+    <li><code>.pbix</code>——Power BI Desktop 的標準檔案，含資料、模型與報表。</li>
+    <li><code>.pbit</code>——範本檔：結構都在但<strong>不含資料</strong>，開啟時可提示輸入參數，適合发给同事重複使用。</li>
+    <li><code>.pbip</code>——專案格式，把內容拆成文字檔，適合 Git 版本控制。</li>
+  </ul>
+  <div class="tip"><strong>學習建議：</strong>先到 powerbi.microsoft.com 免費下載 Desktop，跟著微軟 Learn 的入門教學做一次「匯入 Excel → 做一張圖 → 發佈」，再回來讀後面的章節會事半功倍。</div>
 
   <h2 id="g0">考試簡介與應試策略</h2>
   <p>PL-300 驗證使用 Microsoft Power BI 進行資料準備、建模、視覺化與分析，以及資產部署與維護的能力。</p>
@@ -631,161 +684,186 @@ pre.dax {
   <div class="tip"><strong>應試技巧：</strong>案例研究題組中每題彼此獨立，先看題目再回頭查案例需求可節省時間；「series」是非題組不可回頭修改答案；拿捏時間——平均每題不到 2 分鐘。</div>
 
   <h2 id="g1">① 準備資料（Prepare the data,25–30%）</h2>
-  <h3>取得資料與連線模式</h3>
+  <p>這個領域考的是：把資料「接進來」和「洗乾淨」。對應工具是 Desktop 裡的 <strong>Power Query 編輯器</strong>（功能區「轉換資料」按鈕開啟）——你在裡面做的每一步轉換都會被記錄成「套用的步驟」，資料更新時自動重播，這就是它比手動改 Excel 強大的原因。</p>
+  <h3>連接資料與儲存模式</h3>
+  <p>按「取得資料」可連接數百種來源：Excel、CSV、SQL Server、SharePoint、網頁……連接時最重要的觀念是<strong>儲存模式</strong>——資料要「搬進來」還是「留在原地即時查」：</p>
   <ul>
-    <li><strong>Import（匯入）</strong>：資料快取到模型內，查詢最快、功能最完整；需排程重新整理。<em>預設且最常考的「效能最佳」答案。</em></li>
-    <li><strong>DirectQuery</strong>：不快取，查詢即時送到來源；適合近即時資料或超大資料量，但視覺效果較慢、DAX/PQ 功能受限。</li>
-    <li><strong>Dual（雙重）</strong>：同時可作為快取或直查，常用於「維度表」搭配 DirectQuery 事實表 + Import 彙總表（複合模型），可減少限制關聯性並提升效能。</li>
-    <li><strong>Live Connection（即時連線）</strong>：連到 Analysis Services 或已發佈的 Power BI 語意模型；重用既有模型與量值時「開發工作量最小」的選擇是 <strong>Power BI semantic model（資料集）</strong>連接器。</li>
+    <li><strong>Import(匯入)</strong>：資料複製並壓縮進模型，查詢最快、功能最完整；需排程重新整理。<em>預設模式，也是考題「效能最佳」的標準答案。</em></li>
+    <li><strong>DirectQuery(直接查詢)</strong>：資料留在來源，每次互動都現查；適合近即時或超大資料，但視覺效果較慢、功能受限。</li>
+    <li><strong>Dual(雙重)</strong>：視情境自動當 Import 或 DirectQuery 用，常用於複合模型中的維度表。</li>
+    <li><strong>Live Connection(即時連線)</strong>：連到現成的語意模型直接重用模型與量值——「開發工作量最小」的選擇。</li>
   </ul>
+  <figure class="gfig"><img src="images/ee7c18bf61c3.png" loading="lazy" onclick="zoom(this)" alt="複合模型範例：同一模型中不同資料表使用不同儲存模式（考題常給這種表要你判斷）。"><figcaption>複合模型範例：同一模型中不同資料表使用不同儲存模式（考題常給這種表要你判斷）。</figcaption></figure>
   <table>
     <tr><th>更新需求</th><th>建議儲存模式</th></tr>
     <tr><td>近即時（near real time）</td><td>DirectQuery</td></tr>
-    <tr><td>每日/每週定期更新、追求視覺效能</td><td>Import（或彙總表 Import）</td></tr>
+    <tr><td>每日/每週定期更新、追求視覺效能</td><td>Import(或彙總表 Import)</td></tr>
     <tr><td>維度表連接 DirectQuery 事實表</td><td>Dual</td></tr>
   </table>
   <h3>Power Query 常考轉換</h3>
+  <p>初學者最容易混淆的是「合併 vs 附加」與「Pivot vs Unpivot」，用場景記：</p>
   <ul>
-    <li><strong>Merge（合併）</strong>= 橫向 JOIN（依索引鍵加欄位）；<strong>Append（附加）</strong>= 縱向 UNION（加資料列）。「每位客戶一列並帶出城市」→ Merge；「兩個相同結構的表合成一張」→ Append Queries as New，並停用原始查詢的載入以縮小模型。</li>
-    <li><strong>Group By（分組依據）</strong>：彙總計算（加總、計數、最大最小）。</li>
-    <li><strong>Pivot / Unpivot</strong>:Unpivot 把「多個屬性欄」轉成 屬性/值 兩欄（寬轉長）；Pivot 相反（長轉寬）。欄名是年份、月份等資料值時，幾乎都選 Unpivot。</li>
-    <li><strong>Transpose（轉置）</strong>：整表列欄互換，與 Pivot/Unpivot 不同。</li>
-    <li><strong>Use first row as headers</strong>、<strong>Fill Down/Up（向下/向上填滿）</strong>：處理合併儲存格造成的 null。</li>
-    <li><strong>Split Column（分割欄）</strong>、<strong>Column From Examples（依範例新增欄）</strong>：依樣本自動產生轉換。</li>
-    <li>資料類型錯誤 <code>Expression.Error: cannot convert</code>：通常是欄位含非數字字元或來源欄位改名（<code>column wasn't found</code> → 來源欄位被重新命名）。</li>
+    <li><strong>Merge(合併查詢)</strong>= 橫向 JOIN：兩張表靠共同鍵「加欄位」。例：訂單表 + 客戶表 → 每筆訂單多出客戶城市欄。</li>
+    <li><strong>Append(附加查詢)</strong>= 縱向堆疊：相同欄位結構的表「加資料列」。例：一月銷售 + 二月銷售 → 一張總表。合併後記得停用原始查詢的載入以縮小模型。</li>
+    <li><strong>Unpivot(取消樞紐)</strong>：欄名本身是資料（2022、2023、2024 三個年份欄）時，把它們轉成「年份/值」兩欄（寬轉長）。<strong>Pivot</strong> 相反。考題看到年份/月份當欄名，答案幾乎都是 Unpivot。</li>
+    <li><strong>Group By(分組依據)</strong>：做彙總（每位客戶的訂單數、每月銷售額）。</li>
+    <li><strong>Transpose(轉置)</strong>：整張表列欄互換，與 Pivot/Unpivot 是不同的東西。</li>
+    <li><strong>Use first row as headers</strong>（第一列作標頭）、<strong>Fill Down/Up</strong>（向下/向上填滿，補合併儲存格造成的 null）、<strong>Split Column</strong>（分割欄）、<strong>Column From Examples</strong>（打幾個範例讓它自動推轉換）。</li>
   </ul>
-  <h3>資料剖析（Data Profiling）</h3>
+  <figure class="gfig"><img src="images/10077f898a6f.jpeg" loading="lazy" onclick="zoom(this)" alt="Unpivot 概念圖：左邊的多個屬性欄（A1–A3 當欄名）轉成右邊的「屬性/值」兩欄。"><figcaption>Unpivot 概念圖：左邊的多個屬性欄（A1–A3 當欄名）轉成右邊的「屬性/值」兩欄。</figcaption></figure>
+  <h3>資料剖析：先看資料健不健康</h3>
+  <p>Power Query「檢視」頁籤可開啟三個剖析工具，考試常考它們各自顯示什麼：</p>
   <ul>
-    <li><strong>Column quality（資料行品質）</strong>:Valid / Error / Empty 百分比。</li>
-    <li><strong>Column distribution（資料行分佈）</strong>:Distinct（相異）與 Unique（唯一）個數——判斷可否當主索引鍵。</li>
-    <li><strong>Column profile（資料行設定檔）</strong>：統計值（最小、最大、平均）與值分佈。預設僅剖析前 1,000 列，可改成整個資料集。</li>
+    <li><strong>Column quality(資料行品質)</strong>：每欄的 Valid / Error / Empty 百分比——一眼看出哪欄有錯誤值。</li>
+    <li><strong>Column distribution(資料行分佈)</strong>:Distinct(相異值)與 Unique(唯一值)個數——判斷某欄可否當主鍵（每列都唯一）。</li>
+    <li><strong>Column profile(資料行設定檔)</strong>：單欄的統計值（最小、最大、平均）與值分佈直方圖。</li>
   </ul>
-  <h3>查詢摺疊與效能</h3>
+  <figure class="gfig"><img src="images/c6997e3a1709.jpeg" loading="lazy" onclick="zoom(this)" alt="Power Query 的三個剖析工具同時開啟：欄頂的品質色條、分佈長條與左下的統計設定檔。"><figcaption>Power Query 的三個剖析工具同時開啟：欄頂的品質色條、分佈長條與左下的統計設定檔。</figcaption></figure>
+  <div class="warn"><strong>陷阱：</strong>剖析預設只看<strong>前 1,000 列</strong>，狀態列可切換成整個資料集。</div>
+  <h3>處理錯誤</h3>
+  <p>匯入時常見兩類錯誤訊息，考題會給你訊息問原因：</p>
+  <figure class="gfig"><img src="images/5c46db2ae570.jpeg" loading="lazy" onclick="zoom(this)" alt="Dataformat.Error：欄位裡的 NA 文字無法轉成數字。"><figcaption>Dataformat.Error：欄位裡的 NA 文字無法轉成數字。</figcaption></figure><figure class="gfig"><img src="images/236b74e1effd.jpeg" loading="lazy" onclick="zoom(this)" alt="Expression.Error：套用的步驟找不到被改名的來源欄位 Sales。"><figcaption>Expression.Error：套用的步驟找不到被改名的來源欄位 Sales。</figcaption></figure><figure class="gfig"><img src="images/ea03bd65404e.png" loading="lazy" onclick="zoom(this)" alt="資料行品質顯示 Discount 欄有 63% 錯誤——先剖析再決定怎麼處理。"><figcaption>資料行品質顯示 Discount 欄有 63% 錯誤——先剖析再決定怎麼處理。</figcaption></figure>
   <ul>
-    <li><strong>Query Folding（查詢摺疊）</strong>：步驟轉譯回來源的原生查詢（SQL）。以「View Native Query」檢查；若灰色代表無法摺疊。增量重新整理（Incremental refresh）需要來源支援查詢摺疊。</li>
-    <li>參考（Reference） vs 複製（Duplicate）：Reference 引用原查詢結果，原查詢改動會影響下游。</li>
-    <li>減少模型大小：移除不必要的欄/列、關閉自動日期/時間、避免高基數欄位（如 GUID）、彙總。</li>
+    <li><code>Dataformat.Error: We couldn't convert to Number</code>——欄位裡混了無法轉數字的文字（如 "NA"）。解法：Replace Errors 換成預設值，或先 Replace Values 再轉型。</li>
+    <li><code>Expression.Error: The column 'X' wasn't found</code>——來源欄位<strong>被改名或刪除</strong>，套用的步驟找不到它。</li>
+    <li>選項對比：<strong>Replace Errors</strong>（把錯誤換成指定值，保留所有列）vs <strong>Remove Errors</strong>（整列刪除，列數會變少）vs <strong>Keep Errors</strong>（只留出錯的列，用來檢查）。</li>
+  </ul>
+  <h3>查詢摺疊（Query Folding）與效能</h3>
+  <ul>
+    <li>轉換步驟若能翻譯回來源的原生 SQL 執行，叫「摺疊」——由資料庫做粗活，效率最好。在步驟上右鍵看 <strong>View Native Query</strong>：亮的代表可摺疊，灰的代表從該步起改由 Power BI 自己算。</li>
+    <li><strong>增量重新整理</strong>（只更新最新分割區）需要來源支援查詢摺疊。</li>
+    <li>縮小模型的通則：刪掉用不到的欄與列、關閉「自動日期/時間」、避免高基數欄位（GUID、含秒的時間戳）、能彙總就先彙總。</li>
   </ul>
 
   <h2 id="g2">② 模型化資料（Model the data,25–30%）</h2>
-  <h3>星型結構與關聯性</h3>
+  <p>資料洗乾淨後，下一步是把多張表「接起來」成為模型，並用 DAX 定義計算。這是 Power BI 和 Excel 最不一樣、也是考試最重的部分。</p>
+  <h3>星型結構（Star Schema）</h3>
+  <p>建模的黃金法則：中間一張<strong>事實表</strong>（記錄發生的事：每筆訂單、每筆銷售，列數很多），周圍幾張<strong>維度表</strong>（描述人事時地物：客戶、產品、日期，列數少），維度表以「一對多」連向事實表，畫起來像星星：</p>
+  <figure class="gfig">
+    <svg viewBox="0 0 560 300" role="img" aria-label="星型結構示意圖">
+      <g fill="none" stroke="var(--hairline-strong)"><path d="M280 96v38M172 150h44M344 150h44M280 204v-38"/></g>
+      <g font-size="12" fill="var(--text-3)"><text x="262" y="118">1..*</text><text x="196" y="144">1..*</text><text x="352" y="144">1..*</text><text x="262" y="196">1..*</text></g>
+      <g text-anchor="middle" font-size="13">
+        <g><rect x="216" y="130" width="128" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".7"/><text x="280" y="149" fill="var(--text-1)" font-weight="600">Sales 事實表</text><text x="280" y="165" fill="var(--text-3)" font-size="10.5">訂單ID・日期鍵・客戶鍵・金額</text></g>
+        <g><rect x="216" y="52" width="128" height="40" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="280" y="70" fill="var(--text-1)">Date 維度</text><text x="280" y="84" fill="var(--text-3)" font-size="10.5">日期・月・季・年</text></g>
+        <g><rect x="40" y="130" width="128" height="40" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="104" y="148" fill="var(--text-1)">Customer 維度</text><text x="104" y="162" fill="var(--text-3)" font-size="10.5">客戶・城市・分群</text></g>
+        <g><rect x="392" y="130" width="128" height="40" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="456" y="148" fill="var(--text-1)">Product 維度</text><text x="456" y="162" fill="var(--text-3)" font-size="10.5">產品・類別・供應商</text></g>
+        <g><rect x="216" y="208" width="128" height="40" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="280" y="226" fill="var(--text-1)">Region 維度</text><text x="280" y="240" fill="var(--text-3)" font-size="10.5">區域・國家</text></g>
+      </g>
+    </svg>
+    <figcaption>星型結構：維度表（1）對事實表（多），篩選由維度流向事實。Desktop 的「模型檢視」就長這樣。</figcaption>
+  </figure>
+  <figure class="gfig"><img src="images/e9bbb135e606.jpeg" loading="lazy" onclick="zoom(this)" alt="Desktop 模型檢視：dimDate(1)連向 Sales(*)的一對多關聯，篩選沿箭頭方向流動。"><figcaption>Desktop 模型檢視：dimDate(1)連向 Sales(*)的一對多關聯，篩選沿箭頭方向流動。</figcaption></figure><figure class="gfig"><img src="images/0f922d948eac.jpeg" loading="lazy" onclick="zoom(this)" alt="編輯關聯對話框：在這裡設定基數與交叉篩選方向。"><figcaption>編輯關聯對話框：在這裡設定基數與交叉篩選方向。</figcaption></figure>
+  <h3>關聯的三個設定</h3>
   <ul>
-    <li><strong>事實表（Fact）</strong>存交易/量值，<strong>維度表（Dimension）</strong>存描述屬性；維度表以一對多（1:*）連向事實表，交叉篩選方向預設為「單向」（維度 → 事實）。</li>
-    <li>基數：一對多最常見；<strong>多對多</strong>盡量避免，可用橋接表（bridge table）化解。</li>
-    <li><strong>雙向交叉篩選（Both）</strong>會增加模稜兩可與效能風險，僅在必要（如橋接表）時使用；需要讓 RLS 隨雙向關聯傳遞時，勾選「Apply security filter in both directions」。</li>
-    <li>非作用中關聯（虛線）以 <code>USERELATIONSHIP()</code> 在量值中啟用，常用於一張事實表有訂單日期/出貨日期兩個日期欄（role-playing dimension）。</li>
-    <li>日期表：標示為日期資料表（Mark as date table）才能在自訂日期表上使用時間智慧函數；需為「每日一列、連續不中斷」的日期欄。</li>
+    <li><strong>基數</strong>：一對多（1:*）最常見；多對多盡量避免，用橋接表化解。</li>
+    <li><strong>交叉篩選方向</strong>：預設單向（維度 → 事實）。雙向（Both）會增加模稜兩可與效能風險，只在必要時用；要讓 RLS 沿雙向關聯傳遞需勾「Apply security filter in both directions」。</li>
+    <li><strong>作用中/非作用中</strong>：兩表間只能有一條實線（作用中）關聯。訂單日期、出貨日期都連日期表時，第二條是虛線，量值中用 <code>USERELATIONSHIP()</code> 暫時啟用。</li>
   </ul>
-  <h3>計算資料行 vs 量值 vs 計算資料表</h3>
+  <div class="tip"><strong>日期表：</strong>要用時間智慧函數，需一張「每日一列、連續不斷」的日期表並「標示為日期資料表」。用 DAX 一行就能生：<code>Date = CALENDAR(DATE(2020,1,1), DATE(2026,12,31))</code>。</div>
+  <h3>DAX 入門：計算資料行 vs 量值</h3>
+  <p>DAX 是 Power BI 的公式語言，長得像 Excel 公式但操作整張表。第一課是分清兩種計算：</p>
   <table>
     <tr><th></th><th>計算資料行（Calculated column）</th><th>量值（Measure）</th></tr>
-    <tr><td>計算時機</td><td>資料重新整理時，逐列計算並儲存</td><td>查詢時依篩選內容動態計算</td></tr>
-    <tr><td>內容</td><td>列內容（row context）</td><td>篩選內容（filter context）</td></tr>
-    <tr><td>模型大小</td><td>佔用記憶體</td><td>不佔用（只存公式）</td></tr>
-    <tr><td>適用</td><td>當作交叉分析篩選器/座標軸、分組</td><td>彙總數字、KPI（<em>優先選擇，考題常考「最小化模型大小」→ 量值</em>）</td></tr>
+    <tr><td>什麼時候算</td><td>資料更新時逐列算好、存進模型</td><td>使用者看圖時依當下篩選動態計算</td></tr>
+    <tr><td>計算情境</td><td>列內容（row context）：一次看一列</td><td>篩選內容（filter context）：看被篩出的一群列</td></tr>
+    <tr><td>佔空間？</td><td>佔記憶體</td><td>不佔（只存公式）</td></tr>
+    <tr><td>用途</td><td>要放進交叉分析篩選器/座標軸的欄位</td><td>彙總數字、KPI——<em>考題問「最小化模型大小」時選它</em></td></tr>
   </table>
-  <h3>核心 DAX 觀念</h3>
+  <p>白話比喻：計算資料行像在 Excel 表格右邊多拉一欄公式；量值像樞紐分析表裡的「加總欄位」，換個篩選數字就跟著變。</p>
+  <h3>核心 DAX 觀念與函數</h3>
   <ul>
-    <li><strong><code>CALCULATE(運算式, 篩選…)</code></strong>：改寫篩選內容的核心函數；搭配 <code>FILTER</code>、<code>ALL</code>、<code>ALLSELECTED</code>、<code>KEEPFILTERS</code>、<code>REMOVEFILTERS</code>。</li>
-    <li><strong>迭代函數 X 系列</strong>:<code>SUMX / AVERAGEX / COUNTX / MAXX</code> 逐列運算再彙總，如 <code>SUMX(Sales, Sales[Qty]*Sales[Price])</code>。</li>
-    <li><strong>時間智慧</strong>:<code>TOTALYTD / DATESYTD</code>（年初至今）、<code>SAMEPERIODLASTYEAR / DATEADD(dates,-1,YEAR)</code>（去年同期）、<code>DATESINPERIOD</code>（滾動區間，如近 12 個月）、<code>PREVIOUSMONTH</code>。</li>
-    <li><strong>計數</strong>:<code>COUNT</code>（數值列）、<code>COUNTA</code>（非空白）、<code>COUNTROWS</code>（資料列數）、<code>DISTINCTCOUNT</code>（相異值）。</li>
-    <li><strong>關聯取值</strong>:<code>RELATED</code>（多端取一端）、<code>RELATEDTABLE</code>（一端取多端）、<code>LOOKUPVALUE</code>（無關聯查值）。</li>
-    <li><strong>其他常考</strong>:<code>DIVIDE(a,b,alt)</code> 安全除法、<code>SELECTEDVALUE</code>、<code>HASONEVALUE</code>、<code>ISFILTERED</code>、<code>CALCULATETABLE</code>、<code>SUMMARIZE</code>、<code>ADDCOLUMNS</code>、<code>CROSSFILTER</code>、<code>TREATAS</code>。</li>
-    <li>變數 <code>VAR … RETURN</code> 提升可讀性與效能（同一運算式重複使用時只算一次）。</li>
+    <li><strong><code>CALCULATE(運算式, 篩選…)</code></strong>——DAX 最重要的函數：在指定的篩選條件下計算。搭配 <code>ALL</code>（拿掉篩選，算總體）、<code>ALLSELECTED</code>（尊重使用者的選取）、<code>FILTER</code>、<code>REMOVEFILTERS</code>。</li>
+    <li><strong>迭代函數（X 系列）</strong>:<code>SUMX(Sales, Sales[Qty] * Sales[Price])</code> 逐列算乘積再加總。<code>SUM</code> 只能吃單一欄位，要做列運算就用 X 版。</li>
+    <li><strong>時間智慧</strong>:<code>TOTALYTD</code>（年初至今）、<code>SAMEPERIODLASTYEAR</code>（去年同期）、<code>DATESINPERIOD</code>（近 N 個月滾動）、<code>DATEADD</code>（往前/後平移）。</li>
+    <li><strong>計數家族</strong>:<code>COUNT</code>（數值）/<code>COUNTA</code>（非空白）/<code>COUNTROWS</code>（列數）/<code>DISTINCTCOUNT</code>（相異值）。</li>
+    <li><strong>跨表取值</strong>:<code>RELATED</code>（多端拿一端的值）、<code>RELATEDTABLE</code>（一端拿多端）、<code>LOOKUPVALUE</code>（沒關聯也能查）。</li>
+    <li><code>VAR … RETURN</code> 宣告變數：重複的算式只算一次，又好讀。</li>
   </ul>
   <pre><code>Sales YTD = TOTALYTD ( [Sales Amount], 'Date'[Date] )
 Sales LY  = CALCULATE ( [Sales Amount], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
 Rolling12 = CALCULATE ( [Sales Amount],
               DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -12, MONTH ) )</code></pre>
+  <figure class="gfig"><img src="images/60345e699047.jpeg" loading="lazy" onclick="zoom(this)" alt="快速量值（Quick measures）對話框：不會寫 DAX 也能產生滾動平均等常見計算，並可查看產生的公式來學習。"><figcaption>快速量值（Quick measures）對話框：不會寫 DAX 也能產生滾動平均等常見計算，並可查看產生的公式來學習。</figcaption></figure>
   <h3>資料列層級安全性（RLS）</h3>
-  <ul>
-    <li>Desktop：「模型化 → 管理角色」以 DAX 資料表篩選定義角色，如 <code>[Region] = "West"</code> 或動態 <code>[Email] = USERPRINCIPALNAME()</code>。</li>
-    <li>Desktop 以「檢視身分（View as）」測試；服務中於<strong>語意模型的 [安全性] 頁面</strong>指派使用者/群組到角色。</li>
-    <li>RLS 只對 Viewer（檢視者）角色生效；工作區 Admin / Member / Contributor 不受 RLS 限制。</li>
-  </ul>
+  <p>讓不同人看同一份報表卻只看到自己的資料。三步驟：</p>
+  <ol>
+    <li>Desktop：「模型化 → 管理角色」建角色，寫資料表篩選 DAX，如 <code>[Region] = "West"</code>；要「每人看自己的」就用動態式 <code>[Email] = USERPRINCIPALNAME()</code>。</li>
+    <li>Desktop：「檢視身分（View as）」模擬測試。</li>
+    <li>發佈後在服務中打開語意模型的「安全性」頁面，把使用者/群組指派進角色。</li>
+  </ol>
+  <div class="warn"><strong>最常考：</strong>RLS 只對 <strong>Viewer</strong> 角色生效——工作區的 Admin/Member/Contributor 一律看得到全部資料。</div>
   <h3>效能最佳化</h3>
   <ul>
-    <li><strong>Performance Analyzer</strong>(Desktop)：錄製並檢視每個視覺效果的 DAX 查詢耗時，匯出 JSON。</li>
-    <li><strong>Best Practice / VertiPaq 分析、DAX Studio</strong>：找出高記憶體欄位。</li>
-    <li>降低基數（移除時間的秒數、拆分 datetime）、改用整數索引鍵、量值取代計算資料行、彙總表（Aggregations）。</li>
-    <li><strong>大型語意模型儲存格式（Large dataset storage format）</strong>:Premium 上超過預設大小限制時啟用。</li>
+    <li><strong>Performance Analyzer</strong>（檢視頁籤）：錄下每個視覺效果花多少毫秒、DAX 查詢多久，可匯出 JSON 慢慢分析。</li>
+    <li>降低欄位基數（拆掉時間的秒、date 與 time 分兩欄）、整數當索引鍵、量值取代計算資料行、大表做彙總表。</li>
   </ul>
 
   <h2 id="g3">③ 視覺化與分析資料（Visualize and analyze the data,25–30%）</h2>
+  <p>模型好了就能拉報表。考試重點不是美感，而是「什麼需求配什麼視覺效果」與互動功能的正確名稱。</p>
   <h3>選對視覺效果</h3>
   <table>
     <tr><th>需求</th><th>視覺效果</th></tr>
-    <tr><td>單一重點數字（總數、KPI）</td><td>卡片（Card） / KPI</td></tr>
+    <tr><td>單一重點數字（總數、KPI）</td><td>卡片（Card）/ KPI</td></tr>
     <tr><td>目標達成進度</td><td>量測計（Gauge）、KPI</td></tr>
-    <tr><td>時間趨勢</td><td>折線圖；含預測 → 折線圖分析窗格的 Forecast</td></tr>
+    <tr><td>時間趨勢</td><td>折線圖；要預測 → 分析窗格的 Forecast</td></tr>
     <tr><td>類別比較</td><td>橫條圖/直條圖</td></tr>
-    <tr><td>兩數值關係 + 分佈</td><td>散佈圖（Scatter），可加播放軸</td></tr>
-    <tr><td>組成占比（層級下鑽）</td><td>樹狀圖（Treemap）、環圈圖；分解樹（Decomposition tree）</td></tr>
-    <tr><td>累積增減拆解（如盈虧變化）</td><td>瀑布圖（Waterfall）</td></tr>
-    <tr><td>影響某指標的關鍵因素</td><td>關鍵影響因素（Key influencers）</td></tr>
+    <tr><td>兩數值關係 + 分佈</td><td>散佈圖（Scatter），可加播放軸看時間演變</td></tr>
+    <tr><td>組成占比（可下鑽）</td><td>樹狀圖、環圈圖；分解樹（Decomposition tree）</td></tr>
+    <tr><td>累積增減拆解（盈虧橋）</td><td>瀑布圖（Waterfall）</td></tr>
+    <tr><td>「是什麼影響了這個指標？」</td><td>關鍵影響因素（Key influencers）</td></tr>
     <tr><td>自動文字摘要</td><td>智慧敘述（Smart narrative）</td></tr>
-    <tr><td>「多少 / 總數」的自然語言問答</td><td>Q&amp;A（數字 → 卡片）</td></tr>
-    <tr><td>地理資料</td><td>地圖 / 填色地圖（Choropleth）；形狀地圖</td></tr>
-    <tr><td>矩陣式明細與小計</td><td>矩陣（Matrix），支援階層下鑽與屬性（+/-）展開</td></tr>
+    <tr><td>自然語言問答</td><td>Q&amp;A(數字答案會渲染成卡片)</td></tr>
+    <tr><td>地理資料</td><td>地圖/填色地圖；形狀地圖</td></tr>
+    <tr><td>明細 + 小計 + 階層展開</td><td>矩陣（Matrix）——表格（Table）沒有階層能力</td></tr>
   </table>
+  <div class="ggrid"><figure class="gfig"><img src="images/8c9fc328c186.jpeg" loading="lazy" onclick="zoom(this)" alt=""><figcaption>分解樹：逐層拆解銷售額的組成</figcaption></figure><figure class="gfig"><img src="images/2a260e4f61a7.jpeg" loading="lazy" onclick="zoom(this)" alt=""><figcaption>關鍵影響因素：AI 找出影響指標的因素</figcaption></figure><figure class="gfig"><img src="images/40fffdeb27a2.jpeg" loading="lazy" onclick="zoom(this)" alt=""><figcaption>條件式格式設定：依值上色的表格</figcaption></figure><figure class="gfig"><img src="images/d5313ad633c7.jpeg" loading="lazy" onclick="zoom(this)" alt=""><figcaption>綜合報表頁：KPI 卡片 + 矩陣 + 瀑布圖</figcaption></figure></div>
   <h3>互動、篩選與導覽</h3>
   <ul>
-    <li><strong>篩選層級</strong>：視覺效果 → 頁面 → 所有頁面（報表）；<strong>交叉分析篩選器（Slicer）</strong>可透過「同步交叉分析篩選器」跨頁同步。</li>
-    <li><strong>編輯互動（Edit interactions）</strong>：控制某視覺效果對其他視覺效果是篩選、醒目提示或無作用。</li>
-    <li><strong>鑽研（Drill through）</strong>：從摘要頁右鍵帶篩選跳到明細頁；目標頁設定鑽研欄位，可加「返回」按鈕。</li>
-    <li><strong>書籤（Bookmark）+ 按鈕 + 選取窗格</strong>：製作導覽、重設篩選、切換視覺效果顯示。</li>
-    <li><strong>工具提示頁（Tooltip page）</strong>：自訂頁面作為滑鼠停留提示。</li>
-    <li><strong>條件式格式設定</strong>：依量值變更背景/字型色、資料橫條、圖示；「依欄位值」可用色碼欄位。</li>
-    <li><strong>Top N 篩選</strong>：視覺效果層級篩選依量值取前 N 名。</li>
-    <li><strong>群組與量化（Groups / Bins）</strong>：把連續值分箱或把類別歸組。</li>
-    <li><strong>分析窗格</strong>：平均/中位數/百分位數線、趨勢線、誤差線；折線圖預測（Forecast）與<strong>異常偵測（Anomaly detection）</strong>。</li>
-    <li><strong>行動版配置（Mobile layout）</strong>：直向手機檢視另行排版。</li>
+    <li><strong>篩選層級</strong>：視覺效果 → 頁面 → 所有頁面。<strong>交叉分析篩選器（Slicer）</strong>是放在畫布上給使用者點的篩選；「同步交叉分析篩選器」讓它跨頁生效。</li>
+    <li><strong>編輯互動（Edit interactions）</strong>：控制點 A 圖時 B 圖要被篩選、被醒目提示、還是不受影響。</li>
+    <li><strong>鑽研（Drill through）</strong>：摘要頁右鍵某筆資料 → 帶著篩選跳到明細頁。目標頁要設定鑽研欄位。</li>
+    <li><strong>書籤（Bookmark）+ 按鈕 + 選取窗格</strong>：存住頁面狀態做導覽選單、「重設篩選」鈕、顯示/隱藏切換。</li>
+    <li><strong>條件式格式設定</strong>：依量值上色、資料橫條、圖示；「依欄位值」可直接用存色碼的欄位。</li>
+    <li><strong>Top N 篩選</strong>、<strong>群組/量化（Groups/Bins）</strong>、行動版直向配置。</li>
+    <li><strong>分析窗格</strong>：平均/中位數/百分位線、趨勢線；折線圖的預測（Forecast）與異常偵測（Anomaly detection）。</li>
   </ul>
-  <h3>儀表板（Dashboard）vs 報表（Report）</h3>
+  <h3>儀表板 vs 報表（常考差異）</h3>
   <ul>
-    <li>儀表板僅存在於服務，由多個報表「釘選」磚組成；可設定<strong>資料警示（Alert）</strong>——僅支援卡片、KPI、量測計。</li>
-    <li>警示觸發後可透過 <strong>Power Automate</strong> 寄信給其他人或執行流程（內建警示只通知本人）。</li>
-    <li>即時磚快取更新時間顯示於磚；報表主題與儀表板主題分開設定。</li>
-    <li><strong>訂閱（Subscribe）</strong>定期寄送報表/儀表板快照；<strong>註解（Comments）</strong>可 @ 提及使用者（含外部使用者）。</li>
+    <li>儀表板只存在雲端服務，由報表視覺效果「釘選」而成；跨多份報表的重點可以釘在同一板。</li>
+    <li><strong>資料警示</strong>只能設在儀表板的卡片、KPI、量測計磚上；要通知別人得串 <strong>Power Automate</strong>。</li>
+    <li><strong>訂閱</strong>定期寄快照；<strong>註解</strong>可 @ 提及使用者（含外部使用者）。</li>
   </ul>
 
   <h2 id="g4">④ 管理與保護 Power BI(Manage and secure,15–20%)</h2>
-  <h3>工作區角色（常考！）</h3>
+  <p>報表做好要上雲分享，這個領域考「誰能做什麼」與「資料怎麼更新、怎麼保護」。</p>
+  <h3>工作區四種角色（必背！）</h3>
   <table>
     <tr><th>角色</th><th>關鍵權限</th></tr>
-    <tr><td><strong>Admin</strong></td><td>全部權限 + 刪除工作區、管理所有成員（含其他 Admin）、更新/刪除 App</td></tr>
-    <tr><td><strong>Member</strong></td><td>發佈/取消發佈與更新 App、新增較低權限成員、共用內容（<em>「能邀請他人 + 最小權限」→ Member</em>）</td></tr>
-    <tr><td><strong>Contributor</strong></td><td>建立/編輯/刪除工作區內容、排程重新整理；不能共用或發佈 App（除非 Admin 委派「更新 App」設定）</td></tr>
-    <tr><td><strong>Viewer</strong></td><td>僅檢視與互動；<em>唯一會套用 RLS 的角色</em></td></tr>
+    <tr><td><strong>Admin</strong></td><td>全部權限 + 刪除工作區、管理所有成員、更新/刪除 App</td></tr>
+    <tr><td><strong>Member</strong></td><td>發佈與更新 App、新增較低權限成員、共用內容（「能邀請他人 + 最小權限」→ Member）</td></tr>
+    <tr><td><strong>Contributor</strong></td><td>建立/編輯/刪除內容、排程更新；不能共用、不能發佈 App</td></tr>
+    <tr><td><strong>Viewer</strong></td><td>只能看與互動；唯一會套用 RLS 的角色</td></tr>
   </table>
   <ul>
-    <li>通知工作區問題：把群組加入工作區<strong>連絡人清單（Contact list）</strong>，不需給角色（最小權限）。</li>
-    <li><strong>App</strong>：對大量檢視者散發內容的建議方式；可設定對象（Audience）、允許使用者以 Build 權限連基礎語意模型、可安裝於 Teams。</li>
-  </ul>
-  <h3>共用與權限</h3>
-  <ul>
-    <li>語意模型權限：<strong>Read</strong>（檢視）、<strong>Build</strong>（用資料自建報表/連線分析，Analyze in Excel 需要）、<strong>Reshare</strong>、<strong>Write</strong>。</li>
-    <li>「用既有語意模型自建報表」→ 給 <strong>Build</strong> 權限即可，不必給工作區角色。</li>
-    <li><strong>背書（Endorsement）</strong>:Promoted（推薦，擁有者即可）與 Certified（認證，需租用戶管理員授權的認證者）——「財務決策資料需審核核可」→ Certified。</li>
-    <li><strong>敏感度標籤（Sensitivity labels）</strong>:Microsoft Purview 資訊保護；可加密匯出檔（PDF/Excel/PPT）、防止 PII 匯出；需要 Azure Information Protection 授權。</li>
-    <li><strong>資料譜系（Lineage view）</strong>：檢視從來源→語意模型→報表→儀表板的相依關係與上游影響。</li>
+    <li>只想「出問題時通知某群組」：加進工作區<strong>連絡人清單</strong>即可，不用給角色（最小權限原則）。</li>
+    <li>語意模型層級的權限：<strong>Read</strong> / <strong>Build</strong>（用模型自建報表、Analyze in Excel 需要）/ <strong>Reshare</strong> / <strong>Write</strong>。「讓同事用現成模型做自己的報表」→ 給 Build 就好。</li>
+    <li><strong>背書</strong>:Promoted(推薦，擁有者可設)vs <strong>Certified</strong>（認證，需管理員授權的認證者）——「財務決策資料需審核」→ Certified。</li>
+    <li><strong>敏感度標籤</strong>(Microsoft Purview)：跟著匯出檔走的保護，可加密 PDF/Excel 匯出、防 PII 外洩。</li>
+    <li><strong>資料譜系（Lineage view）</strong>：視覺化「來源 → 模型 → 報表 → 儀表板」的相依鏈，評估上游改動影響。</li>
   </ul>
   <h3>重新整理與閘道</h3>
   <ul>
-    <li>來源在<strong>地端（檔案伺服器、SQL Server、內網）</strong>→ 需要 <strong>On-premises data gateway</strong>（標準模式可多人共用多來源；Personal mode 僅個人）。</li>
-    <li>雲端來源（OneDrive、SharePoint Online、Azure SQL）不需閘道；OneDrive/SharePoint 上的檔案約每小時自動同步。</li>
-    <li>排程重新整理：共用容量每日最多 8 次，Premium 48 次；連續 2 個月無人使用會<strong>因閒置而停用排程</strong>，任何人開啟相關儀表板/報表即恢復。</li>
-    <li><strong>增量重新整理（Incremental refresh）</strong>：以 <code>RangeStart</code>/<code>RangeEnd</code> 參數過濾，僅重新整理最新分割區；需查詢摺疊支援。</li>
-    <li>重新整理失敗通知：語意模型設定中可寄給擁有者與指定連絡人。</li>
+    <li>來源在<strong>地端</strong>（公司內網的 SQL Server、檔案伺服器）→ 雲端要透過 <strong>On-premises data gateway</strong> 才拿得到資料。標準模式多人共用；Personal mode 只限個人。</li>
+    <li>雲端來源（OneDrive、SharePoint Online、Azure SQL）不需要閘道；OneDrive/SharePoint 上的 .pbix 約每小時自動同步。</li>
+    <li>排程更新：共用容量每天最多 <strong>8 次</strong>,Premium <strong>48 次</strong>。兩個月沒人用會「因閒置停用」，任何人再開報表就恢復。</li>
+    <li><strong>增量重新整理</strong>：用 <code>RangeStart</code>/<code>RangeEnd</code> 參數切分割區，只更新最新的。</li>
   </ul>
   <h3>部署與治理</h3>
   <ul>
-    <li><strong>部署管線（Deployment pipelines）</strong>：開發 → 測試 → 生產三階段，支援階段間比較與部署規則（不同階段換資料來源/參數）；需 Premium/PPU/Fabric 容量。</li>
-    <li><strong>範本檔 .pbit</strong>：保留模型/查詢/報表定義但不含資料，可帶參數提示——「發給同事重複使用又不外洩資料」→ .pbit。</li>
-    <li><strong>.pbip / Power BI Desktop 開發者模式</strong>：專案格式利於版本控制。</li>
-    <li><strong>使用量計量報告（Usage metrics）</strong>：報表/儀表板檢視次數與使用者。</li>
-    <li><strong>Analyze in Excel</strong>：以樞紐分析表連線語意模型；<strong>在 Excel 中取得資料 → Power BI 語意模型</strong>。</li>
+    <li><strong>部署管線</strong>：開發 → 測試 → 生產三階段搬遷，支援階段比較與「換資料來源」的部署規則；需 Premium/Fabric 容量。</li>
+    <li><strong>使用量計量報告</strong>：誰看了報表、看幾次。</li>
+    <li><strong>Analyze in Excel</strong>：用 Excel 樞紐分析表連 Power BI 模型（需 Build 權限）。</li>
   </ul>
 
   <h2 id="g5">DAX 速查表</h2>
@@ -796,7 +874,7 @@ Rolling12 = CALCULATE ( [Sales Amount],
     <tr><td>去年同期</td><td><code>CALCULATE ( [Total Sales], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )</code></td></tr>
     <tr><td>年初至今</td><td><code>TOTALYTD ( [Total Sales], 'Date'[Date] )</code></td></tr>
     <tr><td>占整體比例</td><td><code>DIVIDE ( [Total Sales], CALCULATE ( [Total Sales], ALL ( Product ) ) )</code></td></tr>
-    <tr><td>已選項目占比（受其他篩選影響）</td><td><code>DIVIDE ( [Total Sales], CALCULATE ( [Total Sales], ALLSELECTED () ) )</code></td></tr>
+    <tr><td>已選項目占比</td><td><code>DIVIDE ( [Total Sales], CALCULATE ( [Total Sales], ALLSELECTED () ) )</code></td></tr>
     <tr><td>不重複客戶數</td><td><code>DISTINCTCOUNT ( Sales[CustomerID] )</code></td></tr>
     <tr><td>非作用中關聯</td><td><code>CALCULATE ( [x], USERELATIONSHIP ( Sales[ShipDate], 'Date'[Date] ) )</code></td></tr>
     <tr><td>動態 RLS</td><td><code>[Email] = USERPRINCIPALNAME ()</code></td></tr>
@@ -804,14 +882,15 @@ Rolling12 = CALCULATE ( [Sales Amount],
     <tr><td>排名</td><td><code>RANKX ( ALL ( Product[Name] ), [Total Sales] )</code></td></tr>
     <tr><td>條件量值</td><td><code>IF ( HASONEVALUE ( 'Date'[Year] ), [Total Sales], BLANK () )</code></td></tr>
   </table>
-  <div class="warn"><strong>常見陷阱：</strong><code>SUM</code> 只能吃單一欄位；需要列運算時用 <code>SUMX</code>。<code>COUNT</code> 不數文字空白，數列數請用 <code>COUNTROWS</code>。時間智慧需要「標示為日期資料表」的連續日期表。</div>
-  <p class="footnote">教材內容依 Microsoft Learn 官方技能大綱整理，搭配題庫交叉練習效果最佳。</p>
+  <div class="warn"><strong>常見陷阱：</strong><code>SUM</code> 只能吃單一欄位，列運算用 <code>SUMX</code>;<code>COUNT</code> 不數文字空白，數列數用 <code>COUNTROWS</code>；時間智慧需要「標示為日期資料表」的連續日期表。</div>
+  <p class="footnote">教材依 Microsoft Learn 官方技能大綱整理，示例圖取自題庫；搭配題庫練習交叉學習效果最佳。</p>
 </section>
+
 </main>
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786247591"></script>
+<script src="data.js?v=1786250565"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;

@@ -331,6 +331,15 @@ pre.dax {
 }
 .toc a:hover { border-color: var(--hairline-strong); background: var(--surface-2); }
 .toc a .w { display: block; font-size: 11.5px; color: var(--text-3); font-weight: 400; margin-top: 3px; }
+
+.gfig { margin: 16px 0 20px; }
+.gfig img { max-width: min(100%, 680px); border: 1px solid var(--hairline-strong); border-radius: 6px; background: #fff; display: block; cursor: zoom-in; }
+.gfig svg { max-width: 100%; height: auto; display: block; color: var(--text-2); }
+.gfig figcaption { font-size: 13px; color: var(--text-3); margin-top: 8px; max-width: 680px; }
+.ggrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0 20px; }
+.ggrid .gfig { margin: 0; }
+.ggrid .gfig img { width: 100%; }
+
 .guide h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin: 40px 0 12px; padding-top: 20px; border-top: 1px solid var(--hairline); }
 .guide h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; color: var(--accent-text); }
 .guide p, .guide li { font-size: 15px; color: var(--text-2); }
@@ -609,8 +618,9 @@ pre.dax {
 <!-- ============ study guide ============ -->
 <section id="page-guide" class="page guide">
   <h1>PL-300 Study Guide</h1>
-  <p class="sub">Condensed notes organized by the four exam domains. Best used alongside the question bank.</p>
+  <p class="sub">A from-zero Power BI study guide — written for first-time users, building from core concepts up to exam-critical details, illustrated with real exhibits from the question bank.</p>
   <div class="toc">
+    <a href="#gs">Getting started<span class="w">What Power BI is &middot; workflow</span></a>
     <a href="#g0">Exam overview &amp; strategy<span class="w">Format, scoring, pacing</span></a>
     <a href="#g1">1. Prepare the data<span class="w">25&ndash;30% &middot; Power Query</span></a>
     <a href="#g2">2. Model the data<span class="w">25&ndash;30% &middot; Star schema &amp; DAX</span></a>
@@ -619,173 +629,240 @@ pre.dax {
     <a href="#g5">DAX cheat sheet<span class="w">Frequently tested functions</span></a>
   </div>
 
+  <h2 id="gs">Getting started: what is Power BI?</h2>
+  <p>Power BI is Microsoft's <strong>business intelligence (BI)</strong> tool: it turns raw data scattered across Excel files, databases, and cloud services into interactive reports so you and your team can answer questions with data. It has three parts:</p>
+  <table>
+    <tr><th>Component</th><th>What it is</th><th>What you do with it</th></tr>
+    <tr><td><strong>Power BI Desktop</strong></td><td>Free Windows authoring tool</td><td>Connect data, clean and transform, build the model and report (where the exam lives)</td></tr>
+    <tr><td><strong>Power BI Service</strong></td><td>Cloud site app.powerbi.com</td><td>Publish reports, schedule refresh, share with colleagues, build dashboards</td></tr>
+    <tr><td><strong>Power BI Mobile</strong></td><td>Phone/tablet app</td><td>View reports and receive alerts anywhere</td></tr>
+  </table>
+  <h3>The overall workflow</h3>
+  <p>Building a report follows this journey — and the four exam domains slice along it:</p>
+  <figure class="gfig">
+    <svg viewBox="0 0 920 96" role="img" aria-label="Power BI workflow">
+      <g fill="none" stroke="currentColor" stroke-opacity=".35">
+        <path d="M138 48h24m118 0h24m118 0h24m118 0h24m118 0h24" stroke-width="1.5"/>
+      </g>
+      <g font-family="inherit" font-size="13" text-anchor="middle">
+        <g><rect x="10" y="24" width="128" height="48" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".6"/><text x="74" y="44" fill="var(--text-1)">Get data</text><text x="74" y="62" fill="var(--text-3)" font-size="11">connectors</text></g>
+        <g><rect x="162" y="24" width="128" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="226" y="44" fill="var(--text-1)">Clean &amp; shape</text><text x="226" y="62" fill="var(--text-3)" font-size="11">Power Query</text></g>
+        <g><rect x="314" y="24" width="128" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="378" y="44" fill="var(--text-1)">Model</text><text x="378" y="62" fill="var(--text-3)" font-size="11">relationships + DAX</text></g>
+        <g><rect x="466" y="24" width="128" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="530" y="44" fill="var(--text-1)">Visualize</text><text x="530" y="62" fill="var(--text-3)" font-size="11">report pages</text></g>
+        <g><rect x="618" y="24" width="128" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="682" y="44" fill="var(--text-1)">Publish</text><text x="682" y="62" fill="var(--text-3)" font-size="11">Power BI Service</text></g>
+        <g><rect x="770" y="24" width="128" height="48" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="834" y="44" fill="var(--text-1)">Share</text><text x="834" y="62" fill="var(--text-3)" font-size="11">workspaces / apps</text></g>
+      </g>
+    </svg>
+    <figcaption>Six stages from raw data to shared insight. Domain 1 covers the first two steps, domain 2 the third, domain 3 the fourth, domain 4 the last two.</figcaption>
+  </figure>
+  <h3>Five terms you must know</h3>
+  <table>
+    <tr><th>Term</th><th>Plain-language meaning</th></tr>
+    <tr><td><strong>Semantic model</strong> (formerly dataset)</td><td>The cleaned data + table relationships + measures — the "data engine" behind reports. One model can feed many reports</td></tr>
+    <tr><td><strong>Report</strong></td><td>One or more pages of interactive visuals, authored in Desktop</td></tr>
+    <tr><td><strong>Dashboard</strong></td><td>Service-only; a one-page overview assembled by pinning visuals from reports</td></tr>
+    <tr><td><strong>Workspace</strong></td><td>A collaboration folder in the cloud holding models, reports, dashboards, with role-based access</td></tr>
+    <tr><td><strong>App</strong></td><td>A packaged, read-only bundle of workspace content for broad distribution</td></tr>
+  </table>
+  <h3>File formats</h3>
+  <ul>
+    <li><code>.pbix</code> — the standard Desktop file: data, model, and report.</li>
+    <li><code>.pbit</code> — template: same structure but <strong>no data</strong>; can prompt for parameters. Great for sharing reusable starting points.</li>
+    <li><code>.pbip</code> — project format that splits content into text files, suited to Git version control.</li>
+  </ul>
+  <div class="tip"><strong>Study advice:</strong> download Desktop for free from powerbi.microsoft.com, follow Microsoft Learn's beginner tutorial once (import Excel &rarr; build a chart &rarr; publish), then come back — everything below will land much faster.</div>
+
   <h2 id="g0">Exam overview &amp; strategy</h2>
-  <p>PL-300 validates your ability to prepare, model, visualize, and analyze data with Microsoft Power BI, and to deploy and maintain those assets.</p>
+  <p>PL-300 validates your ability to prepare, model, visualize, and analyze data with Power BI, and to deploy and maintain those assets.</p>
   <table>
     <tr><th>Item</th><th>Details</th></tr>
     <tr><td>Questions / time</td><td>About 40&ndash;60 questions, 100 minutes (including case studies)</td></tr>
     <tr><td>Passing score</td><td>700 / 1000</td></tr>
     <tr><td>Question formats</td><td>Single choice, multiple choice, hotspot (dropdowns), drag-and-drop, yes/no series, case studies</td></tr>
-    <tr><td>Languages</td><td>Available in English, Traditional Chinese, and more</td></tr>
+    <tr><td>Languages</td><td>English, Traditional Chinese, and more</td></tr>
   </table>
-  <div class="tip"><strong>Strategy:</strong> within a case study each question stands alone &mdash; read the question first, then look up only the requirements it needs. &ldquo;Series&rdquo; yes/no sets cannot be revisited once you move on. Budget under 2 minutes per question on average.</div>
+  <div class="tip"><strong>Strategy:</strong> within a case study each question stands alone — read the question first, then look up only the requirements it needs. "Series" yes/no sets cannot be revisited. Budget under 2 minutes per question.</div>
 
   <h2 id="g1">1. Prepare the data (25&ndash;30%)</h2>
-  <h3>Getting data &amp; storage modes</h3>
+  <p>This domain is about <em>connecting</em> data and <em>cleaning</em> it. The tool is the <strong>Power Query Editor</strong> (the "Transform data" button in Desktop). Every transformation you make is recorded as an "Applied Step" and replayed automatically on refresh — that is what makes it more powerful than hand-editing Excel.</p>
+  <h3>Connecting data &amp; storage modes</h3>
+  <p>"Get Data" connects to hundreds of sources: Excel, CSV, SQL Server, SharePoint, web pages… The key concept when connecting is the <strong>storage mode</strong> — copy the data in, or query it where it lives:</p>
   <ul>
-    <li><strong>Import</strong>: data is cached in the model; fastest queries, full feature set; needs scheduled refresh. <em>The default, and the usual &ldquo;best performance&rdquo; answer.</em></li>
-    <li><strong>DirectQuery</strong>: nothing cached; every query hits the source. Use for near-real-time data or very large volumes; visuals are slower and DAX/PQ features are limited.</li>
-    <li><strong>Dual</strong>: acts as cached or not depending on the query; typical for dimension tables joining a DirectQuery fact table plus Import aggregations (composite models) &mdash; reduces limited relationships and improves performance.</li>
-    <li><strong>Live Connection</strong>: connects to Analysis Services or a published Power BI semantic model. To reuse an existing model and its measures with the least development effort, choose the <strong>Power BI semantic model</strong> connector.</li>
+    <li><strong>Import</strong>: data is copied and compressed into the model; fastest queries, full features; needs scheduled refresh. <em>The default, and the usual "best performance" exam answer.</em></li>
+    <li><strong>DirectQuery</strong>: data stays at the source and every interaction queries it live; for near-real-time or huge data, but slower visuals and limited features.</li>
+    <li><strong>Dual</strong>: behaves as Import or DirectQuery depending on the query; typical for dimension tables in composite models.</li>
+    <li><strong>Live Connection</strong>: connect to an existing semantic model and reuse its measures — the "least development effort" choice.</li>
   </ul>
+  <figure class="gfig"><img src="images/ee7c18bf61c3.png" loading="lazy" onclick="zoom(this)" alt="A composite model: different tables use different storage modes (exam questions often show a table like this)."><figcaption>A composite model: different tables use different storage modes (exam questions often show a table like this).</figcaption></figure>
   <table>
     <tr><th>Refresh requirement</th><th>Recommended storage mode</th></tr>
     <tr><td>Near real time</td><td>DirectQuery</td></tr>
     <tr><td>Daily/weekly refresh, fastest visuals</td><td>Import (or Import aggregations)</td></tr>
-    <tr><td>Dimension tables joined to a DirectQuery fact</td><td>Dual</td></tr>
+    <tr><td>Dimensions joined to a DirectQuery fact</td><td>Dual</td></tr>
   </table>
-  <h3>Power Query transforms that get tested</h3>
+  <h3>The transforms that get tested</h3>
+  <p>Beginners most often confuse Merge vs Append and Pivot vs Unpivot — remember them by scenario:</p>
   <ul>
-    <li><strong>Merge</strong> = horizontal JOIN (add columns via a key); <strong>Append</strong> = vertical UNION (add rows). &ldquo;One row per customer with city added&rdquo; &rarr; Merge. &ldquo;Two identically shaped tables into one&rdquo; &rarr; Append Queries as New, then disable load on the originals to keep the model small.</li>
-    <li><strong>Group By</strong>: aggregations (sum, count, min/max).</li>
-    <li><strong>Pivot / Unpivot</strong>: Unpivot turns attribute columns into attribute/value pairs (wide &rarr; long); Pivot is the reverse. When column headers are data values (years, months), the answer is almost always Unpivot.</li>
-    <li><strong>Transpose</strong>: swaps rows and columns wholesale &mdash; different from Pivot/Unpivot.</li>
-    <li><strong>Use first row as headers</strong>, <strong>Fill Down/Up</strong>: fixes nulls caused by merged cells.</li>
-    <li><strong>Split Column</strong>, <strong>Column From Examples</strong>: generate transforms from sample values.</li>
-    <li>Type errors like <code>Expression.Error: cannot convert</code> usually mean non-numeric characters in a column, or a renamed source column (<code>column wasn't found</code> &rarr; the source column was renamed).</li>
+    <li><strong>Merge</strong> = horizontal JOIN: add columns from another table via a shared key. Orders + Customers &rarr; each order row gains the customer's city.</li>
+    <li><strong>Append</strong> = vertical stack: add rows from identically-shaped tables. January sales + February sales &rarr; one table. Disable load on the originals afterward to keep the model small.</li>
+    <li><strong>Unpivot</strong>: when column headers are themselves data (2022, 2023, 2024 year columns), turn them into attribute/value rows (wide &rarr; long). <strong>Pivot</strong> is the reverse. Headers that are years/months &rArr; the answer is almost always Unpivot.</li>
+    <li><strong>Group By</strong>: aggregations (orders per customer, sales per month).</li>
+    <li><strong>Transpose</strong>: swap the whole grid's rows and columns — different from Pivot/Unpivot.</li>
+    <li><strong>Use first row as headers</strong>, <strong>Fill Down/Up</strong> (fix nulls from merged cells), <strong>Split Column</strong>, <strong>Column From Examples</strong> (type a few samples and it infers the transform).</li>
   </ul>
-  <h3>Data profiling</h3>
+  <figure class="gfig"><img src="images/10077f898a6f.jpeg" loading="lazy" onclick="zoom(this)" alt="The Unpivot concept: attribute columns on the left become attribute/value rows on the right."><figcaption>The Unpivot concept: attribute columns on the left become attribute/value rows on the right.</figcaption></figure>
+  <h3>Data profiling: check the data's health first</h3>
+  <p>The View tab enables three profiling tools; the exam asks what each one shows:</p>
   <ul>
-    <li><strong>Column quality</strong>: Valid / Error / Empty percentages.</li>
-    <li><strong>Column distribution</strong>: Distinct vs Unique counts &mdash; tells you whether a column can be a key.</li>
-    <li><strong>Column profile</strong>: statistics (min, max, average) and value distribution. Profiling covers the first 1,000 rows by default; switch to the entire data set if needed.</li>
+    <li><strong>Column quality</strong>: Valid / Error / Empty percentages per column — spot bad columns at a glance.</li>
+    <li><strong>Column distribution</strong>: Distinct vs Unique counts — tells you whether a column can be a key (every row unique).</li>
+    <li><strong>Column profile</strong>: single-column statistics (min, max, average) and a value histogram.</li>
+  </ul>
+  <figure class="gfig"><img src="images/c6997e3a1709.jpeg" loading="lazy" onclick="zoom(this)" alt="All three profiling tools at once: quality bars atop columns, distribution bars, and the statistics profile pane."><figcaption>All three profiling tools at once: quality bars atop columns, distribution bars, and the statistics profile pane.</figcaption></figure>
+  <div class="warn"><strong>Trap:</strong> profiling covers only the <strong>first 1,000 rows</strong> by default; switch to the entire data set in the status bar.</div>
+  <h3>Handling errors</h3>
+  <p>Two error messages appear constantly in questions — you are given the message and asked the cause:</p>
+  <figure class="gfig"><img src="images/5c46db2ae570.jpeg" loading="lazy" onclick="zoom(this)" alt="Dataformat.Error: the text NA cannot be converted to a number."><figcaption>Dataformat.Error: the text NA cannot be converted to a number.</figcaption></figure><figure class="gfig"><img src="images/236b74e1effd.jpeg" loading="lazy" onclick="zoom(this)" alt="Expression.Error: an applied step cannot find the renamed source column Sales."><figcaption>Expression.Error: an applied step cannot find the renamed source column Sales.</figcaption></figure><figure class="gfig"><img src="images/ea03bd65404e.png" loading="lazy" onclick="zoom(this)" alt="Column quality showing 63% errors in the Discount column — profile first, then decide the fix."><figcaption>Column quality showing 63% errors in the Discount column — profile first, then decide the fix.</figcaption></figure>
+  <ul>
+    <li><code>Dataformat.Error: We couldn't convert to Number</code> — the column mixes text (like "NA") that cannot become a number. Fix: Replace Errors with a default, or Replace Values before changing the type.</li>
+    <li><code>Expression.Error: The column 'X' wasn't found</code> — the source column was <strong>renamed or removed</strong>, so an applied step can't find it.</li>
+    <li>Know the difference: <strong>Replace Errors</strong> (substitute a value, keep all rows) vs <strong>Remove Errors</strong> (delete the rows) vs <strong>Keep Errors</strong> (keep only failing rows, for inspection).</li>
   </ul>
   <h3>Query folding &amp; performance</h3>
   <ul>
-    <li><strong>Query folding</strong>: steps translate back into the source&rsquo;s native query (SQL). Check with &ldquo;View Native Query&rdquo; &mdash; grayed out means folding broke. Incremental refresh requires a folding-capable source.</li>
-    <li>Reference vs Duplicate: Reference reuses the original query&rsquo;s result, so upstream changes flow downstream.</li>
-    <li>Shrink the model: remove unused columns/rows, disable auto date/time, avoid high-cardinality columns (GUIDs), pre-aggregate.</li>
+    <li>When steps can be translated back into the source's native SQL, they "fold" — the database does the heavy lifting. Right-click a step &rarr; <strong>View Native Query</strong>: enabled means folding works; grayed out means Power BI takes over from that step on.</li>
+    <li><strong>Incremental refresh</strong> (refresh only the newest partitions) requires a folding-capable source.</li>
+    <li>Shrink the model: drop unused columns/rows, disable auto date/time, avoid high-cardinality columns (GUIDs, timestamps with seconds), pre-aggregate.</li>
   </ul>
 
   <h2 id="g2">2. Model the data (25&ndash;30%)</h2>
-  <h3>Star schema &amp; relationships</h3>
+  <p>With clean data, the next step is wiring tables together into a model and defining calculations with DAX. This is where Power BI differs most from Excel — and the heaviest exam domain.</p>
+  <h3>The star schema</h3>
+  <p>The golden rule of modeling: one <strong>fact table</strong> in the middle (events that happened: each order, each sale — many rows), surrounded by <strong>dimension tables</strong> (who/what/when/where: customers, products, dates — few rows), joined one-to-many into the fact. Drawn out, it looks like a star:</p>
+  <figure class="gfig">
+    <svg viewBox="0 0 560 300" role="img" aria-label="Star schema diagram">
+      <g fill="none" stroke="var(--hairline-strong)"><path d="M280 96v38M172 150h44M344 150h44M280 204v-38"/></g>
+      <g font-size="12" fill="var(--text-3)"><text x="262" y="118">1..*</text><text x="196" y="144">1..*</text><text x="352" y="144">1..*</text><text x="262" y="196">1..*</text></g>
+      <g text-anchor="middle" font-size="13">
+        <g><rect x="216" y="130" width="128" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-opacity=".7"/><text x="280" y="149" fill="var(--text-1)" font-weight="600">Sales (fact)</text><text x="280" y="165" fill="var(--text-3)" font-size="10.5">OrderID &middot; DateKey &middot; CustKey &middot; Amount</text></g>
+        <g><rect x="216" y="52" width="128" height="40" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="280" y="70" fill="var(--text-1)">Date (dim)</text><text x="280" y="84" fill="var(--text-3)" font-size="10.5">date &middot; month &middot; quarter &middot; year</text></g>
+        <g><rect x="40" y="130" width="128" height="40" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="104" y="148" fill="var(--text-1)">Customer (dim)</text><text x="104" y="162" fill="var(--text-3)" font-size="10.5">name &middot; city &middot; segment</text></g>
+        <g><rect x="392" y="130" width="128" height="40" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="456" y="148" fill="var(--text-1)">Product (dim)</text><text x="456" y="162" fill="var(--text-3)" font-size="10.5">product &middot; category &middot; supplier</text></g>
+        <g><rect x="216" y="208" width="128" height="40" rx="8" fill="var(--surface-2)" stroke="var(--hairline-strong)"/><text x="280" y="226" fill="var(--text-1)">Region (dim)</text><text x="280" y="240" fill="var(--text-3)" font-size="10.5">region &middot; country</text></g>
+      </g>
+    </svg>
+    <figcaption>A star schema: dimensions (1) relate to the fact (many); filters flow from dimension to fact. Desktop's Model view looks exactly like this.</figcaption>
+  </figure>
+  <figure class="gfig"><img src="images/e9bbb135e606.jpeg" loading="lazy" onclick="zoom(this)" alt="Desktop Model view: a one-to-many relationship from dimDate (1) to Sales (*); filters flow along the arrow."><figcaption>Desktop Model view: a one-to-many relationship from dimDate (1) to Sales (*); filters flow along the arrow.</figcaption></figure><figure class="gfig"><img src="images/0f922d948eac.jpeg" loading="lazy" onclick="zoom(this)" alt="The Edit relationship dialog: cardinality and cross-filter direction live here."><figcaption>The Edit relationship dialog: cardinality and cross-filter direction live here.</figcaption></figure>
+  <h3>Three relationship settings</h3>
   <ul>
-    <li><strong>Fact tables</strong> hold transactions/measures; <strong>dimension tables</strong> hold descriptive attributes. Dimensions relate one-to-many into facts; cross-filter direction defaults to single (dimension &rarr; fact).</li>
-    <li>Cardinality: one-to-many is the norm. Avoid <strong>many-to-many</strong>; resolve it with a bridge table.</li>
-    <li><strong>Bidirectional filtering</strong> adds ambiguity and cost &mdash; use only when required (bridge tables). To let RLS flow across a bidirectional relationship, tick &ldquo;Apply security filter in both directions.&rdquo;</li>
-    <li>Inactive relationships (dashed lines) are activated per-measure with <code>USERELATIONSHIP()</code> &mdash; the classic order-date/ship-date role-playing dimension setup.</li>
-    <li>Date table: &ldquo;Mark as date table&rdquo; is required for time intelligence on a custom date table; it needs one row per day, contiguous, no gaps.</li>
+    <li><strong>Cardinality</strong>: one-to-many (1:*) is the norm; avoid many-to-many — resolve with a bridge table.</li>
+    <li><strong>Cross-filter direction</strong>: defaults to single (dimension &rarr; fact). Bidirectional adds ambiguity and cost; to let RLS flow across it, tick "Apply security filter in both directions."</li>
+    <li><strong>Active/inactive</strong>: only one active (solid) relationship between two tables. When order date and ship date both join the Date table, the second is dashed — activate it per-measure with <code>USERELATIONSHIP()</code>.</li>
   </ul>
-  <h3>Calculated columns vs measures vs calculated tables</h3>
+  <div class="tip"><strong>Date table:</strong> time intelligence requires a contiguous one-row-per-day date table marked as date table. One line of DAX builds it: <code>Date = CALENDAR(DATE(2020,1,1), DATE(2026,12,31))</code>.</div>
+  <h3>DAX first lesson: calculated columns vs measures</h3>
   <table>
     <tr><th></th><th>Calculated column</th><th>Measure</th></tr>
-    <tr><td>Evaluated</td><td>At refresh, row by row, then stored</td><td>At query time, against the current filters</td></tr>
-    <tr><td>Context</td><td>Row context</td><td>Filter context</td></tr>
-    <tr><td>Model size</td><td>Consumes memory</td><td>Only the formula is stored</td></tr>
-    <tr><td>Use for</td><td>Slicers, axes, grouping</td><td>Aggregations, KPIs (<em>prefer measures &mdash; &ldquo;minimize model size&rdquo; questions want a measure</em>)</td></tr>
+    <tr><td>When it computes</td><td>At refresh, row by row, stored in the model</td><td>At query time, against the viewer's current filters</td></tr>
+    <tr><td>Context</td><td>Row context: one row at a time</td><td>Filter context: the filtered set of rows</td></tr>
+    <tr><td>Memory</td><td>Consumes it</td><td>Formula only</td></tr>
+    <tr><td>Use for</td><td>Fields for slicers/axes/grouping</td><td>Aggregations and KPIs — <em>the answer when the exam says "minimize model size"</em></td></tr>
   </table>
-  <h3>Core DAX concepts</h3>
+  <p>Analogy: a calculated column is like dragging a formula down a new Excel column; a measure is like a PivotTable value that recalculates whenever you re-slice.</p>
+  <h3>Core DAX concepts &amp; functions</h3>
   <ul>
-    <li><strong><code>CALCULATE(expression, filters&hellip;)</code></strong> rewrites filter context; combine with <code>FILTER</code>, <code>ALL</code>, <code>ALLSELECTED</code>, <code>KEEPFILTERS</code>, <code>REMOVEFILTERS</code>.</li>
-    <li><strong>Iterators (X functions)</strong>: <code>SUMX / AVERAGEX / COUNTX / MAXX</code> evaluate row by row then aggregate, e.g. <code>SUMX(Sales, Sales[Qty]*Sales[Price])</code>.</li>
-    <li><strong>Time intelligence</strong>: <code>TOTALYTD / DATESYTD</code> (year to date), <code>SAMEPERIODLASTYEAR / DATEADD(dates,-1,YEAR)</code> (prior year), <code>DATESINPERIOD</code> (rolling windows, e.g. last 12 months), <code>PREVIOUSMONTH</code>.</li>
-    <li><strong>Counting</strong>: <code>COUNT</code> (numeric), <code>COUNTA</code> (non-blank), <code>COUNTROWS</code> (rows), <code>DISTINCTCOUNT</code> (unique values).</li>
-    <li><strong>Following relationships</strong>: <code>RELATED</code> (many side pulls from one side), <code>RELATEDTABLE</code> (one side pulls the many side), <code>LOOKUPVALUE</code> (no relationship needed).</li>
-    <li><strong>Also tested</strong>: <code>DIVIDE(a,b,alt)</code> for safe division, <code>SELECTEDVALUE</code>, <code>HASONEVALUE</code>, <code>ISFILTERED</code>, <code>CALCULATETABLE</code>, <code>SUMMARIZE</code>, <code>ADDCOLUMNS</code>, <code>CROSSFILTER</code>, <code>TREATAS</code>.</li>
-    <li><code>VAR &hellip; RETURN</code> improves readability and performance (repeated expressions evaluate once).</li>
+    <li><strong><code>CALCULATE(expression, filters…)</code></strong> — the most important function: evaluate under modified filters. Pair with <code>ALL</code> (drop filters, grand total), <code>ALLSELECTED</code> (respect the user's selection), <code>FILTER</code>, <code>REMOVEFILTERS</code>.</li>
+    <li><strong>Iterators (X functions)</strong>: <code>SUMX(Sales, Sales[Qty] * Sales[Price])</code> computes per row, then sums. <code>SUM</code> takes a single column only.</li>
+    <li><strong>Time intelligence</strong>: <code>TOTALYTD</code>, <code>SAMEPERIODLASTYEAR</code>, <code>DATESINPERIOD</code> (rolling N months), <code>DATEADD</code>.</li>
+    <li><strong>Counting family</strong>: <code>COUNT</code> / <code>COUNTA</code> / <code>COUNTROWS</code> / <code>DISTINCTCOUNT</code>.</li>
+    <li><strong>Across tables</strong>: <code>RELATED</code> (many side reads the one side), <code>RELATEDTABLE</code>, <code>LOOKUPVALUE</code> (no relationship needed).</li>
+    <li><code>VAR … RETURN</code>: compute once, reuse, stay readable.</li>
   </ul>
   <pre><code>Sales YTD = TOTALYTD ( [Sales Amount], 'Date'[Date] )
 Sales LY  = CALCULATE ( [Sales Amount], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
 Rolling12 = CALCULATE ( [Sales Amount],
               DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -12, MONTH ) )</code></pre>
+  <figure class="gfig"><img src="images/60345e699047.jpeg" loading="lazy" onclick="zoom(this)" alt="The Quick measures dialog: generate rolling averages and other common calculations without writing DAX — then read the generated formula to learn."><figcaption>The Quick measures dialog: generate rolling averages and other common calculations without writing DAX — then read the generated formula to learn.</figcaption></figure>
   <h3>Row-level security (RLS)</h3>
-  <ul>
-    <li>Desktop: Modeling &rarr; Manage roles; define table-filter DAX such as <code>[Region] = "West"</code> or dynamic <code>[Email] = USERPRINCIPALNAME()</code>.</li>
-    <li>Test in Desktop with &ldquo;View as&rdquo;; in the service, assign users/groups to roles on the <strong>semantic model&rsquo;s Security page</strong>.</li>
-    <li>RLS applies only to <strong>Viewer</strong>-role users; workspace Admins, Members, and Contributors bypass it.</li>
-  </ul>
+  <p>Different people open the same report but see only their own data. Three steps:</p>
+  <ol>
+    <li>Desktop: Modeling &rarr; Manage roles; write a table-filter DAX like <code>[Region] = "West"</code>, or dynamic <code>[Email] = USERPRINCIPALNAME()</code> for per-user data.</li>
+    <li>Desktop: test with "View as".</li>
+    <li>After publishing, open the semantic model's Security page in the service and assign users/groups to roles.</li>
+  </ol>
+  <div class="warn"><strong>Most-tested fact:</strong> RLS applies only to <strong>Viewer</strong>-role users — workspace Admins, Members, and Contributors always see everything.</div>
   <h3>Performance tuning</h3>
   <ul>
-    <li><strong>Performance Analyzer</strong> (Desktop): records per-visual DAX timings; export to JSON.</li>
-    <li><strong>Best Practice / VertiPaq analysis, DAX Studio</strong>: find memory-hungry columns.</li>
-    <li>Reduce cardinality (drop seconds, split datetime), use integer keys, prefer measures over calculated columns, add aggregation tables.</li>
-    <li><strong>Large dataset storage format</strong>: enable on Premium when a model outgrows the default limit.</li>
+    <li><strong>Performance Analyzer</strong> (View tab): records per-visual render and DAX timings; export to JSON.</li>
+    <li>Reduce cardinality (strip seconds, split date and time), integer keys, prefer measures over calculated columns, aggregation tables for huge facts.</li>
   </ul>
 
   <h2 id="g3">3. Visualize and analyze the data (25&ndash;30%)</h2>
+  <p>With the model ready you build report pages. The exam cares less about beauty and more about "which need maps to which visual" and the correct names of interaction features.</p>
   <h3>Choosing the right visual</h3>
   <table>
     <tr><th>Need</th><th>Visual</th></tr>
     <tr><td>One headline number (total, KPI)</td><td>Card / KPI</td></tr>
     <tr><td>Progress toward a target</td><td>Gauge, KPI</td></tr>
-    <tr><td>Trend over time</td><td>Line chart; with forecasting &rarr; the Analytics pane&rsquo;s Forecast</td></tr>
+    <tr><td>Trend over time</td><td>Line chart; forecasting &rarr; the Analytics pane's Forecast</td></tr>
     <tr><td>Category comparison</td><td>Bar / column chart</td></tr>
     <tr><td>Two measures + distribution</td><td>Scatter chart, optionally with a play axis</td></tr>
     <tr><td>Part-to-whole (with drill-down)</td><td>Treemap, donut; Decomposition tree</td></tr>
-    <tr><td>Cumulative gains/losses breakdown</td><td>Waterfall chart</td></tr>
-    <tr><td>What drives a metric</td><td>Key influencers</td></tr>
-    <tr><td>Auto-generated text summary</td><td>Smart narrative</td></tr>
-    <tr><td>Natural-language &ldquo;how many&rdquo; questions</td><td>Q&amp;A (numeric answers render as a card)</td></tr>
-    <tr><td>Geographic data</td><td>Map / filled map (choropleth); shape map</td></tr>
-    <tr><td>Matrix detail with subtotals</td><td>Matrix &mdash; supports hierarchy drill-down and +/&minus; expansion</td></tr>
+    <tr><td>Cumulative gains/losses</td><td>Waterfall chart</td></tr>
+    <tr><td>"What drives this metric?"</td><td>Key influencers</td></tr>
+    <tr><td>Auto text summary</td><td>Smart narrative</td></tr>
+    <tr><td>Natural-language Q&amp;A</td><td>Q&amp;A (numeric answers render as a card)</td></tr>
+    <tr><td>Geographic data</td><td>Map / filled map; shape map</td></tr>
+    <tr><td>Detail + subtotals + hierarchy</td><td>Matrix — a plain Table has no hierarchy</td></tr>
   </table>
+  <div class="ggrid"><figure class="gfig"><img src="images/8c9fc328c186.jpeg" loading="lazy" onclick="zoom(this)" alt=""><figcaption>Decomposition tree: break a total down level by level</figcaption></figure><figure class="gfig"><img src="images/2a260e4f61a7.jpeg" loading="lazy" onclick="zoom(this)" alt=""><figcaption>Key influencers: AI surfaces what drives a metric</figcaption></figure><figure class="gfig"><img src="images/40fffdeb27a2.jpeg" loading="lazy" onclick="zoom(this)" alt=""><figcaption>Conditional formatting: value-colored table</figcaption></figure><figure class="gfig"><img src="images/d5313ad633c7.jpeg" loading="lazy" onclick="zoom(this)" alt=""><figcaption>A report page: KPI card + matrix + waterfall</figcaption></figure></div>
   <h3>Interactions, filters &amp; navigation</h3>
   <ul>
-    <li><strong>Filter scopes</strong>: visual &rarr; page &rarr; all pages (report). <strong>Slicers</strong> can be synced across pages via Sync slicers.</li>
-    <li><strong>Edit interactions</strong>: choose whether a visual filters, highlights, or ignores the others.</li>
-    <li><strong>Drill through</strong>: right-click a summary to jump to a detail page carrying the filter; the target page declares drill-through fields; add a back button.</li>
-    <li><strong>Bookmarks + buttons + Selection pane</strong>: navigation, reset-filters, and show/hide toggles.</li>
-    <li><strong>Tooltip pages</strong>: a report page used as a custom hover tooltip.</li>
-    <li><strong>Conditional formatting</strong>: background/font color by measure, data bars, icons; &ldquo;Field value&rdquo; accepts a color-code column.</li>
-    <li><strong>Top N filter</strong>: visual-level filter by measure.</li>
-    <li><strong>Groups / bins</strong>: bucket continuous values or group categories.</li>
-    <li><strong>Analytics pane</strong>: average/median/percentile lines, trend lines, error bars; line-chart Forecast and <strong>Anomaly detection</strong>.</li>
-    <li><strong>Mobile layout</strong>: a separate portrait arrangement for phones.</li>
+    <li><strong>Filter scopes</strong>: visual &rarr; page &rarr; all pages. A <strong>slicer</strong> is an on-canvas filter for users; Sync slicers extends one across pages.</li>
+    <li><strong>Edit interactions</strong>: when visual A is clicked, does B filter, highlight, or ignore?</li>
+    <li><strong>Drill through</strong>: right-click a data point on a summary page &rarr; jump to a detail page carrying that filter.</li>
+    <li><strong>Bookmarks + buttons + Selection pane</strong>: saved page states for navigation menus, reset-filters buttons, show/hide toggles.</li>
+    <li><strong>Conditional formatting</strong>: color by measure, data bars, icons; "Field value" uses a color-code column directly.</li>
+    <li><strong>Top N filter</strong>, <strong>groups/bins</strong>, mobile portrait layout.</li>
+    <li><strong>Analytics pane</strong>: average/median/percentile lines, trend lines; line-chart Forecast and Anomaly detection.</li>
   </ul>
-  <h3>Dashboards vs reports</h3>
+  <h3>Dashboards vs reports (classic exam contrast)</h3>
   <ul>
-    <li>Dashboards exist only in the service and are built by pinning tiles from reports. <strong>Data alerts</strong> work only on cards, KPIs, and gauges.</li>
-    <li>Alerts can trigger a <strong>Power Automate</strong> flow to email other people (built-in alerts notify only you).</li>
-    <li>Live tile cache time shows on the tile; report themes and dashboard themes are configured separately.</li>
-    <li><strong>Subscriptions</strong> email report/dashboard snapshots on a schedule; <strong>comments</strong> support @mentions, including external users.</li>
+    <li>Dashboards exist only in the service, assembled by pinning visuals — including from several different reports.</li>
+    <li><strong>Data alerts</strong> only work on dashboard cards, KPIs, and gauges; to notify other people, chain a <strong>Power Automate</strong> flow.</li>
+    <li><strong>Subscriptions</strong> email snapshots on a schedule; <strong>comments</strong> support @mentions, including external users.</li>
   </ul>
 
   <h2 id="g4">4. Manage and secure Power BI (15&ndash;20%)</h2>
-  <h3>Workspace roles (heavily tested!)</h3>
+  <p>Once the report is in the cloud, this domain covers who can do what, and how data stays fresh and protected.</p>
+  <h3>The four workspace roles (memorize!)</h3>
   <table>
     <tr><th>Role</th><th>Key rights</th></tr>
-    <tr><td><strong>Admin</strong></td><td>Everything, plus delete the workspace, manage all members (including other admins), update/delete the app</td></tr>
-    <tr><td><strong>Member</strong></td><td>Publish/unpublish and update the app, add lower-privileged members, share content (<em>&ldquo;can invite others with least privilege&rdquo; &rarr; Member</em>)</td></tr>
-    <tr><td><strong>Contributor</strong></td><td>Create/edit/delete workspace content, schedule refresh; cannot share or publish the app (unless an admin delegates &ldquo;update app&rdquo;)</td></tr>
-    <tr><td><strong>Viewer</strong></td><td>View and interact only; <em>the only role RLS applies to</em></td></tr>
+    <tr><td><strong>Admin</strong></td><td>Everything + delete workspace, manage all members, update/delete the app</td></tr>
+    <tr><td><strong>Member</strong></td><td>Publish/update the app, add lower members, share content ("invite others + least privilege" &rarr; Member)</td></tr>
+    <tr><td><strong>Contributor</strong></td><td>Create/edit/delete content, schedule refresh; cannot share or publish the app</td></tr>
+    <tr><td><strong>Viewer</strong></td><td>View and interact only; the only role RLS applies to</td></tr>
   </table>
   <ul>
-    <li>Notify a group about workspace issues: add it to the workspace <strong>contact list</strong> &mdash; no role needed (least privilege).</li>
-    <li><strong>Apps</strong>: the recommended way to distribute content to many viewers; support audiences, optional Build permission on underlying models, and Teams installation.</li>
-  </ul>
-  <h3>Sharing &amp; permissions</h3>
-  <ul>
-    <li>Semantic-model permissions: <strong>Read</strong> (view), <strong>Build</strong> (create reports on it / connect for analysis; required by Analyze in Excel), <strong>Reshare</strong>, <strong>Write</strong>.</li>
-    <li>&ldquo;Build their own reports on an existing model&rdquo; &rarr; grant <strong>Build</strong>; no workspace role required.</li>
-    <li><strong>Endorsement</strong>: Promoted (any owner) vs Certified (authorized certifiers appointed by the tenant admin) &mdash; &ldquo;financial-decision data must be reviewed and approved&rdquo; &rarr; Certified.</li>
-    <li><strong>Sensitivity labels</strong> (Microsoft Purview Information Protection): encrypt exported files (PDF/Excel/PPT) and prevent PII export; requires Azure Information Protection licensing.</li>
-    <li><strong>Lineage view</strong>: trace source &rarr; semantic model &rarr; report &rarr; dashboard dependencies and upstream impact.</li>
+    <li>Just want a group notified about workspace issues? Add it to the workspace <strong>contact list</strong> — no role needed.</li>
+    <li>Semantic-model permissions: <strong>Read</strong> / <strong>Build</strong> (build reports on it; required by Analyze in Excel) / <strong>Reshare</strong> / <strong>Write</strong>. "Let colleagues build their own reports on the model" &rarr; grant Build.</li>
+    <li><strong>Endorsement</strong>: Promoted (any owner) vs <strong>Certified</strong> (authorized certifiers only) — "financial data must be reviewed and approved" &rarr; Certified.</li>
+    <li><strong>Sensitivity labels</strong> (Microsoft Purview): protection that travels with exports; encrypt PDF/Excel output, prevent PII leaks.</li>
+    <li><strong>Lineage view</strong>: the source &rarr; model &rarr; report &rarr; dashboard dependency chain, for impact analysis.</li>
   </ul>
   <h3>Refresh &amp; gateways</h3>
   <ul>
-    <li>On-premises sources (file servers, SQL Server, intranet) need an <strong>on-premises data gateway</strong> (standard mode is shared, multi-source; personal mode is single-user).</li>
-    <li>Cloud sources (OneDrive, SharePoint Online, Azure SQL) need no gateway; OneDrive/SharePoint files sync roughly hourly.</li>
-    <li>Scheduled refresh: up to 8/day on shared capacity, 48/day on Premium. After ~2 months of inactivity refresh is <strong>disabled for inactivity</strong>; anyone opening a dependent dashboard/report resumes it.</li>
-    <li><strong>Incremental refresh</strong>: filters on <code>RangeStart</code>/<code>RangeEnd</code> parameters and refreshes only the newest partitions; requires query folding.</li>
-    <li>Refresh-failure notifications can go to the owner plus designated contacts in the semantic-model settings.</li>
+    <li>On-premises sources (SQL Server on your network, file servers) need an <strong>on-premises data gateway</strong>; standard mode is shared, personal mode is single-user.</li>
+    <li>Cloud sources (OneDrive, SharePoint Online, Azure SQL) need no gateway; OneDrive/SharePoint .pbix files sync roughly hourly.</li>
+    <li>Scheduled refresh: up to <strong>8/day</strong> on shared capacity, <strong>48/day</strong> on Premium. After ~2 months unused, refresh is disabled for inactivity; anyone opening a dependent report resumes it.</li>
+    <li><strong>Incremental refresh</strong>: partition on <code>RangeStart</code>/<code>RangeEnd</code> parameters, refresh only the newest slices.</li>
   </ul>
   <h3>Deployment &amp; governance</h3>
   <ul>
-    <li><strong>Deployment pipelines</strong>: Development &rarr; Test &rarr; Production; stage comparison and deployment rules (swap data sources/parameters per stage); needs Premium/PPU/Fabric capacity.</li>
-    <li><strong>.pbit templates</strong> keep the model/queries/report definition without data, and can prompt for parameters &mdash; &ldquo;share with colleagues for reuse without leaking data&rdquo; &rarr; .pbit.</li>
-    <li><strong>.pbip / Power BI Desktop developer mode</strong>: project format suited to version control.</li>
-    <li><strong>Usage metrics report</strong>: views and viewers per report/dashboard.</li>
-    <li><strong>Analyze in Excel</strong>: PivotTables over a semantic model; in Excel, Get Data &rarr; Power BI semantic model.</li>
+    <li><strong>Deployment pipelines</strong>: Development &rarr; Test &rarr; Production, with stage comparison and per-stage data-source rules; needs Premium/Fabric capacity.</li>
+    <li><strong>Usage metrics report</strong>: who viewed what, how often.</li>
+    <li><strong>Analyze in Excel</strong>: Excel PivotTables over a Power BI model (Build permission required).</li>
   </ul>
 
   <h2 id="g5">DAX cheat sheet</h2>
@@ -804,14 +881,15 @@ Rolling12 = CALCULATE ( [Sales Amount],
     <tr><td>Ranking</td><td><code>RANKX ( ALL ( Product[Name] ), [Total Sales] )</code></td></tr>
     <tr><td>Conditional measure</td><td><code>IF ( HASONEVALUE ( 'Date'[Year] ), [Total Sales], BLANK () )</code></td></tr>
   </table>
-  <div class="warn"><strong>Common traps:</strong> <code>SUM</code> accepts a single column only &mdash; row-level math needs <code>SUMX</code>. <code>COUNT</code> skips text blanks &mdash; count rows with <code>COUNTROWS</code>. Time intelligence needs a contiguous, marked date table.</div>
-  <p class="footnote">Notes follow the official Microsoft Learn skills outline. Cross-practice with the question bank for best results.</p>
+  <div class="warn"><strong>Common traps:</strong> <code>SUM</code> takes one column — row math needs <code>SUMX</code>; count rows with <code>COUNTROWS</code>; time intelligence needs a contiguous, marked date table.</div>
+  <p class="footnote">Follows the official Microsoft Learn skills outline; example images come from the question bank. Cross-practice with the question bank for best results.</p>
 </section>
+
 </main>
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786247591"></script>
+<script src="data.js?v=1786250565"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;
