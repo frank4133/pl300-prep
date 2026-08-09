@@ -516,7 +516,7 @@ pre.dax {
 <section id="page-exam" class="page">
   <div id="examSetup">
     <h1>模擬測驗</h1>
-    <p class="sub">從 245 題可自動計分的選擇題（單選/多選）中隨機抽題。熱區與拖曳題請至「題庫練習」逐題檢視。</p>
+    <p class="sub">從全部 382 題中隨機抽題，選擇題、熱區、拖曳互動題皆自動計分。</p>
     <div class="card">
       <div class="field-label">題數</div>
       <div class="radio-row">
@@ -563,7 +563,7 @@ pre.dax {
 <!-- ============ 題庫練習 ============ -->
 <section id="page-practice" class="page">
   <h1>題庫練習</h1>
-  <p class="sub">共 382 題，涵蓋所有題型。選擇題可直接作答並即時對答案；熱區/拖曳題以「顯示答案」檢視官方解析與答案圖。</p>
+  <p class="sub">共 382 題，涵蓋所有題型，皆可直接作答並即時對答案。</p>
   <div class="filters">
     <select id="fTopic"><option value="">全部主題</option></select>
     <select id="fType">
@@ -811,7 +811,7 @@ Rolling12 = CALCULATE ( [Sales Amount],
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786217049"></script>
+<script src="data.js?v=1786247591"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;
@@ -1255,13 +1255,13 @@ function startExam() {
   const count = +document.querySelector("input[name=exCount]:checked").value;
   const mins = +document.querySelector("input[name=exTime]:checked").value;
   const poolMode = document.querySelector("input[name=exPool]:checked").value;
-  let pool = QS.filter(q => q.type === "choice");
+  let pool = QS.filter(q => q.type === "choice" || (q.inter && q.inter.kind !== "manual"));
   if (poolMode === "unseen") {
     const unseen = pool.filter(q => !progress[q.id]);
     pool = unseen.length >= count ? unseen : unseen.concat(pool.filter(q => progress[q.id]));
   } else if (poolMode === "wrong") {
     pool = pool.filter(q => progress[q.id] && !progress[q.id].r);
-    if (!pool.length) { alert("目前沒有答錯的選擇題紀錄，請先練習或選擇其他出題方式。"); return; }
+    if (!pool.length) { alert("目前沒有答錯的題目紀錄，請先練習或選擇其他出題方式。"); return; }
   }
   const shuffled = pool.slice();
   for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
@@ -1289,7 +1289,7 @@ function renderExamNav(review) {
   document.getElementById("examNav").innerHTML = st.qs.map((q, i) => {
     let cls = [];
     if (review) cls.push(examRight(q, st.ans[q.id]) ? "rv-right" : "rv-wrong");
-    else { if (st.ans[q.id] && st.ans[q.id].length) cls.push("answered"); if (st.flags.has(q.id)) cls.push("flagged"); }
+    else { if (examAnswered(q)) cls.push("answered"); if (st.flags.has(q.id)) cls.push("flagged"); }
     if (i === st.cur) cls.push("cur");
     return `<button class="${cls.join(" ")}" onclick="examGoto(${i})">${i + 1}</button>`;
   }).join("");
@@ -1315,7 +1315,12 @@ function renderExamQ() {
   document.getElementById("flagBtn").classList.toggle("flag-on", st.flags.has(q.id));
   renderExamNav(false);
   const sel = st.ans[q.id] || [];
-  document.getElementById("examQ").innerHTML = caseBox(q) + `<div class="qbody">${renderLines(q.body)}</div>
+  const bodyHtml = caseBox(q) + `<div class="qbody">${renderLines(q.body)}</div>`;
+  if (q.inter) {
+    document.getElementById("examQ").innerHTML = bodyHtml + examInterHTML(q);
+    return;
+  }
+  document.getElementById("examQ").innerHTML = bodyHtml + `
     <ul class="opts">` + q.options.map(o =>
       `<li class="${sel.includes(o.letter) ? "sel" : ""}" onclick="examPick('${o.letter}')"><span class="letter">${o.letter}</span><span>${esc(o.text)}</span></li>`).join("") + "</ul>";
 }
@@ -1329,11 +1334,82 @@ function examPick(letter) {
 }
 function examRight(q, sel) {
   if (!sel || !sel.length) return false;
-  return sel.slice().sort().join("") === q.correct.split("").sort().join("");
+  if (!q.inter) return sel.slice().sort().join("") === q.correct.split("").sort().join("");
+  const it = q.inter;
+  if (it.kind === "yesno") return it.statements.every((s, i) => sel[i] === s.answer);
+  if (it.kind === "select") return it.boxes.every((b, i) => sel[i] === b.answer);
+  if (it.kind === "order") return sel.length === it.sequence.length && sel.every((x, i) => it.pool[x] === it.sequence[i]);
+  return false;
 }
+
+function examAnswered(q) {
+  const a = examState.ans[q.id];
+  if (!a) return false;
+  if (!q.inter) return a.length > 0;
+  const it = q.inter;
+  if (it.kind === "yesno") return it.statements.every((s, i) => !!a[i]);
+  if (it.kind === "select") return it.boxes.every((b, i) => !!a[i]);
+  if (it.kind === "order") return a.length === it.sequence.length;
+  return false;
+}
+function examInterHTML(q) {
+  const it = q.inter, a = examState.ans[q.id] || [];
+  if (it.kind === "yesno") {
+    return '<div class="inter">' + it.statements.map((s, i) =>
+      `<div class="yn-row"><div class="yn-text">${esc(s.text)}</div><div class="yn-btns">` +
+      ["Yes", "No"].map(v => `<button class="btn small ${a[i] === v ? "sel" : ""}" onclick="examPart(${q.id},${i},'${v}')">${v}</button>`).join("") +
+      `</div></div>`).join("") + "</div>";
+  }
+  if (it.kind === "select") {
+    return '<div class="inter">' + it.boxes.map((b, i) =>
+      `<div class="ibox"><span class="ilabel">${esc(b.label)}</span><select onchange="examPart(${q.id},${i},this.value)"><option value="">-- 請選擇 --</option>` +
+      b.options.map(o => `<option ${a[i] === o ? "selected" : ""}>${esc(o)}</option>`).join("") + `</select></div>`).join("") + "</div>";
+  }
+  if (it.kind === "order") {
+    return `<div class="inter"><div class="order-wrap"><div class="inter-note">依正確順序點選動作，再點一次可取消：</div><div class="order-pool">` +
+      it.pool.map((p, i) => {
+        const pos = a.indexOf(i);
+        return `<button class="${pos >= 0 ? "picked" : ""}" onclick="examOrder(${q.id},${i})"><span class="seqn">${pos >= 0 ? pos + 1 : ""}</span><span>${esc(p)}</span></button>`;
+      }).join("") + `</div></div></div>`;
+  }
+  return "";
+}
+function examPart(qid, i, val) {
+  const a = examState.ans[qid] || (examState.ans[qid] = []);
+  a[i] = val;
+  renderExamQ();
+}
+function examOrder(qid, i) {
+  const a = examState.ans[qid] || (examState.ans[qid] = []);
+  const pos = a.indexOf(i);
+  if (pos >= 0) a.splice(pos, 1); else a.push(i);
+  renderExamQ();
+}
+function reviewInterHTML(q, sel) {
+  const it = q.inter;
+  sel = sel || [];
+  let h = '<div class="inter locked">';
+  if (it.kind === "yesno") {
+    h += it.statements.map((s, i) => {
+      const ok = sel[i] === s.answer;
+      return `<div class="yn-row ${ok ? "right" : "wrong"}"><div class="yn-text">${esc(s.text)}${ok ? "" : `<div class="corr">正確答案：${esc(s.answer)}</div>`}</div><div class="yn-btns"><span class="chip">${esc(sel[i] || "\u2014")}</span></div></div>`;
+    }).join("");
+  } else if (it.kind === "select") {
+    h += it.boxes.map((b, i) => {
+      const ok = sel[i] === b.answer;
+      return `<div class="ibox ${ok ? "right" : "wrong"}"><span class="ilabel">${esc(b.label)}</span><span>${esc(sel[i] || "\u2014")}</span>${ok ? "" : `<span class="corr">正確答案：${esc(b.answer)}</span>`}</div>`;
+    }).join("");
+  } else if (it.kind === "order") {
+    const user = sel.map(i => it.pool[i]);
+    const ok = examRight(q, sel);
+    h += `<div class="order-wrap ${ok ? "right" : "wrong"}"><div>${user.length ? user.map((x, n) => (n + 1) + ". " + esc(x)).join("<br>") : "\u2014"}</div>${ok ? "" : `<div class="corr">正確答案：${it.sequence.map((x, n) => (n + 1) + ". " + esc(x)).join("&nbsp;&nbsp;")}</div>`}</div>`;
+  }
+  return h + "</div>";
+}
+
 function confirmSubmit() {
   const st = examState;
-  const un = st.qs.filter(q => !(st.ans[q.id] && st.ans[q.id].length)).length;
+  const un = st.qs.filter(q => !examAnswered(q)).length;
   if (!confirm(un ? `還有 ${un} 題未作答，確定要交卷嗎？` : "確定要交卷嗎？")) return;
   finishExam(false);
 }
@@ -1390,6 +1466,12 @@ function renderReviewQ() {
   const right = examRight(q, sel);
   document.getElementById("examPos").textContent = `第 ${st.cur + 1} / ${st.qs.length} 題 · T${q.topic}#${q.num}`;
   renderExamNav(true);
+  if (q.inter) {
+    document.getElementById("examQ").innerHTML = caseBox(q) + `<div class="qbody">${renderLines(q.body)}</div>` +
+      reviewInterHTML(q, sel) +
+      `<div class="verdict ${right ? "ok" : "no"}">${right ? "\u2713" : "\u2717"}</div>` + explHTML(q);
+    return;
+  }
   document.getElementById("examQ").innerHTML = caseBox(q) + `<div class="qbody">${renderLines(q.body)}</div>
     <ul class="opts">` + q.options.map(o => {
       let cls = ["locked"];
