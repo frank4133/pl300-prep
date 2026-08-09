@@ -963,7 +963,7 @@ Rolling12 = CALCULATE ( [Revenue],
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786262657"></script>
+<script src="data.js?v=1786281740"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;
@@ -1206,8 +1206,16 @@ function qDetailHTML(q) {
   const prev = progress[q.id];
   if (prev) {
     if (q.type === "choice") {
-      html += `<ul class="opts">` + q.options.map(o =>
-        `<li class="locked ${q.correct.includes(o.letter) ? "right" : "dim"}"><span class="letter">${o.letter}</span><span>${esc(o.text)}</span></li>`).join("") + "</ul>";
+      const picked = prev.a || [];
+      html += `<ul class="opts">` + q.options.map(o => {
+        const cls = ["locked"];
+        if (q.correct.includes(o.letter)) cls.push("right");
+        else if (picked.includes(o.letter)) cls.push("wrong");
+        else cls.push("dim");
+        return `<li class="${cls.join(" ")}"><span class="letter">${o.letter}</span><span>${esc(o.text)}</span></li>`;
+      }).join("") + "</ul>";
+    } else if (q.inter && q.inter.kind !== "manual") {
+      html += reviewInterHTML(q, prev.a || null);
     }
     html += `<div class="verdict ${prev.r ? "ok" : "no"}">Previous attempt: ${prev.r ? "✓ Correct" : "✗ Missed"}</div>` + explHTML(q) +
       `<div class="rowbtns"><button class="btn small" onclick="clearRecord(${q.id})">Retry (clear this record)</button></div>`;
@@ -1291,13 +1299,14 @@ function gradeInter(qid) {
   const q = QS.find(x => x.id === qid);
   const it = q.inter;
   const root = document.getElementById("in" + qid);
-  let total = 0, good = 0;
+  let total = 0, good = 0, picks = [];
   if (it.kind === "yesno") {
     const rows = [...root.querySelectorAll(".yn-row")];
     if (rows.some(r => !r.dataset.pick)) { alert("Please answer every part first"); return; }
     rows.forEach(r => {
       const s = it.statements[parseInt(r.dataset.i)];
       total++;
+      picks[parseInt(r.dataset.i)] = r.dataset.pick;
       const ok = r.dataset.pick === s.answer;
       if (ok) good++;
       r.classList.add(ok ? "right" : "wrong");
@@ -1309,6 +1318,7 @@ function gradeInter(qid) {
     boxes.forEach(b => {
       const spec = it.boxes[parseInt(b.dataset.i)];
       total++;
+      picks[parseInt(b.dataset.i)] = b.querySelector("select").value;
       const ok = b.querySelector("select").value === spec.answer;
       if (ok) good++;
       b.classList.add(ok ? "right" : "wrong");
@@ -1318,6 +1328,7 @@ function gradeInter(qid) {
     const st = interState[qid];
     if (st.seq.length !== it.sequence.length) { alert("Pick {n} actions in order for this question".replace("{n}", it.sequence.length)); return; }
     total = 1;
+    picks = st.seq.slice();
     const picked = st.seq.map(i => it.pool[i]);
     const ok = picked.join("\u0001") === it.sequence.join("\u0001");
     if (ok) good = 1;
@@ -1327,7 +1338,7 @@ function gradeInter(qid) {
   }
   root.classList.add("locked");
   const allOk = good === total;
-  saveResult(qid, allOk);
+  saveResult(qid, allOk, picks);
   document.getElementById("fb" + qid).innerHTML =
     `<div class="verdict ${allOk ? "ok" : "no"}">${allOk ? "✓ All correct!" : "{g} / {t} parts correct".replace("{g}", good).replace("{t}", total)}</div>` + explHTML(q) + `<div class="rowbtns"><button class="btn small" onclick="clearRecord(${qid})">Retry (clear this record)</button></div>`;
 }
@@ -1441,8 +1452,8 @@ function clearRecord(qid) {
   schedSync();
   renderPQ();
 }
-function saveResult(qid, right) {
-  progress[qid] = { r: right };
+function saveResult(qid, right, picks) {
+  progress[qid] = picks === undefined ? { r: right } : { r: right, a: picks };
   LS.set("pl300_progress", progress);
   schedSync();
   if (document.getElementById("page-practice").classList.contains("active")) renderPList();
@@ -1461,7 +1472,7 @@ function pickOpt(qid, letter, li) {
     else if (L === letter) el.classList.add("wrong");
     else el.classList.add("dim");
   });
-  saveResult(qid, right);
+  saveResult(qid, right, [letter]);
   document.getElementById("fb" + qid).innerHTML =
     `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ Correct!" : "✗ Incorrect"}</div>` + explHTML(q) + `<div class="rowbtns"><button class="btn small" onclick="clearRecord(${qid})">Retry (clear this record)</button></div>`;
 }
@@ -1480,7 +1491,7 @@ function gradeMulti(qid) {
     else if (sel.includes(L)) el.classList.add("wrong");
     else el.classList.add("dim");
   });
-  saveResult(qid, right);
+  saveResult(qid, right, sel);
   document.getElementById("fb" + qid).innerHTML =
     `<div class="verdict ${right ? "ok" : "no"}">${right ? "✓ Correct!" : "✗ Incorrect"}</div>` + explHTML(q) + `<div class="rowbtns"><button class="btn small" onclick="clearRecord(${qid})">Retry (clear this record)</button></div>`;
 }
@@ -1646,19 +1657,23 @@ function examOrder(qid, i) {
 }
 function reviewInterHTML(q, sel) {
   const it = q.inter;
+  const unknown = !sel;
   sel = sel || [];
   let h = '<div class="inter locked">';
   if (it.kind === "yesno") {
     h += it.statements.map((s, i) => {
       const ok = sel[i] === s.answer;
+      if (unknown) return `<div class="yn-row"><div class="yn-text">${esc(s.text)}<div class="corr">Correct: ${esc(s.answer)}</div></div></div>`;
       return `<div class="yn-row ${ok ? "right" : "wrong"}"><div class="yn-text">${esc(s.text)}${ok ? "" : `<div class="corr">Correct: ${esc(s.answer)}</div>`}</div><div class="yn-btns"><span class="chip">${esc(sel[i] || "\u2014")}</span></div></div>`;
     }).join("");
   } else if (it.kind === "select") {
     h += it.boxes.map((b, i) => {
       const ok = sel[i] === b.answer;
+      if (unknown) return `<div class="ibox"><span class="ilabel">${esc(b.label)}</span><span class="corr">Correct: ${esc(b.answer)}</span></div>`;
       return `<div class="ibox ${ok ? "right" : "wrong"}"><span class="ilabel">${esc(b.label)}</span><span>${esc(sel[i] || "\u2014")}</span>${ok ? "" : `<span class="corr">Correct: ${esc(b.answer)}</span>`}</div>`;
     }).join("");
   } else if (it.kind === "order") {
+    if (unknown) return h + `<div class="order-wrap"><div class="corr">Correct: ${it.sequence.map((x, n) => (n + 1) + ". " + esc(x)).join("&nbsp;&nbsp;")}</div></div></div>`;
     const user = sel.map(i => it.pool[i]);
     const ok = examRight(q, sel);
     h += `<div class="order-wrap ${ok ? "right" : "wrong"}"><div>${user.length ? user.map((x, n) => (n + 1) + ". " + esc(x)).join("<br>") : "\u2014"}</div>${ok ? "" : `<div class="corr">Correct: ${it.sequence.map((x, n) => (n + 1) + ". " + esc(x)).join("&nbsp;&nbsp;")}</div>`}</div>`;
@@ -1681,7 +1696,7 @@ function finishExam(auto) {
   st.qs.forEach(q => {
     const r = examRight(q, st.ans[q.id]);
     if (r) correct++;
-    saveResult(q.id, r);
+    saveResult(q.id, r, st.ans[q.id] || []);
   });
   const score = Math.round(correct / st.qs.length * 1000);
   const usedMin = Math.round((Date.now() - st.startAt) / 60000);
