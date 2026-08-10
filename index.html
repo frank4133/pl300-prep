@@ -150,6 +150,12 @@ main { max-width: 1500px; margin: 0 auto; padding: 28px 24px 96px; }
 .badge.t-hotspot { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, transparent); }
 .badge.t-dragdrop { color: var(--code-text); border-color: color-mix(in srgb, var(--code-text) 40%, transparent); }
 .badge.t-case { color: var(--text-2); }
+.badge.t-dup { color: var(--text-3); border-style: dashed; }
+.badge.t-ser { color: var(--text-3); border-style: dashed; }
+.qnote-tip {
+  margin-top: 14px; padding: 9px 12px; border-radius: 8px; font-size: 12.5px; line-height: 1.7;
+  color: var(--text-2); background: var(--surface-2); border: 1px solid var(--hairline);
+}
 .badge.st-right { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, transparent); }
 .badge.st-wrong { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 40%, transparent); }
 .qid {
@@ -247,7 +253,7 @@ pre.dax {
 
 /* ---------- 左右分欄 ---------- */
 #pCard { scroll-margin-top: 70px; }
-.psplit { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 16px; align-items: start; }
+.psplit { display: grid; grid-template-columns: 248px minmax(0, 1fr); gap: 16px; align-items: start; }
 .pside {
   position: sticky; top: 70px; max-height: calc(100vh - 92px);
   display: flex; flex-direction: column; overflow: hidden;
@@ -259,21 +265,30 @@ pre.dax {
 }
 .legend { display: inline-flex; align-items: center; gap: 5px; }
 .dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
-.pside-list { overflow-y: auto; overscroll-behavior: contain; }
-.pitem {
-  display: flex; gap: 10px; align-items: center; padding: 8px 14px;
-  font-size: 13px; cursor: pointer; color: var(--text-2);
-  border-top: 1px solid var(--hairline);
-  transition: background .15s ease-out;
+.pside-list { overflow-y: auto; overscroll-behavior: contain; padding: 10px; }
+.pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(31px, 1fr)); gap: 5px; }
+.pgrid-hd {
+  display: flex; align-items: baseline; gap: 6px; margin: 14px 2px 8px;
+  font-size: 11.5px; color: var(--text-3); letter-spacing: .02em;
 }
-.pitem:first-child { border-top: none; }
-.pitem:hover { background: var(--surface-2); }
-.pitem.cur { background: var(--accent-soft); color: var(--text-1); box-shadow: inset 2px 0 0 var(--accent); }
-.pitem.r { }
-.pitem.w { }
-.pitem .num { font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--text-3); min-width: 30px; }
-.pitem .tno { font-family: "JetBrains Mono", monospace; font-size: 12px; white-space: nowrap; flex: 1; }
-.pitem .ic { font-size: 12px; min-width: 14px; text-align: center; }
+.pgrid-hd:first-child { margin-top: 2px; }
+.pgrid-hd .n { font-family: "JetBrains Mono", monospace; }
+.pcell {
+  position: relative; aspect-ratio: 1; display: grid; place-items: center;
+  font-family: "JetBrains Mono", monospace; font-size: 11.5px; line-height: 1;
+  border: 1px solid var(--hairline-strong); border-radius: 7px;
+  background: var(--surface-2); color: var(--text-2); cursor: pointer;
+  transition: border-color .12s ease-out, background .12s ease-out;
+}
+.pcell:hover { border-color: var(--text-3); background: var(--surface-3); }
+.pcell.r { border-color: color-mix(in srgb, var(--ok) 60%, transparent); background: var(--ok-soft); color: var(--ok); }
+.pcell.w { border-color: color-mix(in srgb, var(--bad) 60%, transparent); background: var(--bad-soft); color: var(--bad); }
+.pcell.cur { border-color: var(--accent); background: var(--accent); color: #fff; font-weight: 600; }
+.pcell.cur::after { content: ""; position: absolute; inset: -3px; border: 1px solid var(--accent); border-radius: 9px; opacity: .45; }
+.pcell .mk { position: absolute; top: 2px; right: 2px; width: 5px; height: 5px; border-radius: 50%; background: var(--warn); }
+.pcell .nt { position: absolute; bottom: 2px; left: 2px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-text); }
+.pcell.cur .mk, .pcell.cur .nt { box-shadow: 0 0 0 1.5px var(--accent); }
+.pcell.ser { border-style: dashed; }
 #pSideBtn { display: none; align-items: center; gap: 7px; }
 #pSideBtn svg { width: 14px; height: 14px; }
 .pbackdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 55; }
@@ -455,7 +470,7 @@ pre.dax {
 @media (max-width: 860px) {
   .psplit { display: block; }
   .pside {
-    position: fixed; top: 54px; left: 0; bottom: 0; width: min(50vw, 300px);
+    position: fixed; top: 54px; left: 0; bottom: 0; width: min(74vw, 320px);
     max-height: none; z-index: 60; border-radius: 0 12px 0 0;
     transform: translateX(-105%);
     transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1);
@@ -480,7 +495,7 @@ pre.dax {
   .pbar { flex-wrap: nowrap; }
   .pbar .ppos { white-space: nowrap; font-size: 11.5px; flex: none; }
   .pbar .btn { padding: 8px 10px; font-size: 13px; white-space: nowrap; }
-  .filters select { flex: 1 1 0; min-width: 0; padding: 8px 6px; font-size: 13px; }
+  .filters select { flex: 1 1 calc(50% - 5px); min-width: 0; padding: 8px 6px; font-size: 13px; }
   .filters input[type=text] { flex: 1 1 100%; min-width: 0; }
   #pSideBtn .pslabel { display: none; }
   #pSideBtn { padding: 8px 9px; }
@@ -607,6 +622,12 @@ pre.dax {
       <option value="mark">已收藏</option>
       <option value="note">有筆記</option>
     </select>
+    <select id="fKind">
+      <option value="">全部題目</option>
+      <option value="core">排除重複改寫題</option>
+      <option value="dup">只看重複改寫題</option>
+      <option value="ser">只看情境系列題</option>
+    </select>
     <input type="text" id="fSearch" placeholder="搜尋關鍵字，例如 DAX、RLS、gateway…">
   </div>
   <div class="sub" id="fCount"></div>
@@ -616,6 +637,7 @@ pre.dax {
         <span class="legend"><span class="dot" style="background:var(--ok)"></span>答對</span>
         <span class="legend"><span class="dot" style="background:var(--bad)"></span>答錯</span>
         <span class="legend"><span class="dot" style="background:var(--warn)"></span>收藏</span>
+        <span class="legend"><span class="dot" style="background:var(--accent-text)"></span>筆記</span>
       </div>
       <div class="pside-list" id="pSideList"></div>
     </aside>
@@ -975,7 +997,7 @@ Rolling12 = CALCULATE ( [營收],
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786338512"></script>
+<script src="data.js?v=1786339588"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;
@@ -995,7 +1017,9 @@ function typeBadge(q) {
   const k = typeKey(q);
   const cls = { single: "t-choice", multi: "t-multi", hotspot: "t-hotspot", dragdrop: "t-dragdrop" }[k];
   const lbl = { single: "單選", multi: "多選", hotspot: "熱區", dragdrop: "拖曳" }[k];
-  return `<span class="badge ${cls}">${lbl}</span>` + (q.hasCase ? '<span class="badge t-case">案例</span>' : "");
+  return `<span class="badge ${cls}">${lbl}</span>` + (q.hasCase ? '<span class="badge t-case">案例</span>' : "") +
+    (q.dup && !q.dup.rep ? '<span class="badge t-dup">重複改寫</span>' : "") +
+    (q.ser ? '<span class="badge t-ser">情境系列</span>' : "");
 }
 function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
@@ -1119,7 +1143,7 @@ const fTopic = document.getElementById("fTopic");
   const n = QS.filter(q => q.topic === t).length;
   fTopic.insertAdjacentHTML("beforeend", `<option value="${t}">Topic ${t}${t >= 6 ? "（案例）" : ""} — ${n} 題</option>`);
 });
-["fTopic", "fType", "fStatus"].forEach(id => document.getElementById(id).onchange = renderList);
+["fTopic", "fType", "fStatus", "fKind"].forEach(id => document.getElementById(id).onchange = renderList);
 document.getElementById("fSearch").oninput = () => { clearTimeout(window._st); window._st = setTimeout(renderList, 250); };
 
 let pList = [], pIdx = 0;
@@ -1135,13 +1159,21 @@ function renderList() {
     if (st === "wrong" && !(progress[q.id] && !progress[q.id].r)) return false;
     if (st === "mark" && !marks.has(q.id)) return false;
     if (st === "note" && !notes[q.id]) return false;
+    const kd = document.getElementById("fKind").value;
+    if (kd === "core" && q.dup && !q.dup.rep) return false;
+    if (kd === "dup" && !q.dup) return false;
+    if (kd === "ser" && !q.ser) return false;
     if (kw) {
       const hay = (q.body.join(" ") + " " + q.options.map(o => o.text).join(" ")).toLowerCase();
       if (!hay.includes(kw)) return false;
     }
     return true;
   });
-  document.getElementById("fCount").textContent = `符合條件：${pList.length} 題`;
+  // 重複改寫題排到最後，與側欄的兩個區塊順序一致
+  pList.sort((a, b) => ((a.dup && !a.dup.rep) ? 1 : 0) - ((b.dup && !b.dup.rep) ? 1 : 0) || a.id - b.id);
+  const nDup = pList.filter(q => q.dup && !q.dup.rep).length;
+  document.getElementById("fCount").textContent = `符合條件：${pList.length} 題` +
+    (nDup ? `（其中 ${nDup} 題為重複改寫題，已排在最後）` : "");
   const lastId = LS.get("pl300_lastq", null);
   const keep = pList.findIndex(q => q.id === lastId);
   pIdx = keep >= 0 ? keep : 0;
@@ -1172,21 +1204,35 @@ function renderPQ(scroll) {
   renderPList();
   if (scroll) window.scrollTo({ top: 0 });
 }
+function cellHTML(q, i) {
+  const p = progress[q.id];
+  const cls = ["pcell"];
+  if (p) cls.push(p.r ? "r" : "w");
+  if (i === pIdx) cls.push("cur");
+  if (q.ser) cls.push("ser");
+  const st = p ? (p.r ? "答對" : "答錯") : "未作答";
+  const tip = `T${q.topic}#${q.num}　${TYPE_LABEL[typeKey(q) === "single" ? "choice" : typeKey(q)] || ""}　${st}` +
+    (marks.has(q.id) ? "　★收藏" : "") + (notes[q.id] ? "　✎有筆記" : "") +
+    (q.ser ? "　情境系列題" : "") + (q.dup ? (q.dup.rep ? "　重複題代表" : "　重複改寫題") : "");
+  return `<div class="${cls.join(" ")}" title="${tip}" onclick="pIdx=${i};renderPQ(true);togglePSide(false)">${i + 1}` +
+    (marks.has(q.id) ? '<span class="mk"></span>' : "") +
+    (notes[q.id] ? '<span class="nt"></span>' : "") + `</div>`;
+}
 function renderPList() {
   const el = document.getElementById("pSideList");
-  el.innerHTML = pList.map((q, i) => {
-    const p = progress[q.id];
-    const cls = ["pitem"];
-    if (p) cls.push(p.r ? "r" : "w");
-    if (i === pIdx) cls.push("cur");
-    const icColor = marks.has(q.id) ? "var(--warn)" : (p ? (p.r ? "var(--ok)" : "var(--bad)") : "var(--text-3)");
-    const icon = marks.has(q.id) ? "★" : (p ? (p.r ? "✓" : "✗") : "");
-    const nIc = notes[q.id] ? `<span class="ic" style="color:var(--accent-text)">✎</span>` : "";
-    return `<div class="${cls.join(" ")}" onclick="pIdx=${i};renderPQ(true);togglePSide(false)">
-      <span class="num">${String(i + 1).padStart(3, "0")}</span><span class="tno">T${q.topic}#${q.num}</span>
-      ${nIc}<span class="ic" style="color:${icColor}">${icon}</span></div>`;
-  }).join("");
-  const cur = el.children[pIdx];
+  const core = [], dups = [];
+  pList.forEach((q, i) => (q.dup && !q.dup.rep ? dups : core).push([q, i]));
+  let h = "";
+  if (core.length) {
+    h += `<div class="pgrid-hd"><span>核心題目</span><span class="n">${core.length}</span></div>`;
+    h += `<div class="pgrid">` + core.map(([q, i]) => cellHTML(q, i)).join("") + `</div>`;
+  }
+  if (dups.length) {
+    h += `<div class="pgrid-hd"><span>重複改寫題</span><span class="n">${dups.length}</span></div>`;
+    h += `<div class="pgrid">` + dups.map(([q, i]) => cellHTML(q, i)).join("") + `</div>`;
+  }
+  el.innerHTML = h;
+  const cur = el.querySelector(".pcell.cur");
   if (cur && cur.offsetTop !== undefined) el.scrollTop = cur.offsetTop - el.clientHeight / 2;
 }
 function togglePSide(force) {
@@ -1256,8 +1302,20 @@ function noteInput(qid) {
   if (had !== !!notes[qid]) renderPList();
 }
 
+function dupTip(q) {
+  if (q.dup && !q.dup.rep) {
+    const rep = QS.find(x => x.dup && x.dup.g === q.dup.g && x.dup.rep);
+    return `<div class="qnote-tip">🔁 本題與 <strong>T${rep.topic}#${rep.num}</strong> 實質相同（多半只換了用語，例如 dataset 改稱 semantic model），答案也一致。時間有限時可略過，用篩選器的「排除重複改寫題」即可隱藏。</div>`;
+  }
+  if (q.ser) {
+    const sibs = QS.filter(x => x.ser === q.ser && x.id !== q.id);
+    return `<div class="qnote-tip">🧩 <strong>情境系列題</strong>：本題與 ${sibs.map(x => `T${x.topic}#${x.num}`).join("、")} 共用同一個情境，但各自提出<strong>不同的解決方案</strong>問你是否可行——答案通常不同，看起來像重複，其實每題都要練。</div>`;
+  }
+  return "";
+}
+
 function qDetailHTML(q) {
-  let html = caseBox(q) + `<div class="qbody">${renderLines(q.body)}</div>`;
+  let html = caseBox(q) + `<div class="qbody">${renderLines(q.body)}</div>` + dupTip(q);
   const prev = progress[q.id];
   if (prev) {
     if (q.type === "choice") {
