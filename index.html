@@ -418,6 +418,7 @@ pre.dax {
 
 .expl.ai .hd { color: var(--accent-text); }
 .ai-sec { font-weight: 600; color: var(--accent-text); margin: 14px 0 8px; }
+.ai-sec.warn { color: var(--warn); }
 
 /* ---------- 我的筆記 ---------- */
 .notebox { margin-top: 16px; border: 1px solid var(--hairline-strong); border-radius: 8px; background: var(--surface-2); }
@@ -974,7 +975,7 @@ Rolling12 = CALCULATE ( [營收],
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786283437"></script>
+<script src="data.js?v=1786337601"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;
@@ -1293,7 +1294,7 @@ function aiHTML(txt) {
     if (m) return `<div class="ai-opt"><span class="ai-tag ${m[2] === "✓" ? "ok" : "no"}">${m[1]} ${m[2]}</span><span>${esc(m[3].trim())}</span></div>`;
     m = line.match(/^([✓✗])\s*(.+)$/);
     if (m) return `<div class="ai-opt"><span class="ai-tag ${m[1] === "✓" ? "ok" : "no"}">${m[1]}</span><span>${esc(m[2].trim())}</span></div>`;
-    if (/^【.+】$/.test(line)) return `<p class="ai-sec">${esc(line.slice(1, -1))}</p>`;
+    if (/^【.+】$/.test(line)) return `<p class="ai-sec${line.includes("⚠") ? " warn" : ""}">${esc(line.slice(1, -1))}</p>`;
     return `<p>${esc(line)}</p>`;
   }).join("");
 }
