@@ -265,7 +265,7 @@ pre.dax {
 }
 .legend { display: inline-flex; align-items: center; gap: 5px; }
 .dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
-.pside-list { overflow-y: auto; overscroll-behavior: contain; padding: 10px; }
+.pside-list { overflow: hidden auto; overscroll-behavior: contain; padding: 10px; }
 .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(31px, 1fr)); gap: 5px; }
 .pgrid-hd {
   display: flex; align-items: baseline; gap: 6px; margin: 14px 2px 8px;
@@ -283,8 +283,12 @@ pre.dax {
 .pcell:hover { border-color: var(--text-3); background: var(--surface-3); }
 .pcell.r { border-color: color-mix(in srgb, var(--ok) 60%, transparent); background: var(--ok-soft); color: var(--ok); }
 .pcell.w { border-color: color-mix(in srgb, var(--bad) 60%, transparent); background: var(--bad-soft); color: var(--bad); }
-.pcell.cur { border-color: var(--accent); background: var(--accent); color: #fff; font-weight: 600; }
-.pcell.cur::after { content: ""; position: absolute; inset: -3px; border: 1px solid var(--accent); border-radius: 9px; opacity: .45; }
+/* box-shadow instead of an inset ::after ring: takes no layout width, so no stray horizontal scrollbar */
+.pcell.cur {
+  border-color: var(--accent); background: var(--accent); color: #fff; font-weight: 600;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 32%, transparent);
+}
+.pcell .tno { display: none; }
 .pcell .mk { position: absolute; top: 2px; right: 2px; width: 5px; height: 5px; border-radius: 50%; background: var(--warn); }
 .pcell .nt { position: absolute; bottom: 2px; left: 2px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-text); }
 .pcell.cur .mk, .pcell.cur .nt { box-shadow: 0 0 0 1.5px var(--accent); }
@@ -477,6 +481,16 @@ pre.dax {
     box-shadow: 4px 0 24px rgba(0,0,0,.3);
   }
   .pside.open { transform: none; }
+  /* wider drawer: three per row, with the question number spelled out.
+     minmax(0,1fr) keeps columns from being widened by their content */
+  .pgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+  .pcell {
+    aspect-ratio: auto; height: 44px; grid-auto-flow: column;
+    gap: 5px; font-size: 12.5px; padding: 0 3px; overflow: hidden;
+  }
+  .pcell .tno { display: inline; font-size: 10px; color: var(--text-3); }
+  .pcell.r .tno, .pcell.w .tno { color: inherit; opacity: .7; }
+  .pcell.cur .tno { color: rgba(255,255,255,.82); }
   #pSideBtn { display: inline-flex; }
   .keyhint { display: none; }
   .pbar { padding: 8px 10px; gap: 6px; }
@@ -996,7 +1010,7 @@ Rolling12 = CALCULATE ( [Revenue],
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786339588"></script>
+<script src="data.js?v=1786340358"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;
@@ -1213,6 +1227,7 @@ function cellHTML(q, i) {
     (marks.has(q.id) ? " · bookmarked" : "") + (notes[q.id] ? " · has note" : "") +
     (q.ser ? " · scenario series" : "") + (q.dup ? (q.dup.rep ? " · duplicate original" : " · reworded duplicate") : "");
   return `<div class="${cls.join(" ")}" title="${tip}" onclick="pIdx=${i};renderPQ(true);togglePSide(false)">${i + 1}` +
+    `<span class="tno">T${q.topic}#${q.num}</span>` +
     (marks.has(q.id) ? '<span class="mk"></span>' : "") +
     (notes[q.id] ? '<span class="nt"></span>' : "") + `</div>`;
 }
