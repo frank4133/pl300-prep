@@ -217,6 +217,11 @@ pre.dax {
 
 /* ---------- 篩選列 ---------- */
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; align-items: center; }
+/* 題庫練習頁：標題與篩選器同一列，把捲到頂後的無用空白壓到最小 */
+.ptop { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
+.ptop h1 { font-size: 19px; margin: 0; flex: none; }
+.ptop .filters { margin: 0; flex: 1 1 420px; min-width: 0; }
+.fcount { color: var(--text-3); font-size: 12.5px; margin-bottom: 12px; }
 .filters select, .filters input[type=text] {
   background: var(--surface-1); color: var(--text-1); border: 1px solid var(--hairline-strong);
   border-radius: 6px; padding: 8px 12px; font-size: 14px; font-family: inherit;
@@ -510,6 +515,11 @@ pre.dax {
   .pbar .btn { padding: 8px 10px; font-size: 13px; white-space: nowrap; }
   .filters select { flex: 1 1 calc(50% - 5px); min-width: 0; padding: 8px 6px; font-size: 13px; }
   .filters input[type=text] { flex: 1 1 100%; min-width: 0; }
+  /* 導覽列已標示目前分頁，手機版省下標題那一行 */
+  .ptop h1 { display: none; }
+  .ptop { gap: 0; margin-bottom: 6px; }
+  .fcount { margin-bottom: 10px; }
+  #pCard { scroll-margin-top: 100px; }  /* 手機版頂欄較高（導覽換行） */
   #pSideBtn .pslabel { display: none; }
   #pSideBtn { padding: 8px 9px; }
   main { padding: 18px 12px 72px; }
@@ -616,8 +626,8 @@ pre.dax {
 
 <!-- ============ 題庫練習 ============ -->
 <section id="page-practice" class="page">
+  <div class="ptop">
   <h1>題庫練習</h1>
-  <p class="sub">共 382 題，涵蓋所有題型，皆可直接作答並即時對答案。</p>
   <div class="filters">
     <select id="fTopic"><option value="">全部主題</option></select>
     <select id="fType">
@@ -643,7 +653,8 @@ pre.dax {
     </select>
     <input type="text" id="fSearch" placeholder="搜尋關鍵字，例如 DAX、RLS、gateway…">
   </div>
-  <div class="sub" id="fCount"></div>
+  </div>
+  <div class="fcount" id="fCount"></div>
   <div class="psplit">
     <aside class="pside" id="pSide">
       <div class="pside-head">
@@ -1010,7 +1021,7 @@ Rolling12 = CALCULATE ( [營收],
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786340358"></script>
+<script src="data.js?v=1786344658"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;
@@ -1215,7 +1226,11 @@ function renderPQ(scroll) {
   </div>`;
   document.getElementById("pPos").textContent = `第 ${pIdx + 1} / ${pList.length} 題`;
   renderPList();
-  if (scroll) window.scrollTo({ top: 0 });
+  // 對齊題目卡而非頁面頂端，換題後不必再往下捲過篩選列
+  if (scroll) {
+    if (el.scrollIntoView) el.scrollIntoView({ block: "start" });
+    else window.scrollTo({ top: 0 });
+  }
 }
 function cellHTML(q, i) {
   const p = progress[q.id];

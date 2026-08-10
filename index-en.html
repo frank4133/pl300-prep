@@ -217,6 +217,11 @@ pre.dax {
 
 /* ---------- filters ---------- */
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; align-items: center; }
+/* Question bank: title and filters share one row, minimising dead space above the question */
+.ptop { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
+.ptop h1 { font-size: 19px; margin: 0; flex: none; }
+.ptop .filters { margin: 0; flex: 1 1 420px; min-width: 0; }
+.fcount { color: var(--text-3); font-size: 12.5px; margin-bottom: 12px; }
 .filters select, .filters input[type=text] {
   background: var(--surface-1); color: var(--text-1); border: 1px solid var(--hairline-strong);
   border-radius: 6px; padding: 8px 12px; font-size: 14px; font-family: inherit;
@@ -511,6 +516,11 @@ pre.dax {
   .pbar .btn { padding: 8px 10px; font-size: 13px; white-space: nowrap; }
   .filters select { flex: 1 1 calc(50% - 5px); min-width: 0; padding: 8px 6px; font-size: 13px; }
   .filters input[type=text] { flex: 1 1 100%; min-width: 0; }
+  /* the nav bar already shows the active page, so drop the heading row on phones */
+  .ptop h1 { display: none; }
+  .ptop { gap: 0; margin-bottom: 6px; }
+  .fcount { margin-bottom: 10px; }
+  #pCard { scroll-margin-top: 100px; }  /* taller top bar on phones (nav wraps) */
   #pSideBtn .pslabel { display: none; }
   #pSideBtn { padding: 8px 9px; }
   main { padding: 18px 12px 72px; }
@@ -617,8 +627,8 @@ pre.dax {
 
 <!-- ============ question bank ============ -->
 <section id="page-practice" class="page">
+  <div class="ptop">
   <h1>Question Bank</h1>
-  <p class="sub">All 382 questions, every format — answer directly and get instant grading.</p>
   <div class="filters">
     <select id="fTopic"><option value="">All topics</option></select>
     <select id="fType">
@@ -644,7 +654,8 @@ pre.dax {
     </select>
     <input type="text" id="fSearch" placeholder="Search keywords, e.g. DAX, RLS, gateway&hellip;">
   </div>
-  <div class="sub" id="fCount"></div>
+  </div>
+  <div class="fcount" id="fCount"></div>
   <div class="psplit">
     <aside class="pside" id="pSide">
       <div class="pside-head">
@@ -1010,7 +1021,7 @@ Rolling12 = CALCULATE ( [Revenue],
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" src="" alt=""></div>
 
-<script src="data.js?v=1786340358"></script>
+<script src="data.js?v=1786344658"></script>
 <script>
 /* ================= state ================= */
 const QS = BANK.questions;
@@ -1214,7 +1225,11 @@ function renderPQ(scroll) {
   </div>`;
   document.getElementById("pPos").textContent = `${pIdx + 1} / ${pList.length}`;
   renderPList();
-  if (scroll) window.scrollTo({ top: 0 });
+  // align on the question card, not the page top, so a new question needs no extra scrolling
+  if (scroll) {
+    if (el.scrollIntoView) el.scrollIntoView({ block: "start" });
+    else window.scrollTo({ top: 0 });
+  }
 }
 function cellHTML(q, i) {
   const p = progress[q.id];
